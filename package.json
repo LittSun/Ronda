@@ -1,0 +1,25 @@
+{
+	"name": "ronda",
+	"version": "0.7.10",
+	"private": true,
+	"description": "Ronda: barra de patrulha, manutenção e administração para a Wikipédia em português (sucessor do FastButtons, convive com o DiffTools)",
+	"license": "MIT",
+	"homepage": "https://pt.wikipedia.org/wiki/Usuário:Little_Sunshine/Ronda",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LittSun/Ronda.git"
+	},
+	"scripts": {
+		"verificar": "node ferramentas/verificar.js",
+		"wiki": "node ferramentas/gerar-wiki.js",
+		"console": "node ferramentas/gerar-pacote-console.js",
+		"construir": "npm run verificar && npm run wiki && npm run console",
+		"publicar": "node ferramentas/publicar-wiki.js"
+	},
+	"devDependencies": {
+		"acorn": "^8.11.0"
+	},
+	"engines": {
+		"node": ">=18"
+	}
+}

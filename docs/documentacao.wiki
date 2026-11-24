@@ -1,0 +1,222 @@
+{{Info/Script de usuário
+|nome               = Ronda
+|descrição          = Reúne o FastButtons e o DiffTools em uma só<br/>barra de patrulha, manutenção e administração
+|logo               = UserScript Ronda Icon.svg
+|tamanho-logo       = 50px
+|captura            = Userscript Ronda screenshot.png
+|autor              = [[User:Little Sunshine|Little Sunshine]]
+|estado             = beta
+|temas              = Todos
+|versão             = 0.7.10
+|código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
+|github             =
+}}
+O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote. Combina funções do [[WP:FB|FastButtons]] e do DiffTools (Reversão e avisos), com recursos inspirados no [[WP:Twinkle|Twinkle]].
+
+Os botões variam conforme a página e as permissões do usuário. O Ronda facilita as tarefas, mas não substitui as políticas da Wikipédia: confira os critérios aplicáveis antes de executar uma ação.
+
+== Instalação e primeiros passos ==
+Adicione a linha abaixo à sua [[Especial:Minha página/common.js|common.js]] ou ao JavaScript do tema utilizado:
+
+<syntaxhighlight lang="javascript" copy>
+importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
+</syntaxhighlight>
+
+Salve e recarregue a página. Se a barra não aparecer, faça uma atualização forçada (Ctrl+Shift+R). Para desinstalar, remova a linha.
+
+'''Para experimentar sem gravar alterações''', abra '''Preferências do Ronda''' no menu de ações (aba "Mais") e ative '''Modo de simulação'''. A barra exibirá a indicação "Simulação". Abra uma diferença entre edições ("dif") nas [[Especial:Mudanças recentes|mudanças recentes]] e experimente os botões '''Reverter''' e '''Avisar'''. Desative a simulação quando estiver pronto para usar a ferramenta.
+
+A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; no celular, toque no nome da ferramenta na própria barra. Essa escolha fica salva no navegador.
+
+== Funcionalidades ==
+{| class="wikitable"
+! Botão !! Função
+|-
+| '''Reverter''' || Desfaz edições e permite avisar o autor.
+|-
+| '''Avisar''' || Envia avisos à discussão de um usuário.
+|-
+| '''Usuário''' || Exibe informações sobre uma conta ou IP e atalhos para ações.
+|-
+| '''Listar''' || Mostra listas de páginas e edições para patrulhamento.
+|-
+| '''Manutenção''' || Adiciona ou remove predefinições de manutenção.
+|-
+| '''Esboço''' || Marca um artigo como esboço.
+|-
+| '''#R''' || Cria um redirecionamento.
+|-
+| '''Fusão''' || Propõe a fusão de páginas.
+|-
+| '''Mover''' || Altera o título de uma página.
+|-
+| '''ER''' || Propõe [[WP:ER|eliminação rápida]].
+|-
+| '''ESR''' || Propõe [[WP:ESR|eliminação semirrápida]].
+|-
+| '''Consenso''' || Abre uma discussão de eliminação por consenso.
+|-
+| '''Busca''' || Procura fontes sobre o assunto da página.
+|-
+| '''PetScan''' || Localiza páginas de uma categoria que precisam de melhorias.
+|-
+| '''Informações''' || Exibe dados e registros da página.
+|-
+| '''Pedido''' || Prepara pedidos aos administradores.
+|-
+| '''Não assinou''' || Insere a predefinição de comentário sem assinatura.
+|-
+| '''Eliminar''' || Elimina uma página.
+|-
+| '''Restaurar''' || Restaura uma página eliminada.
+|-
+| '''Desligar''' || Remove ligações de outras páginas para a página atual.
+|-
+| '''Bloquear''' || Aplica, altera ou remove bloqueios.
+|-
+| '''Proteger''' || Altera a proteção de uma página.
+|-
+| '''Lote''' || Elimina, restaura ou protege várias páginas.
+|}
+
+Os botões que alteram o texto aparecem em páginas compatíveis, inclusive durante a edição e em diferenças entre versões; os que agem sobre a página também podem aparecer no histórico. Ferramentas de usuário aparecem nas contribuições e nas páginas e discussões de usuário. '''Pedido''' e '''Listar''' estão disponíveis em todas as páginas. Ações administrativas ficam agrupadas à direita, em vermelho, e dependem das permissões correspondentes. '''Usuário''', '''Busca''', '''PetScan''', '''Informações''' e '''Listar''' expandem uma faixa na barra, em vez de abrir uma janela.
+
+=== Patrulhamento e reversão ===
+'''Reversão rápida.''' Ao lado de edições recentes, nas diferenças, históricos, contribuições, mudanças recentes e páginas vigiadas, podem aparecer três links:
+* '''reverter (BF)''': desfaz edições de boa-fé, solicitando um motivo;
+* '''reverter''': desfaz diretamente, sem pedir motivo;
+* '''reverter (vandalismo)''': desfaz e abre o formulário de aviso, com vandalismo e a página já selecionados e o nível sugerido.
+
+Esses links desfazem as edições consecutivas do mesmo autor até a última versão de outra pessoa. Não revertem se houver edição posterior de outra pessoa. Para reversores, usam a reversão rápida; para os demais, o desfazimento comum. O link '''restaurar''', disponível em versões antigas, diferenças e históricos, republica o texto de uma versão anterior, com motivo opcional.
+
+'''Reverter''' permite voltar à versão da esquerda de uma diferença, partindo da versão atual. Se houver edições posteriores de outras pessoas, o diálogo as identifica e exige a opção '''Reverter mesmo assim'''. Quando o resultado é equivalente, reversores utilizam a reversão rápida. É possível acrescentar um comentário, marcar a edição como patrulhada quando essa opção existir e selecionar avisos para o autor; estes só são enviados após uma reversão bem-sucedida. O botão '''Reverter agora''' faz a reversão na hora, enquanto os avisos ainda estão sendo escolhidos; depois, basta clicar em '''Enviar aviso'''.
+
+'''Listar''' apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar apontadas pelo LiftWing como danosas e de má-fé (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
+
+=== Avisos e informações de usuários ===
+'''Avisar''' permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão '''Prévia''' mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe.
+
+* '''Favoritos:''' clique na estrela ao lado de um aviso para fixá-lo no início da lista. Os favoritos são salvos na conta e aparecem também no diálogo de reversão.
+* '''Níveis sugeridos:''' o Ronda consulta os avisos dos últimos 30 dias, inclusive os do DiffTools, para sugerir o próximo nível. Após o terceiro aviso de uma série, pode sugerir o bloqueio e preparar uma notificação em [[Wikipédia:Pedidos/Notificações de vandalismo]].
+* '''Confirmações:''' há alerta se o mesmo aviso tiver sido enviado nas últimas 24 horas ou se a discussão tiver sido editada há menos de um minuto.
+* '''Casos especiais:''' quando o autor não puder ser identificado, o Ronda pergunta quem avisar. Há avisos específicos para as categorias de nomes impróprios da [[Wikipédia:Política de nome de usuário]], com observação e pedido de revisão opcionais, além de notificações de bloqueio ({{tl|bloqueado}}, {{tl|bloqueado-disc}}, {{tl|bloqueado-CPV}} e {{tl|proxy}}). O aviso de vandalismo repetido é colocado no topo da discussão. O aviso de '''assinatura não permitida''' traz uma caixa para cada ponto das [[Wikipédia:Regras para assinaturas|regras para assinaturas]]; os pontos marcados entram no aviso.
+
+'''Usuário''' apresenta um resumo de contas e IPs: bloqueios locais e globais, situação global da conta, registro, edições, grupos e datas de atribuição de direitos, bloqueios anteriores, reversões entre as cem contribuições mais recentes, páginas criadas ou eliminadas, atividade recente e avisos dos últimos 30 dias. Oferece links para registros e ferramentas pertinentes, inclusive verificações para quem tem a permissão.
+
+Para IPs, inclui informações sobre faixas /24 ou /64, WHOIS, localização, proxies, Spur e contribuições globais. As informações da ferramenta de IP da Wikipédia só são consultadas ao clicar, pois o acesso é registrado. O painel também oferece atalhos para avisar, bloquear, '''reverter todas no topo''' (com conferência prévia) e '''eliminar as criadas''' (abrindo o Lote).
+
+=== Manutenção e edição ===
+'''Manutenção''' reúne marcações por tema, permite filtrá-las e remover as já presentes. Reconhece redirecionamentos de predefinições e marcações dentro ou fora de {{tl|Múltiplos problemas}}, podendo agrupá-las ou separá-las. Quando aplicável, avisa o criador e registra a página em [[Wikipédia:Páginas precisando de manutenção]].
+
+* '''Esboço:''' insere {{tl|Esboço}} ou {{tl|Esboço-tema}}, com sugestões de predefinições existentes, antes das categorias.
+* '''#R:''' substitui o conteúdo por um redirecionamento. Em categorias, usa {{tl|Redirecionamento de categoria}}, com motivo; também cria redirecionamentos em páginas inexistentes, adicionando-as às páginas vigiadas.
+* '''Fusão:''' insere {{tl|f-de}} na página que permanece e {{tl|f-com}} na outra.
+* '''Não assinou:''' insere {{tl|Não assinou}} na posição do cursor ao editar discussões ou páginas do domínio Wikipédia.
+
+No formulário de edição, '''Manutenção''', '''Esboço''', '''#R''', '''ER''' e '''ESR''' modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
+
+=== Movimentação e eliminação ===
+'''Mover''' verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
+
+* '''ER:''' apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1.
+* '''ESR:''' sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
+* '''Consenso:''' arquiva a discussão anterior, quando houver, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
+
+Uma página já marcada para outro processo de eliminação não pode receber ER, ESR ou consenso pelo Ronda.
+
+=== Ferramentas administrativas ===
+Estas ferramentas aparecem apenas para usuários com os direitos necessários. '''Eliminar''' e '''Desligar''' estão disponíveis a eliminadores e administradores; '''Restaurar''' e '''Proteger''', a administradores. '''Lote''' está disponível a eliminadores e administradores, conforme as ações permitidas. '''Bloquear''' também pode ser usado por reversores, com limites específicos.
+
+* '''Eliminar:''' usa os motivos dos formulários oficiais e sugere a regra de ER já presente na página. Complementa motivos ausentes para certos domínios, inclusive discussões, e prioriza os motivos próprios de ficheiros. Pode eliminar a discussão e os redirecionamentos que apontam para a página, além de abrir o Desligar em seguida. Numa página de usuário, a discussão do usuário só é eliminada se essa opção for marcada explicitamente.
+* '''Restaurar:''' exibe as edições eliminadas e o último registro, permitindo restaurar também a discussão.
+* '''Desligar:''' remove ligações para a página e usos de ficheiros, processando uma página por vez e registrando o resultado.
+* '''Bloquear:''' permite bloqueios totais ou parciais, alteração, acréscimo e remoção de bloqueios existentes. Exibe os bloqueios ativos, preenche as opções ao alterar um deles e avisa quando um IP já está abrangido por um bloqueio de intervalo. As notificações usam o [[MediaWiki:Gadget-blockNotificationButton.api.js|módulo comunitário]] quando aplicável; notificações de CPV e proxy são enviadas pelo Ronda.
+* '''Proteger:''' define nível e duração para cada ação, com opção de manter a duração atual. Edição e moção ficam vinculadas por padrão, mas podem ser configuradas separadamente.
+* '''Lote:''' elimina, restaura ou protege páginas a partir de ligações, categorias, criações de um usuário, prefixos ou listas digitadas. Permite filtrar por domínio, texto, expressão regular ou comparação com outra lista. Ao eliminar páginas de usuário, as discussões de usuário só são eliminadas com uma opção própria, desmarcada por padrão. Usa os motivos oficiais, reunindo os dos domínios carregados quando necessário.
+
+'''Limites dos reversores:''' podem bloquear somente IPs e contas não confirmadas, por vandalismo leve ou destrutivo e por até 24 horas. Não podem aplicar bloqueios parciais, impedir criação de contas nem remover bloqueios feitos por outros. O formulário restringe motivos e durações. Para contas confirmadas, oferece pedidos de notificação de vandalismo ou incidente. Bloqueios fora desses limites constituem abuso da ferramenta.
+
+Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda segue os critérios do FastButtons: não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
+
+=== Buscas, informações e pedidos ===
+* '''Busca:''' pesquisa o título no Google, Google Notícias, Livros, Acadêmico, Google Brasil e Portugal e Bing.
+* '''PetScan:''' localiza páginas de uma categoria sem fontes, que precisam de revisão ou wikificação ou que são muito pequenas.
+* '''Informações:''' apresenta referências, categorias, afluentes, se a página já foi proposta para eliminação, tamanho, qualidade, última edição, vigilantes, edições eliminadas, registros e visualizações. Para páginas inexistentes, informa a data da eliminação, quando disponível.
+* '''Pedido:''' prepara solicitações de vandalismo, desproteção, edição, histórico, proteção, restauro, ocultação, nome impróprio, incidente e outros casos, com o alvo e o modelo da página de pedidos preenchidos.
+
+=== Uso no celular ===
+No tema Minerva, a barra fica no início do conteúdo, com botões maiores e diálogos adaptados à largura da tela. Toque em '''Ronda''' para recolher ou expandir a barra; as '''Preferências''' ficam nela. '''Reverter''' e '''Avisar''' também funcionam nas diferenças do modo móvel.
+
+== Preferências e simulação ==
+Abra '''Preferências do Ronda''' pelo menu de ações ou, no celular, pela barra. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
+
+Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
+
+Com o '''modo de simulação''' ativo, o Ronda continua consultando páginas, mas não publica edições nem executa eliminações, bloqueios ou proteções. Em vez disso, registra os detalhes no console e exibe uma notificação. '''Exceção:''' preferências e avisos favoritos continuam sendo salvos. O modo também pode ser ativado por <code>window.rondaConfig = { dryRun: true };</code>.
+
+=== Configuração avançada pelo common.js ===
+''Opcional, para usuários familiarizados com JavaScript.''
+
+Defina <code>window.rondaConfig</code> '''antes''' de importar o script. Esses valores têm prioridade sobre as preferências salvas na interface:
+
+<syntaxhighlight lang="javascript" copy>
+window.rondaConfig = {
+	watchlist: 'nochange',
+	unlink: { namespaces: '0|14' },
+	warnings: { window: 30 },
+	revert: { confirm: true }
+};
+importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
+</syntaxhighlight>
+
+{| class="wikitable"
+! Opção !! Padrão !! Efeito
+|-
+| <code>watchlist</code> || <code>'preferences'</code> || Vigilância: <code>'preferences'</code>, <code>'watch'</code>, <code>'nochange'</code> ou <code>'unwatch'</code>.
+|-
+| <code>icon</code> || <code>'UserScript Ronda Icon.svg'</code> || Ícone da barra; <code>null</code> oculta.
+|-
+| <code>dryRun</code> || <code>false</code> || Ativa a simulação.
+|-
+| <code>revert.patrol</code> || <code>true</code> || Marca edições como patrulhadas ao reverter, quando possível.
+|-
+| <code>revert.confirm</code> || <code>false</code> || Confirmação nos links de reversão rápida.
+|-
+| <code>revert.vandalWarn</code> || <code>true</code> || Abre Avisar após reverter vandalismo.
+|-
+| <code>revert.links</code> || Todos <code>true</code> || Locais dos links: <code>diff</code>, <code>history</code>, <code>contribs</code>, <code>recentchanges</code> e <code>watchlist</code>.
+|-
+| <code>warnings.window</code> || <code>30</code> || Dias usados para sugerir níveis de avisos.
+|-
+| <code>warnings.marker</code> || <code>true</code> || Insere marcador oculto para acompanhar avisos.
+|-
+| <code>warnings.confirm</code> || <code>true</code> || Confirma avisos repetidos em 24 horas ou discussão editada há menos de um minuto.
+|-
+| <code>unlink.namespaces</code> || <code>'0'</code> || Domínios do Desligar, separados por <code>&#124;</code> ou em lista, como <code>[ 0, 14 ]</code>.
+|-
+| <code>unlink.currentNamespace</code> || <code>true</code> || Inclui ligações originadas no domínio da própria página.
+|-
+| <code>unlink.right</code> || <code>'delete'</code> || Direito exigido para exibir Desligar.
+|-
+| <code>maintenance.namespaces</code> || <code>[ 0 ]</code> || Domínios em que Manutenção aparece.
+|-
+| <code>messages</code> || — || Substitui textos da interface pelas chaves de [[Usuário:Little Sunshine/Scripts/Ronda-mensagens.js|Ronda-mensagens.js]], por exemplo <code><nowiki>{ 'core-fechar': 'Fechar janela' }</nowiki></code>.
+|}
+
+== Cuidados e limitações ==
+* Alterações de texto são calculadas sobre a versão atual, com detecção de conflitos. Confira especialmente os resultados de '''Desligar''' e '''Lote'''.
+* Os motivos de eliminação, restauro, bloqueio, proteção e moção vêm das mensagens usadas nos formulários oficiais e ficam em cache por uma semana. Use o botão de atualização ao lado do menu para obter os motivos mais recentes; o botão abaixo do campo de detalhes o limpa de uma vez.
+* O carregador tenta carregar todas as partes do Ronda; se uma falhar, as demais continuam funcionando. Os erros aparecem no console do navegador.
+* Antes de agir, consulte a política correspondente, como [[Wikipédia:Vandalismo]] ou [[WP:ER]].
+
+== Monitoramento de edições ==
+As edições e ações realizadas pelo Ronda acrescentam ao resumo a identificação <code><nowiki>(via [[User:Little Sunshine/Ronda|script]] #Ronda)</nowiki></code>. Esse texto é fixo e não pode ser alterado nas preferências.
+
+As ações podem ser acompanhadas pela [https://hashtags.wmcloud.org/?query=Ronda&project=pt.wikipedia.org&startdate=&enddate=&search_type=or&user= ferramenta de hashtags].
+
+== Créditos ==
+* '''FastButtons:''' Racso, Macy, Danilo.mac, Helder, !Silent e demais colaboradores.
+* '''DiffTools / Reversão e avisos:''' Lorian, Helder, !Silent e Albertoleoncio.
+* Recursos de reversão rápida, confirmações, ações em lote e preferências inspirados no '''Twinkle''' (AzaToth e colaboradores da Wikipédia em inglês).
+
+{{Usuário:Little Sunshine/Scripts/Navbox}}

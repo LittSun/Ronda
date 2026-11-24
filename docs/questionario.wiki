@@ -1,0 +1,85 @@
+{{Atalho|U:LS/RQ}}
+Esta página reúne a '''opinião de quem usa ou já experimentou o [[User:Little Sunshine/Ronda|Ronda]]'''. As respostas vão orientar as próximas versões e a decisão de oferecê-lo como gadget.
+
+'''Como responder:''' copie o modelo da seção [[#Modelo de resposta|Modelo de resposta]], cole-o no fim da seção [[#Respostas|Respostas]], preencha o que quiser e assine com <code><nowiki>~~~~</nowiki></code>. Todas as perguntas são opcionais: pode responder só algumas, e pode escrever "não sei" ou "não usei". Críticas são bem-vindas, inclusive de quem desistiu de usar.
+
+Para relatar um erro específico, use de preferência a [[Usuário Discussão:Little Sunshine|discussão do autor]], com a página e o que aconteceu.
+
+== Perguntas ==
+'''A. Sobre você'''
+# Há quanto tempo edita a Wikipédia? (menos de 1 ano / 1 a 5 anos / mais de 5 anos)
+# Quais estatutos tem? (nenhum, autorrevisor, reversor, eliminador, administrador, outro)
+# Em que atividades usa o Ronda? (patrulha de mudanças recentes, páginas novas, manutenção de artigos, eliminações, bloqueios, ações em lote, outra)
+# Usava antes o FastButtons, o DiffTools ou o Twinkle? Ainda usa algum deles junto com o Ronda?
+# Usa o Ronda no computador, no celular ou nos dois?
+
+'''B. Avaliação geral''' (de 1 a 5, sendo 1 "muito ruim" e 5 "muito bom")
+# Facilidade de instalar e começar a usar: __
+# Clareza dos botões e das janelas: __
+# Rapidez para fazer as tarefas, comparada com as ferramentas que usava antes: __
+# Confiança no resultado (o Ronda faz o que você espera?): __
+# Satisfação geral: __
+# Recomendaria o Ronda a outros editores? (sim / talvez / não)
+
+'''C. Funcionalidades'''
+# Quais botões ou recursos usa com mais frequência?
+# Algum recurso é difícil de achar, confuso ou não funciona como esperava? Qual?
+# Já usou o '''modo de simulação'''? Ele ajudou a aprender a ferramenta?
+# Os '''níveis sugeridos''' dos avisos costumam estar certos?
+# Os '''avisos favoritos''' são úteis para você?
+# Os '''links rápidos''' de reversão (reverter, reverter (BF), reverter (vandalismo)) ficam no lugar certo e com o resumo adequado?
+# (Para quem tem ferramentas administrativas ou é reversor) O Eliminar, o Bloquear, o Proteger e o Lote atendem ao que precisa? Os limites dos reversores no Bloquear estão claros?
+# Falta algum recurso que o FastButtons, o DiffTools ou o Twinkle tinham?
+
+'''D. Problemas'''
+# Já encontrou algum erro (botão que não aparece, ação que falhou, texto errado na página ou no resumo)? Descreva, se lembrar.
+# O Ronda deixou o carregamento das páginas mais lento ou interferiu com outros scripts e gadgets?
+# A aparência (cores, tamanho, modo escuro, celular) atrapalhou em algum momento?
+
+'''E. Próximos passos'''
+# O que mais gostaria que fosse acrescentado ou mudado?
+# O Ronda deveria virar um '''gadget''' opcional, ativado nas preferências? (sim / não / tanto faz)
+# Comentários livres.
+
+== Modelo de resposta ==
+Copie o bloco abaixo (editando o código-fonte desta seção), cole no fim de [[#Respostas|Respostas]] e preencha:
+<pre>
+=== ~~~ ===
+'''A. Sobre você'''
+#
+#
+#
+#
+#
+'''B. Avaliação geral (1 a 5)'''
+# Instalação:
+# Clareza:
+# Rapidez:
+# Confiança:
+# Satisfação geral:
+# Recomendaria:
+'''C. Funcionalidades'''
+#
+#
+#
+#
+#
+#
+#
+#
+'''D. Problemas'''
+#
+#
+#
+'''E. Próximos passos'''
+#
+#
+#
+~~~~
+</pre>
+
+== Respostas ==
+<!-- Acrescente a sua resposta abaixo desta linha, usando o modelo acima. -->
+
+== Resumo ==
+<!-- Reservado para o resumo das respostas, ao fim da consulta. -->
