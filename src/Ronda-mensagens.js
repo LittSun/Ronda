@@ -71,6 +71,12 @@ window.rondaMessages = {
 	'core-preferencias': 'Preferências',
 	'core-simulacao': 'Simulação',
 	'core-nada-e-gravado-na-wiki-as': 'Nada é gravado na wiki; as escritas aparecem no console',
+	'core-boasvindas-texto': 'Boas-vindas ao Ronda! Ele pode ser ajustado ao seu jeito: vigilância das páginas, links de reversão rápida, avisos, simulação e outras opções ficam nas preferências.',
+	'core-boasvindas-onde': 'Elas ficam depois em "$1", no menu de ações (aba "Mais").',
+	'core-boasvindas-onde-movel': 'Elas ficam depois no link "$1", nesta barra.',
+	'core-boasvindas-abrir': 'Abrir preferências',
+	'core-boasvindas-documentacao': 'Documentação',
+	'core-boasvindas-entendi': 'Entendi',
 
 	// Patrulha: Reverter, Avisar, Usuário, Listar e reversão rápida
 	'patrulha-o-aviso-ja-foi-deixado-nas': 'O aviso "$1" já foi deixado nas últimas 24 horas.',

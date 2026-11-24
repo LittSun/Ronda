@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = 0.7.12
+|versão             = 0.7.13
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -148,6 +148,8 @@ Ações com várias etapas exibem progresso e registro de resultados. Nos avisos
 No tema Minerva, a barra fica no início do conteúdo, com botões maiores e diálogos adaptados à largura da tela. Toque em '''Ronda''' para recolher ou expandir a barra; as '''Preferências''' ficam nela. {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} também funcionam nas diferenças do modo móvel.
 
 == Preferências e simulação ==
+Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam as preferências, com um botão para abri-las. Ela some ao clicar em qualquer opção e não volta a aparecer.
+
 Abra '''Preferências do Ronda''' pelo menu de ações ou, no celular, pela barra. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.

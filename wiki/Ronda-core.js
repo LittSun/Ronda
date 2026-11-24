@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.12',
+		version: '0.7.13',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1224,6 +1224,59 @@ function addControls( $bar ) {
 	}
 }
 
+ronda.WELCOME_OPTION = 'userjs-ronda-boasvindas';
+ronda.DOC_PAGE = 'Usuário:Little Sunshine/Ronda';
+
+function addWelcome( $bar ) {
+	var $strip, hasMenu;
+
+	if ( !$bar || mw.user.isAnon() || mw.user.options.get( ronda.WELCOME_OPTION ) ||
+		mw.user.options.get( ronda.PREFS_OPTION ) ) {
+		return;
+	}
+	if ( $bar.hasClass( 'ronda-collapsed' ) || $bar.css( 'display' ) === 'none' ) {
+		return;
+	}
+	hasMenu = !!document.getElementById( 'ca-ronda-prefs' );
+
+	function dismiss() {
+		$strip.remove();
+		if ( mw.user.options.set ) {
+			mw.user.options.set( ronda.WELCOME_OPTION, '1' );
+		}
+		new mw.Api().postWithToken( 'csrf', {
+			action: 'options',
+			optionname: ronda.WELCOME_OPTION,
+			optionvalue: '1'
+		} );
+	}
+
+	$strip = $( '<div class="ronda-welcome ui-state-highlight ui-corner-all"></div>' ).append(
+		$( '<p></p>' ).text( ronda.msg( 'core-boasvindas-texto' ) + ' ' +
+			ronda.msg( hasMenu ? 'core-boasvindas-onde' : 'core-boasvindas-onde-movel',
+				ronda.msg( hasMenu ? 'core-preferencias-do-ronda' : 'core-preferencias' ) ) ),
+		$( '<div class="ronda-welcome-actions"></div>' ).append(
+			$( '<button type="button" class="ui-priority-primary ui-button-blue"></button>' )
+				.text( ronda.msg( 'core-boasvindas-abrir' ) )
+				.button()
+				.on( 'click', function () {
+					dismiss();
+					ronda.openPreferences();
+				} ),
+			$( '<a target="_blank"></a>' )
+				.attr( 'href', mw.util.getUrl( ronda.DOC_PAGE ) )
+				.text( ronda.msg( 'core-boasvindas-documentacao' ) ),
+			$( '<button type="button"></button>' )
+				.text( ronda.msg( 'core-boasvindas-entendi' ) )
+				.button()
+				.on( 'click', dismiss )
+		)
+	).appendTo( $bar );
+
+}
+
+ronda.welcome = { show: addWelcome };
+
 ronda.start = function () {
 	if ( ronda.started ) {
 		return;
@@ -1255,6 +1308,7 @@ ronda.start = function () {
 		}
 
 		addControls( $bar );
+		addWelcome( $bar );
 
 		mw.hook( 'ronda.ready' ).fire( ronda );
 	} );

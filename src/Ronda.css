@@ -73,6 +73,33 @@
 	line-height: 1.6;
 }
 
+/* Boas-vindas (uma vez por conta) */
+#ronda-toolbar .ronda-welcome {
+	flex-basis: 100%;
+	padding: 0.4em 0.6em;
+	line-height: 1.5;
+}
+
+#ronda-toolbar .ronda-welcome p {
+	margin: 0 0 0.4em;
+}
+
+#ronda-toolbar .ronda-welcome-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4em 0.8em;
+}
+
+#ronda-toolbar .ronda-welcome-actions .ui-button {
+	margin: 0;
+	font-size: 1em;
+}
+
+#ronda-toolbar .ronda-welcome-actions .ui-button-text {
+	padding: 0.2em 0.7em;
+}
+
 #ronda-toolbar .ronda-up-line {
 	margin: 0.1em 0;
 }
