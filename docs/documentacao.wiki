@@ -9,7 +9,7 @@
 |temas              = Todos
 |versão             = 0.7.11
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
-|github             =
+|github             = LittSun/Ronda
 }}
 O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote. Combina funções do [[WP:FB|FastButtons]] e do DiffTools (Reversão e avisos), com recursos inspirados no [[WP:Twinkle|Twinkle]].
 
@@ -205,7 +205,7 @@ importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [
 
 == Cuidados e limitações ==
 * Alterações de texto são calculadas sobre a versão atual, com detecção de conflitos. Confira especialmente os resultados de '''Desligar''' e '''Lote'''.
-* Os motivos de eliminação, restauro, bloqueio, proteção e moção vêm das mensagens usadas nos formulários oficiais e ficam em cache por uma semana. Use o botão de atualização ao lado do menu para obter os motivos mais recentes; o botão abaixo do campo de detalhes o limpa de uma vez.
+* Os motivos de eliminação, restauro, bloqueio, proteção e moção vêm das mensagens usadas nos formulários oficiais e ficam em cache por uma semana. Use o botão de atualização ao lado do menu para obter os motivos mais recentes. O campo de detalhes também busca motivos padrão: o escolhido é acrescentado aos detalhes quando já há um motivo no menu, sem substituí-lo, ou ocupa o menu quando ele está vazio. O botão abaixo do campo o limpa de uma vez.
 * O carregador tenta carregar todas as partes do Ronda; se uma falhar, as demais continuam funcionando. Os erros aparecem no console do navegador.
 * Antes de agir, consulte a política correspondente, como [[Wikipédia:Vandalismo]] ou [[WP:ER]].
 
