@@ -1,0 +1,107 @@
+# Verifica o código e gera, a partir de src/:
+# - wiki/ — os arquivos prontos para a wiki (sem comentários, com o cabeçalho
+#   @target e as ligações entre arquivos);
+# - dist/Ronda-console.js — o pacote único para colar no console.
+# Em pull requests, só verifica e gera (os arquivos ficam na aba Actions).
+# No main, grava wiki/ e dist/ num único commit do robô e publica na wiki as
+# páginas que mudaram, com a senha de robô dos segredos WIKI_BOT_USER e
+# WIKI_BOT_PASSWORD (sem eles, a publicação é pulada).
+# Em tags v* (ex.: v1.0.0), anexa os arquivos à versão no GitHub.
+name: Construir
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'ferramentas/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/construir.yml'
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publicar:
+        description: 'Publicar na wiki'
+        type: boolean
+        default: true
+      simular:
+        description: 'Só simular (mostra o que mudaria, sem editar)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: construir-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar e gerar
+        run: npm run construir
+
+      - name: Disponibilizar para download (aba Actions)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ronda
+          path: |
+            wiki/
+            dist/
+
+      # Só no main: grava os arquivos gerados, se mudaram, num único commit
+      - name: Commitar wiki/ e dist/
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wiki/ dist/
+          if git diff --cached --quiet; then
+            echo "Arquivos gerados sem alterações."
+          else
+            git commit -m "Atualiza os arquivos gerados [skip ci]"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Publicar na wiki
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publicar))
+        env:
+          WIKI_BOT_USER: ${{ secrets.WIKI_BOT_USER }}
+          WIKI_BOT_PASSWORD: ${{ secrets.WIKI_BOT_PASSWORD }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.simular }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          versao=$(cat wiki/Ronda-Versao.wiki)
+          titulo=$(printf '%s' "$COMMIT_MSG" | head -n1 | cut -c1-150)
+          export WIKI_SUMMARY="Atualização do Ronda $versao (GitHub ${GITHUB_SHA::7}${titulo:+: $titulo})"
+          npm run publicar
+
+      - name: Compactar para a versão
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cd wiki && zip -r ../Ronda-wiki.zip .
+
+      - name: Anexar à versão
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Ronda-wiki.zip
+            dist/Ronda-console.js
+          generate_release_notes: true

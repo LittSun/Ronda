@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Arquivos gerados a partir de src/ (não editar à mão)
+wiki/** linguist-generated=true
+dist/** linguist-generated=true
