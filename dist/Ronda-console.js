@@ -617,7 +617,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.11',
+		version: '0.7.12',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1067,9 +1067,23 @@ ronda.joinReason = function ( selected, extra ) {
 	return selected || extra;
 };
 
-/** Escapa barras verticais para uso em parâmetros de predefinição */
+/**
+ * Escapa barras verticais para uso em parâmetros de predefinição.
+ * As que estão dentro de [[…]] e {{…}} ficam como estão: são do próprio link ou predefinição.
+ */
 ronda.templateSafe = function ( text ) {
-	return String( text ).replace( /\|/g, '{{!}}' );
+	var depth = 0;
+
+	return String( text == null ? '' : text ).replace( /\[\[|\]\]|\{\{|\}\}|\|/g, function ( m ) {
+		if ( m === '[[' || m === '{{' ) {
+			depth++;
+		} else if ( m === ']]' || m === '}}' ) {
+			depth = Math.max( 0, depth - 1 );
+		} else if ( !depth ) {
+			return '{{!}}';
+		}
+		return m;
+	} );
 };
 
 ronda.ui = {};
@@ -6195,20 +6209,9 @@ var SIG = '~~' + '~~',
  * Funções puras
  * ================================================================== */
 
-/** Escapa só as barras verticais fora de [[…]] e {{…}} (as de dentro são do próprio link) */
+/** Escapa só as barras verticais fora de [[…]] e {{…}} */
 function paramSafe( text ) {
-	var depth = 0;
-
-	return String( text || '' ).replace( /\[\[|\]\]|\{\{|\}\}|\|/g, function ( m ) {
-		if ( m === '[[' || m === '{{' ) {
-			depth++;
-		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
-		} else if ( !depth ) {
-			return '{{!}}';
-		}
-		return m;
-	} );
+	return ronda.templateSafe( text );
 }
 
 /** Regras de ER que valem para a página */

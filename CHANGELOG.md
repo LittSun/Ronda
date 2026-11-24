@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.12 — 24/11/2026
+- Observações e campos de avisos (nome impróprio, ER, bloqueio e outros): as barras verticais dentro de predefinições e ligações, como em `{{User|Fulano}}` ou `[[Página|texto]]`, não são mais trocadas por `{{!}}`. Só as barras soltas no texto continuam escapadas.
+
 ## Repositório — 24/11/2026
 - Repositório reorganizado para ficar público no futuro: código em `src/`, scripts em `ferramentas/`, documentação em `docs/`, pacote de console em `dist/`; `package.json` com `npm run verificar` e `npm run construir`; um único workflow (*Construir*) no lugar dos dois anteriores, com um só commit do robô por push; licença MIT para o código e CC BY-SA 4.0 para os textos ([CREDITOS.md](CREDITOS.md)); guia de contribuição. O código da ferramenta não mudou.
 

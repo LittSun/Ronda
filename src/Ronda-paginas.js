@@ -831,20 +831,9 @@ var SIG = '~~' + '~~',
  * Funções puras
  * ================================================================== */
 
-/** Escapa só as barras verticais fora de [[…]] e {{…}} (as de dentro são do próprio link) */
+/** Escapa só as barras verticais fora de [[…]] e {{…}} */
 function paramSafe( text ) {
-	var depth = 0;
-
-	return String( text || '' ).replace( /\[\[|\]\]|\{\{|\}\}|\|/g, function ( m ) {
-		if ( m === '[[' || m === '{{' ) {
-			depth++;
-		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
-		} else if ( !depth ) {
-			return '{{!}}';
-		}
-		return m;
-	} );
+	return ronda.templateSafe( text );
 }
 
 /** Regras de ER que valem para a página */

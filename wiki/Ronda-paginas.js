@@ -744,18 +744,7 @@ var SIG = '~~' + '~~',
 	FORBIDDEN_NS = [ 8, 828 ];
 
 function paramSafe( text ) {
-	var depth = 0;
-
-	return String( text || '' ).replace( /\[\[|\]\]|\{\{|\}\}|\|/g, function ( m ) {
-		if ( m === '[[' || m === '{{' ) {
-			depth++;
-		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
-		} else if ( !depth ) {
-			return '{{!}}';
-		}
-		return m;
-	} );
+	return ronda.templateSafe( text );
 }
 
 function rulesFor( page ) {
