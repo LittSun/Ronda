@@ -6,6 +6,9 @@ Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada
 ## Repositório — 24/11/2026
 - Repositório reorganizado para ficar público no futuro: código em `src/`, scripts em `ferramentas/`, documentação em `docs/`, pacote de console em `dist/`; `package.json` com `npm run verificar` e `npm run construir`; um único workflow (*Construir*) no lugar dos dois anteriores, com um só commit do robô por push; licença MIT para o código e CC BY-SA 4.0 para os textos ([CREDITOS.md](CREDITOS.md)); guia de contribuição. O código da ferramenta não mudou.
 
+## 0.7.11 — 24/11/2026
+- Menus de motivos (Eliminar, Restaurar, Bloquear, Proteger, Mover, Lote): escolher um motivo-padrão pela busca do campo "Detalhes" não substitui mais o motivo principal já escolhido; o motivo encontrado entra nos detalhes. Sem motivo principal ("Outro motivo"), ele continua virando o principal.
+
 ## 0.7.10 — 23/11/2026
 - **Reverter**: botão **Reverter agora** na caixa de reversão, que reverte (e marca como patrulhada, se escolhido) na hora, enquanto os avisos ainda são escolhidos. Depois disso, a caixa fica travada com "Revertido…" e o botão principal passa a "Enviar aviso", que manda só os avisos. O botão principal continua fazendo tudo de uma vez para quem não usar o novo.
 

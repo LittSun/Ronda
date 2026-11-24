@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.10',
+		version: '0.7.11',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -732,9 +732,13 @@ ronda.ui.reasonSearch = function ( $input, $select, groups ) {
 			return false;
 		},
 		select: function ( e, ui ) {
-			$select.val( ui.item.value );
-			ronda.ui.refreshSelect( $select );
-			$input.val( '' );
+			if ( $select.val() ) {
+				$input.val( ui.item.value ).trigger( 'input' );
+			} else {
+				$select.val( ui.item.value );
+				ronda.ui.refreshSelect( $select );
+				$input.val( '' );
+			}
 			return false;
 		}
 	} );
