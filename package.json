@@ -1,6 +1,6 @@
 {
 	"name": "ronda",
-	"version": "0.7.10",
+	"version": "0.7.11",
 	"private": true,
 	"description": "Ronda: barra de patrulha, manutenção e administração para a Wikipédia em português (sucessor do FastButtons, convive com o DiffTools)",
 	"license": "MIT",
