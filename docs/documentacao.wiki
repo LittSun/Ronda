@@ -7,11 +7,12 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = 0.7.15
+|versão             = [[/Changelog#0.7.15|0.7.15]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
 O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote. Combina funções do [[WP:FB|FastButtons]] e do DiffTools (Reversão e avisos), com recursos inspirados no [[WP:Twinkle|Twinkle]].
+[[File:Userscript Ronda Batch screenshot.png|thumb|Captura de tela das ações em lote do Ronda]]
 
 Os botões variam conforme a página e as permissões do usuário. O Ronda facilita as tarefas, mas não substitui as políticas da Wikipédia: confira os critérios aplicáveis antes de executar uma ação.
 

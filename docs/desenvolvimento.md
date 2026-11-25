@@ -59,7 +59,7 @@ Dicas:
 ## Versões
 
 1. Suba o número em **dois** lugares: `version` em `src/Ronda-core.js` e em `package.json` (o `npm run verificar` acusa se ficarem diferentes).
-2. Acrescente a entrada no topo de [CHANGELOG.md](../CHANGELOG.md) e atualize a versão no topo do [README](../README.md) e na infobox de [docs/documentacao.wiki](documentacao.wiki).
+2. Acrescente a entrada no topo de [CHANGELOG.md](../CHANGELOG.md) e atualize a versão no topo do [README](../README.md). A versão da infobox da documentação é preenchida na geração, ligada ao histórico (`[[/Changelog#0.7.15|0.7.15]]`).
 3. Para marcar uma versão fechada: `git tag v1.0.0 && git push --tags`. O Actions anexa `Ronda-wiki.zip` e `Ronda-console.js` à versão no GitHub.
 
 Esquema: `0.MENOR.CORREÇÃO` até a 1.0, que será a primeira publicada como gadget.
@@ -71,7 +71,7 @@ O workflow [`.github/workflows/construir.yml`](../.github/workflows/construir.ym
 | Quando | O que faz |
 |---|---|
 | Pull request | Verifica e gera; os arquivos ficam para download na aba *Actions* |
-| Push no `main` que mexa em `src/`, `ferramentas/` ou `package*.json` | Verifica, gera, grava `wiki/` e `dist/` num único commit do robô (se mudaram) e publica na wiki |
+| Push no `main` que mexa em `src/`, `ferramentas/`, `package*.json`, `CHANGELOG.md` ou `docs/documentacao.wiki` | Verifica, gera, grava `wiki/` e `dist/` num único commit do robô (se mudaram) e publica na wiki |
 | *Run workflow* | O mesmo, sob demanda; com **Só simular**, mostra o que mudaria na wiki, sem editar |
 | Tag `v*` | Anexa os arquivos gerados à versão |
 
@@ -79,9 +79,20 @@ Como o robô grava no `main` depois de cada push, rode `git pull --rebase` antes
 
 ## Publicar na wiki
 
+Além do código, o workflow publica:
+
+| Origem | Página | Como |
+|---|---|---|
+| [CHANGELOG.md](../CHANGELOG.md) | `Usuário:Little Sunshine/Ronda/Changelog` | Convertido em wikitexto; cada versão tem âncora com o número (`#0.7.15`). Seções que não são versões (ex.: "Repositório") ficam de fora |
+| [docs/documentacao.wiki](documentacao.wiki) | `Usuário:Little Sunshine/Ronda` | Como está, com a versão da infobox atualizada |
+
+**Documentação:** é para quem usa a ferramenta, não para quem a desenvolve. Registre nela só o que muda o uso (botões, opções, comportamentos que a pessoa nota), em linguagem simples; detalhes internos e correções pequenas ficam só no CHANGELOG.
+
+**Edições feitas na wiki:** a documentação e o histórico só são substituídos se a última edição foi da própria publicação (resumo "Atualização do Ronda…"). Se alguém editou na wiki, a página é pulada com um aviso no Actions: leve a mudança para o arquivo do repositório e rode o workflow com **Substituir a documentação mesmo se editada na wiki**.
+
 O workflow publica as páginas que mudaram em `Usuário:Little Sunshine/Scripts/` com uma senha de robô. O carregador vai por último, para que só peça arquivos já atualizados.
 
-1. Em [Especial:BotPasswords](https://pt.wikipedia.org/wiki/Especial:BotPasswords), crie uma senha de robô (ex.: `Ronda`) com as permissões **Editar páginas existentes** e **Editar o seu CSS/JSON/JavaScript de usuário**.
+1. Em [Especial:BotPasswords](https://pt.wikipedia.org/wiki/Especial:BotPasswords), crie uma senha de robô (ex.: `Ronda`) com as permissões **Editar páginas existentes**, **Criar, editar e mover páginas** e **Editar o seu CSS/JSON/JavaScript de usuário**.
 2. No repositório, em *Settings › Secrets and variables › Actions*, crie os segredos `WIKI_BOT_USER` (ex.: `Little Sunshine@Ronda`) e `WIKI_BOT_PASSWORD`. Sem eles, a publicação é pulada.
 
 No computador: `WIKI_BOT_USER=… WIKI_BOT_PASSWORD=… npm run publicar` (com `DRY_RUN=true` para simular).
