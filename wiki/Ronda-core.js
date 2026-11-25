@@ -373,6 +373,52 @@ ronda.joinReason = function ( selected, extra ) {
 	return selected || extra;
 };
 
+ronda.templateParams = function ( text, name ) {
+	var re = new RegExp( '\\{\\{\\s*(?:subst:)?[' + name.charAt( 0 ).toUpperCase() + name.charAt( 0 ).toLowerCase() + ']' +
+			name.slice( 1 ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ).replace( / /g, '[ _]' ) + '\\s*(?=[|}])' ),
+		m = re.exec( String( text || '' ) ),
+		out = {},
+		parts = [],
+		cur = '',
+		depth = 0,
+		i, two, pos = 1;
+
+	if ( !m ) {
+		return null;
+	}
+	text = String( text );
+	for ( i = m.index + m[ 0 ].length; i < text.length; i++ ) {
+		two = text.substr( i, 2 );
+		if ( two === '{{' || two === '[[' ) {
+			depth++;
+			cur += two;
+			i++;
+		} else if ( two === '}}' && depth === 0 ) {
+			parts.push( cur );
+			break;
+		} else if ( two === '}}' || two === ']]' ) {
+			depth = Math.max( 0, depth - 1 );
+			cur += two;
+			i++;
+		} else if ( text[ i ] === '|' && depth === 0 ) {
+			parts.push( cur );
+			cur = '';
+		} else {
+			cur += text[ i ];
+		}
+	}
+	parts.slice( 1 ).forEach( function ( p ) {
+		var eq = p.match( /^\s*([^=\[\]{}|]+?)\s*=([\s\S]*)$/ );
+
+		if ( eq ) {
+			out[ eq[ 1 ] ] = eq[ 2 ].trim();
+		} else {
+			out[ String( pos++ ) ] = p.trim();
+		}
+	} );
+	return out;
+};
+
 ronda.templateSafe = function ( text ) {
 	var depth = 0;
 

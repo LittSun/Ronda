@@ -1108,6 +1108,60 @@ ronda.joinReason = function ( selected, extra ) {
 };
 
 /**
+ * Parâmetros da primeira chamada de uma predefinição no texto, respeitando
+ * predefinições e ligações aninhadas (a barra de [[A|b]] não separa parâmetros).
+ * @param {string} text
+ * @param {string} name Nome da predefinição (sem distinção de maiúscula na primeira letra)
+ * @return {Object|null} { '1': …, '2': …, 'nome': … } com os valores sem espaços nas pontas
+ */
+ronda.templateParams = function ( text, name ) {
+	var re = new RegExp( '\\{\\{\\s*(?:subst:)?[' + name.charAt( 0 ).toUpperCase() + name.charAt( 0 ).toLowerCase() + ']' +
+			name.slice( 1 ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ).replace( / /g, '[ _]' ) + '\\s*(?=[|}])' ),
+		m = re.exec( String( text || '' ) ),
+		out = {},
+		parts = [],
+		cur = '',
+		depth = 0,
+		i, two, pos = 1;
+
+	if ( !m ) {
+		return null;
+	}
+	text = String( text );
+	for ( i = m.index + m[ 0 ].length; i < text.length; i++ ) {
+		two = text.substr( i, 2 );
+		if ( two === '{{' || two === '[[' ) {
+			depth++;
+			cur += two;
+			i++;
+		} else if ( two === '}}' && depth === 0 ) {
+			parts.push( cur );
+			break;
+		} else if ( two === '}}' || two === ']]' ) {
+			depth = Math.max( 0, depth - 1 );
+			cur += two;
+			i++;
+		} else if ( text[ i ] === '|' && depth === 0 ) {
+			parts.push( cur );
+			cur = '';
+		} else {
+			cur += text[ i ];
+		}
+	}
+	// parts[ 0 ] é o que vem entre o nome e a primeira barra (vazio)
+	parts.slice( 1 ).forEach( function ( p ) {
+		var eq = p.match( /^\s*([^=\[\]{}|]+?)\s*=([\s\S]*)$/ );
+
+		if ( eq ) {
+			out[ eq[ 1 ] ] = eq[ 2 ].trim();
+		} else {
+			out[ String( pos++ ) ] = p.trim();
+		}
+	} );
+	return out;
+};
+
+/**
  * Escapa barras verticais para uso em parâmetros de predefinição.
  * As que estão dentro de [[…]] e {{…}} ficam como estão: são do próprio link ou predefinição.
  */
@@ -9102,7 +9156,8 @@ function suggestReason( ctx, page, text, groups ) {
 
 function showForm( ctx, page, groups ) {
 	var text = ( page.revisions && page.revisions[ 0 ] && page.revisions[ 0 ].slots.main.content ) || '',
-		erNote = text.match( /\{\{\s*ER\s*\|[^}]*?\|\s*3\s*=\s*([^|}]*)/ ),
+		erParams = ronda.templateParams( text, 'ER' ),
+		erNote = erParams && erParams[ '3' ] ? erParams[ '3' ] : '',
 		otherProcess = /\{\{\s*(?:subst:)?(?:ESR[\w\-]*|apagar\d*|Página para eliminar)\s*[|}]/i.test( text ),
 		// Redirecionamentos para a página vêm da tabela de redirecionamentos (prop=redirects):
 		// um afluente marcado como redirecionamento pode apontar para outra página e só
@@ -9137,9 +9192,9 @@ function showForm( ctx, page, groups ) {
 		reasonFields.$extra.val( '[[WP:ER|ER]] ' + suggestion.rule );
 	}
 
-	if ( erNote && erNote[ 1 ].trim() ) {
+	if ( erNote ) {
 		reasonFields.$extra.val(
-			( reasonFields.$extra.val() ? reasonFields.$extra.val() + ' — ' : '' ) + erNote[ 1 ].trim()
+			( reasonFields.$extra.val() ? reasonFields.$extra.val() + ' — ' : '' ) + erNote
 		);
 	}
 
