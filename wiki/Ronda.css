@@ -419,6 +419,42 @@
 	cursor: pointer;
 }
 
+#ronda-toolbar .ronda-brand-toggle:hover,
+#ronda-toolbar .ronda-brand-toggle:focus {
+	color: var( --color-progressive, #36c );
+}
+
+#ronda-toolbar .ronda-brand-caret {
+	font-weight: normal;
+	font-size: 0.85em;
+}
+
+#ronda-toolbar .ronda-meta-news {
+	margin: 0 0 0 1.2em;
+	padding: 0;
+}
+
+#ronda-toolbar .ronda-meta-quick {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+#ronda-toolbar .ronda-meta-head {
+	margin-bottom: 0.4em;
+	padding: 0.3em 0.6em;
+}
+
+#ronda-toolbar .ronda-not-again {
+	font-size: 0.9em;
+}
+
+.ronda-report-env {
+	margin: 0.3em 0 0 1.2em;
+	font-size: 0.85em;
+	color: var( --color-subtle, #54595d );
+	word-break: break-word;
+}
+
 #ronda-toolbar .ronda-prefs-link {
 	margin-left: auto;
 	font-size: 0.9em;

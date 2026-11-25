@@ -95,6 +95,7 @@ function criar( opts ) {
 	};
 
 	const storage = {};
+	const opcoes = Object.assign( {}, opts.options || {} );
 	w.mw = {
 		config: { get: ( k ) => ( k === undefined ? config : config[ k ] ), set: ( k, v ) => { config[ k ] = v; } },
 		Api: Api,
@@ -113,7 +114,7 @@ function criar( opts ) {
 			getName: () => user,
 			isAnon: () => false,
 			getRights: () => D( rights ),
-			options: { get: () => null, set: () => {} },
+			options: { get: ( k ) => ( k in opcoes ? opcoes[ k ] : null ), set: ( k, v ) => { opcoes[ k ] = v; } },
 			tokens: { get: () => 'x' }
 		},
 		storage: { get: ( k ) => storage[ k ] || null, set: ( k, v ) => { storage[ k ] = v; }, getObject: () => null, setObject: () => {} },
@@ -141,6 +142,7 @@ function criar( opts ) {
 		notificacoes: notificacoes,
 		confirmacoes: confirmacoes,
 		externos: externos,
+		opcoes: opcoes,
 		consultas: consultas,
 		/** Espera as promessas pendentes (jQuery 3 resolve de forma assíncrona) */
 		esperar: ( ms ) => new Promise( ( ok ) => setTimeout( ok, ms || 30 ) ),
