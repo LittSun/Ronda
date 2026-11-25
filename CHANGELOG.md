@@ -4,6 +4,7 @@ O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `pack
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
 ## 0.7.15 — 25/11/2026
+- **Eliminar**: a observação da marcação {{ER}} (parâmetro 3) é lida por inteiro mesmo quando tem ligações com barra, como `[[WP:FF|fiáveis]]`; antes, o campo Detalhes ficava cortado na primeira barra. A leitura de parâmetros (`ronda.templateParams`) respeita predefinições e ligações aninhadas.
 - **ER**: campo **Aviso a mais**, para mandar ao criador, junto da notificação de eliminação e na mesma edição da discussão, um aviso do catálogo (vandalismo, spam, testes…), com os favoritos no topo. Nos avisos em série, o nível pode ser escolhido ou ficar em "nível sugerido", calculado pelos avisos dos últimos dias. Vale também quando a notificação está em "Não avisar" e segue os mesmos critérios de quem pode ser avisado.
 
 ## 0.7.14 — 25/11/2026

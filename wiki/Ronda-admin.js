@@ -135,7 +135,8 @@ function suggestReason( ctx, page, text, groups ) {
 
 function showForm( ctx, page, groups ) {
 	var text = ( page.revisions && page.revisions[ 0 ] && page.revisions[ 0 ].slots.main.content ) || '',
-		erNote = text.match( /\{\{\s*ER\s*\|[^}]*?\|\s*3\s*=\s*([^|}]*)/ ),
+		erParams = ronda.templateParams( text, 'ER' ),
+		erNote = erParams && erParams[ '3' ] ? erParams[ '3' ] : '',
 		otherProcess = /\{\{\s*(?:subst:)?(?:ESR[\w\-]*|apagar\d*|Página para eliminar)\s*[|}]/i.test( text ),
 		redirects = page.redirects || [],
 		redirectTitles = redirects.map( function ( r ) {
@@ -166,9 +167,9 @@ function showForm( ctx, page, groups ) {
 		reasonFields.$extra.val( '[[WP:ER|ER]] ' + suggestion.rule );
 	}
 
-	if ( erNote && erNote[ 1 ].trim() ) {
+	if ( erNote ) {
 		reasonFields.$extra.val(
-			( reasonFields.$extra.val() ? reasonFields.$extra.val() + ' — ' : '' ) + erNote[ 1 ].trim()
+			( reasonFields.$extra.val() ? reasonFields.$extra.val() + ' — ' : '' ) + erNote
 		);
 	}
 
