@@ -217,6 +217,7 @@ window.rondaMessages = {
 	'patrulha-filtro-em': ' em $1 ($2)',
 	'patrulha-filtro-ver': 'ver ocorrências',
 	'patrulha-revertidas': 'Revertidas: ',
+	'patrulha-restaurada-versao-autor-oculto': 'Restaurada a versão $1 (autor oculto)',
 	'patrulha-up-situacao': 'Situação',
 	'patrulha-up-conta': 'Conta',
 	'patrulha-up-bloqueios': 'Bloqueios',
@@ -392,6 +393,16 @@ window.rondaMessages = {
 	'paginas-criar-um-redirecionamento': 'Criar um redirecionamento',
 	'paginas-suprimir-redirecionamento-da-pagina-de-discussao': 'Suprimir redirecionamento da página de discussão',
 	'paginas-eliminar-o-destino-antes-de-mover': 'Eliminar o destino antes de mover (R2)',
+	'paginas-pe-aberta': 'Já existe uma discussão de eliminação desta página, criada em $1, que provavelmente ainda está aberta. Não abra outra: se a marcação foi removida, restaure-a. Discussão: ',
+	'paginas-pe-anterior-existe': ' já existe (criada em $1). Se a discussão está encerrada, ela pode ser arquivada numa subpágina para abrir a nova proposta.',
+	'paginas-pe-anterior-arquivar': 'A discussão anterior está encerrada: arquivar $1 numa subpágina (/1, /2…) e abrir a nova',
+	'paginas-pe-anterior-confirme': 'Já existe uma discussão de eliminação desta página. Confira se ela está encerrada e marque a opção de arquivá-la.',
+	'paginas-pe-existe-interrompido': 'já existe uma discussão de eliminação; nada foi arquivado',
+	'paginas-pe-existe-extra': '$1 já tem uma discussão de eliminação ($2) e não pode entrar numa proposta conjunta.',
+	'paginas-digite-o-titulo-do-destino': 'Digite o título do destino para confirmar a eliminação',
+	'paginas-confirmacao': 'Confirmação',
+	'paginas-confira-o-destino': 'O destino já existe. Confira a situação dele no formulário antes de mover.',
+	'paginas-digite-o-titulo-para-confirmar': 'O destino tem conteúdo. Para eliminá-lo, digite "$1" no campo de confirmação.',
 	'paginas-eliminar-tambem-a-discussao-do-destino': 'Eliminar também a discussão do destino (R2)',
 	'paginas-principal': '(Principal)',
 	'paginas-esta-livre': '$1 está livre.',
@@ -401,7 +412,7 @@ window.rondaMessages = {
 	'paginas-com-uma-edicao': ', com uma edição',
 	'paginas-ja-existe': ' já existe: $1.$2',
 	'paginas-so-quem-pode-eliminar-paginas-pode': ' Só quem pode eliminar páginas pode mover para cá.',
-	'paginas-o-destino-nao-e-um-redirecionamento': 'O destino não é um redirecionamento simples para esta página. Confira antes de eliminar.',
+	'paginas-o-destino-nao-e-um-redirecionamento': 'O destino não é um redirecionamento de uma só edição para esta página. Só elimine se tiver certeza; a eliminação pede que o título seja digitado.',
 	'paginas-tambem-ja-existe': ' também já existe.$1',
 	'paginas-a-discussao-nao-sera-movida': ' A discussão não será movida.',
 	'paginas-destino': 'Destino: $1.',
@@ -612,6 +623,13 @@ window.rondaMessages = {
 	'admin-nenhuma-pagina-encontrada': 'Nenhuma página encontrada.',
 	'admin-nao-existe': ' (não existe)',
 	'admin-escolha-ao-menos-uma-pagina': 'Escolha ao menos uma página.',
+	'admin-lote-escolha-o-nivel': '— escolha —',
+	'admin-pagina-mudou-confirmar': 'A página foi editada depois que este diálogo foi aberto (a marcação ou o conteúdo podem ter mudado). Eliminar mesmo assim?',
+	'admin-reversor-so-altera-os-proprios': 'Reversores só podem alterar bloqueios feitos por eles mesmos; para os demais, acrescente um novo bloqueio ou faça um pedido aos administradores.',
+	'admin-lote-remover-protecao': 'Remover proteção (todos os usuários)',
+	'admin-lote-confirmar-eliminar': 'Eliminar {{PLURAL:$1|1 página|$1 páginas}}?',
+	'admin-lote-confirmar-restaurar': 'Restaurar {{PLURAL:$1|1 página|$1 páginas}}?',
+	'admin-lote-confirmar-proteger': 'Alterar a proteção de {{PLURAL:$1|1 página|$1 páginas}}?',
 	'admin-eliminando': 'Eliminando ',
 	'admin-restaurando': 'Restaurando ',
 	'admin-protegendo': 'Protegendo ',
@@ -657,7 +675,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.15',
+		version: '0.7.16',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1108,6 +1126,18 @@ ronda.joinReason = function ( selected, extra ) {
 };
 
 /**
+ * Substituto para String#replace que insere o texto como está: sem função, padrões
+ * como $&, $1 ou $$ no texto do usuário seriam interpretados pelo replace.
+ */
+ronda.literal = function ( value ) {
+	var text = value === null || value === undefined ? '' : String( value );
+
+	return function () {
+		return text;
+	};
+};
+
+/**
  * Parâmetros da primeira chamada de uma predefinição no texto, respeitando
  * predefinições e ligações aninhadas (a barra de [[A|b]] não separa parâmetros).
  * @param {string} text
@@ -1164,6 +1194,7 @@ ronda.templateParams = function ( text, name ) {
 /**
  * Escapa barras verticais para uso em parâmetros de predefinição.
  * As que estão dentro de [[…]] e {{…}} ficam como estão: são do próprio link ou predefinição.
+ * Um "}}" sem abertura correspondente vira &#125;&#125;, para não fechar a predefinição.
  */
 ronda.templateSafe = function ( text ) {
 	var depth = 0;
@@ -1172,7 +1203,11 @@ ronda.templateSafe = function ( text ) {
 		if ( m === '[[' || m === '{{' ) {
 			depth++;
 		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
+			// Fechamento solto (sem abertura antes) fecharia a predefinição: vira entidade
+			if ( !depth ) {
+				return m === '}}' ? '&#125;&#125;' : m;
+			}
+			depth--;
 		} else if ( !depth ) {
 			return '{{!}}';
 		}
@@ -3531,7 +3566,7 @@ function showForm( ctx, mode, talk, plan ) {
 			chosen = [];
 
 		items.forEach( function ( it ) {
-			var values = { pagina: page },
+			var values = { pagina: ronda.templateSafe( page ) },
 				level = it.$level ? Number( it.$level.val() ) : null;
 
 			if ( !it.cb.isChecked() ) {
@@ -5486,10 +5521,10 @@ function quickPlan( revs, user ) {
 }
 
 function fillSummary( tpl, restoredUser, user, revid, reason ) {
-	return tpl.replace( /\$1/g, restoredUser || '' )
-		.replace( /\$2/g, user || '' )
-		.replace( /\$3/g, revid || '' )
-		.replace( /\$4/g, reason || '' )
+	return tpl.replace( /\$1/g, ronda.literal( restoredUser ) )
+		.replace( /\$2/g, ronda.literal( user ) )
+		.replace( /\$3/g, ronda.literal( revid ) )
+		.replace( /\$4/g, ronda.literal( reason ) )
 		.replace( /:\s*$/, '' );
 }
 
@@ -5668,7 +5703,9 @@ function restore( title, revid, $box ) {
 			return ronda.api.edit( title, function () {
 				return ronda.params( {
 					text: rev.slots.main.content,
-					summary: fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' ) + ( reason ? ' (' + reason + ')' : '' ),
+					// Autor oculto: sem ligação para as contribuições (ficaria [[Special:Contribs/|]])
+					summary: ( rev.user ? fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' )
+						: ronda.msg( 'patrulha-restaurada-versao-autor-oculto', rev.revid ) ) + ( reason ? ' (' + reason + ')' : '' ),
 					nocreate: true,
 					watchlist: ronda.config.watchlist
 				} );
@@ -7266,7 +7303,9 @@ function buildMasterText( template, justification, extras, opts ) {
 		text = text.replace( /^(=+)([^\n]*?)\1[ \t]*$/m, function ( all, eq, inner ) {
 			var suffix = extras.length === 1 && opts.headerSuffixSingular
 				? opts.headerSuffixSingular
-				: opts.headerSuffix.replace( '$1', extras.length );
+				: opts.headerSuffix.replace( '$1', function () {
+					return String( extras.length );
+				} );
 
 			return eq + inner.replace( /\s+$/, '' ) + suffix + ' ' + eq;
 		} );
@@ -7310,7 +7349,38 @@ ronda.consensus = {
  * Arquiva a discussão existente em <título>/N (primeiro N livre).
  * @return {jQuery.Promise} resolve com o título de destino, ou null se não havia discussão
  */
-function archiveIfExists( title ) {
+/**
+ * Discussão de eliminação existente: null se não existe; senão { title, created, recent }.
+ * "recent" = criada há menos de PE_OPEN_DAYS dias, ou seja, provavelmente ainda aberta.
+ */
+var PE_OPEN_DAYS = 10;
+
+function peInfo( title ) {
+	return ronda.api.get( {
+		action: 'query',
+		titles: title,
+		prop: 'revisions',
+		rvprop: 'timestamp',
+		rvdir: 'newer',
+		rvlimit: 1
+	} ).then( function ( data ) {
+		var p = data.query.pages[ 0 ] || {},
+			first = ( p.revisions || [] )[ 0 ],
+			created;
+
+		if ( p.missing || !first ) {
+			return null;
+		}
+		created = Date.parse( first.timestamp );
+		return { title: p.title, created: created, recent: Date.now() - created < PE_OPEN_DAYS * 864e5 };
+	} );
+}
+
+/**
+ * Arquiva a discussão anterior em /1, /2…, mas só se quem propõe confirmou
+ * (allow); sem confirmação, uma discussão existente interrompe a proposta.
+ */
+function archiveIfExists( title, allow ) {
 	var i,
 		titles = [ title ];
 
@@ -7332,6 +7402,9 @@ function archiveIfExists( title ) {
 
 		if ( !exists[ title ] ) {
 			return null;
+		}
+		if ( !allow ) {
+			return $.Deferred().reject( 'ronda-pe-exists' ).promise();
 		}
 
 		for ( i = 1; i <= 30 && !target; i++ ) {
@@ -7433,13 +7506,15 @@ function errorText( code ) {
 	return {
 		'ronda-pe-template': ronda.msg( 'paginas-o-modelo-da-discussao-nao-tem' ),
 		'ronda-archive-full': ronda.msg( 'paginas-ha-mais-de-30-discussoes-arquivadas' ),
+		'ronda-pe-exists': ronda.msg( 'paginas-pe-existe-interrompido' ),
 		'ronda-already-tagged': ronda.msg( 'paginas-a-pagina-ja-tem-uma-marcacao' ),
 		articleexists: ronda.msg( 'paginas-a-pagina-ja-existe' )
 	}[ code ] || code;
 }
 
-function showForm( ctx, masterPage ) {
+function showForm( ctx, masterPage, oldPE ) {
 	var extras = [],
+		cbArchive = oldPE ? ronda.ui.checkbox( ronda.msg( 'paginas-pe-anterior-arquivar', oldPE.title ), false ) : null,
 		$justification = ronda.ui.textarea( '', ronda.msg( 'paginas-justificativa-da-eliminacao-nao-precisa-assinar' ) ).attr( 'rows', 5 ),
 		$add = ronda.ui.text( '', ronda.msg( 'paginas-titulo-de-outra-pagina-para-incluir' ) ),
 		$addButton = $( '<button type="button"></button>' ).text( ronda.msg( 'paginas-incluir' ) ),
@@ -7506,10 +7581,18 @@ function showForm( ctx, masterPage ) {
 				return;
 			}
 
-			ronda.ui.require( $add, true );
-			extras.push( { title: p.title, ns: p.ns } );
-			$add.val( '' );
-			renderExtras();
+			// Página com discussão de eliminação anterior não entra na proposta conjunta
+			return peInfo( peTitle( p.title ) ).then( function ( pe ) {
+				if ( pe ) {
+					ronda.ui.require( $add, false );
+					mw.notify( ronda.msg( 'paginas-pe-existe-extra', p.title, pe.title ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+					return;
+				}
+				ronda.ui.require( $add, true );
+				extras.push( { title: p.title, ns: p.ns } );
+				$add.val( '' );
+				renderExtras();
+			} );
 		}, ronda.fail ).always( function () {
 			$addButton.button( 'enable' );
 		} );
@@ -7545,6 +7628,11 @@ function showForm( ctx, masterPage ) {
 			$( '<b></b>' ).text( peTitle( masterPage.title ) ),
 			document.createTextNode( '. Páginas incluídas abaixo terão a discussão redirecionada para ela e também receberão a marca de eliminação.' )
 		) ),
+		oldPE ? ronda.ui.message( 'error', $( '<span></span>' ).append(
+			$( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( oldPE.title ) ).text( oldPE.title ),
+			document.createTextNode( ronda.msg( 'paginas-pe-anterior-existe', new Date( oldPE.created ).toLocaleDateString( 'pt-BR' ) ) )
+		) ) : null,
+		cbArchive ? cbArchive.$element : null,
 		ronda.ui.row( ronda.msg( 'paginas-justificativa' ), $justification ),
 		ronda.ui.row( ronda.msg( 'paginas-proposta-conjunta-opcional' ), $add ),
 		$( '<div class="ronda-refresh"></div>' ).append( $addButton ),
@@ -7570,10 +7658,15 @@ function showForm( ctx, masterPage ) {
 		if ( !ronda.ui.require( $justification, !!justification ) ) {
 			return;
 		}
+		if ( cbArchive && !cbArchive.isChecked() ) {
+			ronda.ui.require( cbArchive.$element, false );
+			mw.notify( ronda.msg( 'paginas-pe-anterior-confirme' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+			return;
+		}
 
 		// Discussão mestra (críticas: se falharem, nada mais é feito)
 		tasks.push( { critical: true, label: ronda.msg( 'paginas-discussao-anterior-de', master ), fn: function () {
-			return archiveIfExists( peTitle( master ) ).then( function ( target ) {
+			return archiveIfExists( peTitle( master ), !!( cbArchive && cbArchive.isChecked() ) ).then( function ( target ) {
 				archived[ master ] = !!target;
 				return target ? ronda.msg( 'paginas-arquivada-em', target ) : 'nenhuma';
 			} );
@@ -7587,7 +7680,7 @@ function showForm( ctx, masterPage ) {
 		// Redirecionamentos das demais páginas
 		extras.forEach( function ( e ) {
 			tasks.push( { label: ronda.msg( 'paginas-discussao-anterior-de', e.title ), fn: function () {
-				return archiveIfExists( peTitle( e.title ) ).then( function ( target ) {
+				return archiveIfExists( peTitle( e.title ), false ).then( function ( target ) {
 					archived[ e.title ] = !!target;
 					return target ? ronda.msg( 'paginas-arquivada-em', target ) : 'nenhuma';
 				} );
@@ -7697,7 +7790,17 @@ function open( ctx ) {
 			return;
 		}
 
-		showForm( ctx, { title: p.title, ns: p.ns } );
+		// Discussão anterior: recente = provavelmente aberta (ex.: marcação removida por vandalismo) → recusa
+		return peInfo( peTitle( p.title ) ).then( function ( pe ) {
+			if ( pe && pe.recent ) {
+				mw.notify( $( '<span></span>' ).append(
+					document.createTextNode( ronda.msg( 'paginas-pe-aberta', new Date( pe.created ).toLocaleDateString( 'pt-BR' ) ) ),
+					$( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( pe.title ) ).text( pe.title )
+				), { type: 'error', title: ronda.msg( 'core-nome' ), autoHide: false } );
+				return;
+			}
+			showForm( ctx, { title: p.title, ns: p.ns }, pe );
+		} );
 	}, ronda.fail );
 }
 
@@ -7887,8 +7990,12 @@ function showForm( ctx, page, groups ) {
 		cbRedirect = canSuppress ? ronda.ui.checkbox( ronda.msg( 'paginas-criar-um-redirecionamento' ), true ) : null,
 		cbTalkSuppress = canSuppress && hasTalk
 			? ronda.ui.checkbox( ronda.msg( 'paginas-suprimir-redirecionamento-da-pagina-de-discussao' ), false ) : null,
-		cbDelete = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-o-destino-antes-de-mover' ), true ),
-		cbDeleteTalk = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-tambem-a-discussao-do-destino' ), true ),
+		// Nunca marcadas por padrão: eliminar o destino é sempre uma escolha explícita
+		cbDelete = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-o-destino-antes-de-mover' ), false ),
+		cbDeleteTalk = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-tambem-a-discussao-do-destino' ), false ),
+		// Destino com conteúdo (não um redirecionamento simples para cá): confirmação digitando o título
+		$confirm = ronda.ui.text( '', ronda.msg( 'paginas-digite-o-titulo-do-destino' ) ).attr( 'id', ronda.ui.id( 'move-confirm' ) ),
+		$confirmRow = ronda.ui.row( ronda.msg( 'paginas-confirmacao' ), $confirm ).hide(),
 		$progress = $( '<div class="ronda-progress"></div>' ).hide(),
 		$log = $( '<ul class="ronda-log"></ul>' ),
 		$content = $( '<div></div>' ),
@@ -7915,13 +8022,24 @@ function showForm( ctx, page, groups ) {
 		};
 	}
 
+	/** Destino que pode ser eliminado sem confirmação extra: redirecionamento de uma edição para a origem */
+	function trivial( s ) {
+		return s.isRedirect && s.revisions === 1 && s.redirectTo === page.title;
+	}
+
 	function showState( s ) {
 		var parts, moveTalk = cbTalk && cbTalk.isChecked();
 
+		if ( !s || !state || s.title !== state.title ) {
+			cbDelete.setChecked( false );
+			cbDeleteTalk.setChecked( false );
+			$confirm.val( '' );
+		}
 		state = s;
 		$target.empty();
 		cbDelete.$element.hide();
 		cbDeleteTalk.$element.hide();
+		$confirmRow.hide();
 
 		if ( !s ) {
 			return;
@@ -7942,10 +8060,11 @@ function showForm( ctx, page, groups ) {
 
 			if ( canDelete ) {
 				cbDelete.$element.show();
-				if ( !s.isRedirect || ( s.redirectTo && s.redirectTo !== page.title ) || s.revisions > 1 ) {
+				if ( !trivial( s ) ) {
 					$target.append( ronda.ui.message( 'error', $( '<span></span>' ).text(
 						ronda.msg( 'paginas-o-destino-nao-e-um-redirecionamento' )
 					) ) );
+					$confirmRow.toggle( cbDelete.isChecked() );
 				}
 			}
 		}
@@ -7985,10 +8104,18 @@ function showForm( ctx, page, groups ) {
 		checking = null;
 		showState( null );
 	} ).on( 'keydown', function ( e ) {
+		// Enter só move direto se o destino estiver livre; se existir, mostra a situação e espera
 		if ( e.key === 'Enter' ) {
 			e.preventDefault();
-			submit();
+			check().then( function ( s ) {
+				if ( !s.exists ) {
+					submit();
+				}
+			} );
 		}
+	} );
+	cbDelete.$input.on( 'change', function () {
+		$confirmRow.toggle( !!state && state.exists && !trivial( state ) && cbDelete.isChecked() );
 	} );
 	ronda.ui.onChange( $ns, function () {
 		checking = null;
@@ -8016,6 +8143,7 @@ function showForm( ctx, page, groups ) {
 		cbRedirect ? cbRedirect.$element : null,
 		cbTalkSuppress ? cbTalkSuppress.$element : null,
 		cbDelete.$element,
+		$confirmRow,
 		cbDeleteTalk.$element,
 		$progress,
 		$log
@@ -8026,7 +8154,8 @@ function showForm( ctx, page, groups ) {
 	}
 
 	function submit() {
-		var d = destination();
+		var d = destination(),
+			seen = state;
 
 		if ( !ronda.ui.require( $title, !!$title.val().trim() && d.title !== page.title ) ) {
 			return;
@@ -8043,6 +8172,19 @@ function showForm( ctx, page, groups ) {
 				talkBlocked = moveTalk && s.talk && s.talk.exists && !( canDelete && cbDeleteTalk.isChecked() ),
 				plan;
 
+			// O destino existe, mas a situação mostrada era outra (ou nenhuma): mostra e espera nova confirmação
+			if ( s.exists && ( !seen || seen.title !== s.title || !seen.exists || seen.isRedirect !== s.isRedirect ||
+				seen.revisions !== s.revisions || seen.redirectTo !== s.redirectTo ) ) {
+				ronda.ui.setBusy( $dlg, false );
+				mw.notify( ronda.msg( 'paginas-confira-o-destino' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+				return;
+			}
+			if ( s.exists && canDelete && cbDelete.isChecked() && !trivial( s ) &&
+				!ronda.ui.require( $confirm, $confirm.val().trim().replace( /_/g, ' ' ) === s.title ) ) {
+				ronda.ui.setBusy( $dlg, false );
+				mw.notify( ronda.msg( 'paginas-digite-o-titulo-para-confirmar', s.title ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+				return;
+			}
 			if ( s.exists && !( canDelete && cbDelete.isChecked() ) ) {
 				ronda.ui.setBusy( $dlg, false );
 				mw.notify( canDelete
@@ -8057,7 +8199,7 @@ function showForm( ctx, page, groups ) {
 					return ronda.post( {
 						action: 'delete',
 						title: s.title,
-						reason: ronda.config.move.deleteReason.replace( /\$1/g, page.title )
+						reason: ronda.config.move.deleteReason.replace( /\$1/g, ronda.literal( page.title ) )
 					} );
 				} } );
 			}
@@ -8066,7 +8208,7 @@ function showForm( ctx, page, groups ) {
 					return ronda.post( {
 						action: 'delete',
 						title: s.talk.title,
-						reason: ronda.config.move.deleteReason.replace( /\$1/g, page.talkTitle )
+						reason: ronda.config.move.deleteReason.replace( /\$1/g, ronda.literal( page.talkTitle ) )
 					} );
 				} } );
 			}
@@ -8264,13 +8406,13 @@ function buildRequest( model, o ) {
 	}
 	if ( o.request.history ) {
 		return value
-			.replace( /Página 1/i, o.target )
-			.replace( /Página 2/i, o.target2 || '' )
-			.replace( /Razão/i, o.text || '' );
+			.replace( /Página 1/i, ronda.literal( o.target ) )
+			.replace( /Página 2/i, ronda.literal( o.target2 ) )
+			.replace( /Razão/i, ronda.literal( o.text ) );
 	}
 	return value
-		.replace( /(Nome( ou IP)?|página|Exemplo)/i, o.target )
-		.replace( /Razão/i, o.text || '' );
+		.replace( /(Nome( ou IP)?|página|Exemplo)/i, ronda.literal( o.target ) )
+		.replace( /Razão/i, ronda.literal( o.text ) );
 }
 
 /** Classe de qualidade a partir das categorias da discussão ("!Artigos de qualidade N sobre …") */
@@ -8395,7 +8537,8 @@ function openRedirect( ctx ) {
 					watchlist: ronda.creationWatchlist() } ) );
 
 		ronda.ui.setBusy( $dlg, true );
-		$.when( edit, patrolCurrent() ).then( function () {
+		// Patrulha só depois que a edição deu certo
+		edit.then( patrolCurrent ).then( function () {
 			done( $dlg, ronda.msg( 'paginas-redirecionamento-feito' ), mw.util.getUrl( ctx.page, { redirect: 'no' } ) );
 		}, function ( code, data ) {
 			ronda.ui.setBusy( $dlg, false );
@@ -8454,7 +8597,7 @@ function openStub( ctx ) {
 				template = theme ? 'Esboço-' + theme : 'Esboço';
 
 			ronda.ui.setBusy( $dlg, true );
-			$.when( ronda.editPage( ctx.page, function ( rev ) {
+			ronda.editPage( ctx.page, function ( rev ) {
 				if ( hasStub( rev.content ) ) {
 					return $.Deferred().reject( 'ronda-stub-exists' ).promise();
 				}
@@ -8465,7 +8608,7 @@ function openStub( ctx ) {
 					nocreate: true,
 					watchlist: ronda.config.watchlist
 				} );
-			} ), patrolCurrent() ).then( function () {
+			} ).then( patrolCurrent ).then( function () {
 				done( $dlg, ronda.msg( 'paginas-esboco-adicionado' ) );
 			}, function ( code, data ) {
 				ronda.ui.setBusy( $dlg, false );
@@ -9247,11 +9390,20 @@ function showForm( ctx, page, groups ) {
 
 		ronda.ui.setBusy( $dlg, true );
 
-		ronda.post( {
-			action: 'delete',
-			title: ctx.page,
-			reason: reason,
-			deletetalk: !!( cbTalk && cbTalk.isChecked() )
+		// A página mudou desde que o diálogo abriu (ex.: marcação removida, texto reescrito)? Pergunta antes
+		ronda.api.get( { action: 'query', titles: ctx.page, prop: 'info' } ).then( function ( d ) {
+			var now = ( d.query.pages || [] )[ 0 ] || {};
+
+			if ( page.lastrevid && now.lastrevid && now.lastrevid !== page.lastrevid &&
+				!window.confirm( ronda.msg( 'admin-pagina-mudou-confirmar' ) ) ) {
+				return $.Deferred().reject( 'ronda-cancelled' ).promise();
+			}
+			return ronda.post( {
+				action: 'delete',
+				title: ctx.page,
+				reason: reason,
+				deletetalk: !!( cbTalk && cbTalk.isChecked() )
+			} );
 		} ).then( function () {
 			mw.notify( ronda.msg( 'admin-pagina-eliminada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 
@@ -9287,7 +9439,9 @@ function showForm( ctx, page, groups ) {
 			}
 		}, function ( code, data ) {
 			ronda.ui.setBusy( $dlg, false );
-			ronda.fail( code, data );
+			if ( code !== 'ronda-cancelled' ) {
+				ronda.fail( code, data );
+			}
 		} );
 	}
 
@@ -10139,9 +10293,12 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 		own = blocks.filter( function ( b ) {
 			return sameTarget( b.user, user );
 		} ),
-		current = own[ 0 ],
-		removing = null,
 		me = mw.config.get( 'wgUserName' ),
+		// Reversores só alteram os próprios bloqueios: sem um deles, o formulário começa como bloqueio novo
+		current = limited ? own.filter( function ( b ) {
+			return b.by === me;
+		} )[ 0 ] || null : own[ 0 ],
+		removing = null,
 		$mode = $( '<select></select>' ),
 		$editArea = $( '<div></div>' ),
 		$unblockReason = ronda.ui.text( '', ronda.msg( 'admin-desbloqueio-motivo-exemplo' ) ),
@@ -10284,9 +10441,11 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 	}
 
 	// Já bloqueado: alterar ou remover um dos bloqueios atuais, ou acrescentar outro (multibloqueio).
-	// Reversores só removem bloqueios feitos por eles mesmos.
+	// Reversores só alteram e removem bloqueios feitos por eles mesmos; nos demais, só acrescentam.
 	if ( own.length ) {
-		$( '<optgroup></optgroup>' ).attr( 'label', ronda.msg( 'admin-multibloqueio-grupo-alterar' ) ).append( own.map( function ( b ) {
+		$( '<optgroup></optgroup>' ).attr( 'label', ronda.msg( 'admin-multibloqueio-grupo-alterar' ) ).append( own.filter( function ( b ) {
+			return !limited || b.by === me;
+		} ).map( function ( b ) {
 			return $( '<option></option>' ).val( 'edit:' + b.id ).text( ronda.msg( 'admin-multibloqueio-alterar', blockLine( b ) ) );
 		} ) ).appendTo( $mode );
 		$( '<option value="new"></option>' ).text( ronda.msg( 'admin-multibloqueio-novo', own.length ) ).appendTo( $mode );
@@ -10372,6 +10531,11 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 			expiry: expiry,
 			reason: reason
 		};
+		if ( current && limited && current.by !== me ) {
+			// Salvaguarda: o menu já não oferece isso
+			mw.notify( ronda.msg( 'admin-reversor-so-altera-os-proprios' ), { type: 'error', title: ronda.msg( 'core-nome' ) } );
+			return;
+		}
 		if ( current ) {
 			// Altera exatamente o bloqueio escolhido (id não combina com user, reblock nem newblock)
 			params.id = current.id;
@@ -10905,11 +11069,13 @@ function openBatch( ctx, options ) {
 					$( '<option></option>' ).val( a[ 0 ] ).text( a[ 1 ] ).appendTo( $action );
 				}
 			} );
-		[ '' ].concat( restr.levels.filter( Boolean ) ).forEach( function ( l ) {
-			var label = l ? msgOr( 'protect-level-' + l, l ) : msgOr( 'protect-default', ronda.msg( 'admin-todos-os-usuarios' ) );
-
-			$( '<option></option>' ).val( l ).text( label ).appendTo( $editLevel );
-			$( '<option></option>' ).val( l ).text( label ).appendTo( $moveLevel );
+		// Sem nível pré-escolhido: o primeiro item é só um aviso, e remover a proteção é uma opção explícita
+		[ $editLevel, $moveLevel ].forEach( function ( $sel ) {
+			$( '<option value=""></option>' ).text( ronda.msg( 'admin-lote-escolha-o-nivel' ) ).appendTo( $sel );
+			restr.levels.filter( Boolean ).forEach( function ( l ) {
+				$( '<option></option>' ).val( l ).text( msgOr( 'protect-level-' + l, l ) ).appendTo( $sel );
+			} );
+			$( '<option value="all"></option>' ).text( ronda.msg( 'admin-lote-remover-protecao' ) ).appendTo( $sel );
 		} );
 		$expiry.find( 'option[value="other"]' ).remove();
 		$protectBox.append(
@@ -11070,11 +11236,24 @@ function openBatch( ctx, options ) {
 				expiry = ronda.ui.expiryValue( $expiry, $() ),
 				ok = !!reasonFields && ronda.ui.require( reasonFields.$extra, !!reason );
 
+			if ( a === 'protect' ) {
+				ok = ronda.ui.require( $editLevel, !!$editLevel.val() ) && ok;
+				if ( chosen.some( function ( p ) {
+					return p.exists;
+				} ) ) {
+					ok = ronda.ui.require( $moveLevel, !!$moveLevel.val() ) && ok;
+				}
+			}
 			if ( !ok ) {
 				return;
 			}
 			if ( !chosen.length ) {
 				mw.notify( ronda.msg( 'admin-escolha-ao-menos-uma-pagina' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+				return;
+			}
+			// Confirmação com a contagem, antes de qualquer escrita
+			if ( !window.confirm( ronda.msg( a === 'delete' ? 'admin-lote-confirmar-eliminar'
+				: a === 'undelete' ? 'admin-lote-confirmar-restaurar' : 'admin-lote-confirmar-proteger', chosen.length ) ) ) {
 				return;
 			}
 
@@ -11090,8 +11269,8 @@ function openBatch( ctx, options ) {
 						return ronda.post( { action: 'undelete', title: p.title, reason: reason } );
 					}
 					protections = p.exists
-						? 'edit=' + ( $editLevel.val() || 'all' ) + '|move=' + ( $moveLevel.val() || 'all' )
-						: 'create=' + ( $editLevel.val() || 'all' );
+						? 'edit=' + $editLevel.val() + '|move=' + $moveLevel.val()
+						: 'create=' + $editLevel.val();
 					return ronda.post( { action: 'protect', title: p.title, protections: protections, expiry: expiry, reason: reason } );
 				} };
 			} ), function ( done ) {

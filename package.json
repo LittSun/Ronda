@@ -1,6 +1,6 @@
 {
 	"name": "ronda",
-	"version": "0.7.15",
+	"version": "0.7.16",
 	"private": true,
 	"description": "Ronda: barra de patrulha, manutenção e administração para a Wikipédia em português (sucessor do FastButtons, convive com o DiffTools)",
 	"license": "MIT",
@@ -11,13 +11,17 @@
 	},
 	"scripts": {
 		"verificar": "node ferramentas/verificar.js",
+		"test": "node --test tests/*.test.js",
 		"wiki": "node ferramentas/gerar-wiki.js",
 		"console": "node ferramentas/gerar-pacote-console.js",
-		"construir": "npm run verificar && npm run wiki && npm run console",
+		"construir": "npm run verificar && npm test && npm run wiki && npm run console",
 		"publicar": "node ferramentas/publicar-wiki.js"
 	},
 	"devDependencies": {
-		"acorn": "^8.11.0"
+		"acorn": "^8.11.0",
+		"jquery": "^3.8.0",
+		"jquery-ui": "1.13",
+		"jsdom": "^24.1.3"
 	},
 	"engines": {
 		"node": ">=18"

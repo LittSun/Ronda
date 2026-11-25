@@ -33,10 +33,11 @@ npm install
 
 | Comando | O que faz |
 |---|---|
+| `npm test` | Roda os testes de `tests/` (funções puras e regressões de segurança, em jsdom com API simulada; nada sai para a rede) |
 | `npm run verificar` | Confere a sintaxe de todos os arquivos, se a versão do `package.json` é a mesma de `ronda.version` e se toda chave usada em `ronda.msg()` existe em `src/Ronda-mensagens.js` |
 | `npm run wiki` | Gera `wiki/` |
 | `npm run console` | Gera `dist/Ronda-console.js` |
-| `npm run construir` | Os três acima, nessa ordem |
+| `npm run construir` | Verifica, testa e gera (`verificar`, `test`, `wiki` e `console`, nessa ordem) |
 | `npm run publicar` | Publica na wiki as páginas de `wiki/` que mudaram (veja [Publicar](#publicar-na-wiki)) |
 
 O gerador da wiki tira os comentários com um analisador de JavaScript (não toca em strings nem em expressões regulares), acrescenta o cabeçalho (`@target` para o carregador, descrição, ligação para a documentação, ligações para todos os arquivos, `<nowiki>`; no CSS, as mesmas linhas como comentários de CSS) e confere se o resultado continua válido. Para outro prefixo de páginas, use a variável `RONDA_BASE`; para outra página de documentação, `RONDA_DOC`.
@@ -78,6 +79,8 @@ O workflow [`.github/workflows/construir.yml`](../.github/workflows/construir.ym
 Como o robô grava no `main` depois de cada push, rode `git pull --rebase` antes do próximo `git push`.
 
 ## Publicar na wiki
+
+**Aprovação manual (recomendado):** em *Settings › Environments*, crie (ou abra) o ambiente `wiki` e marque **Required reviewers** com a sua conta. Assim, cada publicação espera um clique de aprovação na aba *Actions*. Os segredos podem ficar no repositório ou no próprio ambiente.
 
 Além do código, o workflow publica:
 

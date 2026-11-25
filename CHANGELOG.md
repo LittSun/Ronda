@@ -3,7 +3,20 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.16 — 25/11/2026
+Correções da auditoria técnica da 0.7.15.
+- **Mover** (crítico): eliminar o destino nunca vem marcado. Se o destino não for um redirecionamento de uma edição para a página, a eliminação exige digitar o título dele. Enter só move quando o destino está livre, e o Mover não age sobre um destino cuja situação ainda não foi mostrada no formulário.
+- **Lote › Proteger**: sem nível pré-escolhido (antes, o padrão removia a proteção); "Remover proteção" é uma opção à parte. Toda ação do Lote pede confirmação com o número de páginas.
+- **Bloquear**: reversores só alteram (e removem) bloqueios feitos por eles mesmos; nos demais, só podem acrescentar um bloqueio novo.
+- **Consenso**: não abre outra proposta se já existir uma discussão de eliminação recente (provavelmente aberta, por exemplo com a marcação removida por vandalismo). Se a anterior for antiga, o arquivamento precisa ser confirmado. Páginas com discussão anterior não entram em propostas conjuntas.
+- **Eliminar**: se a página foi editada depois que o diálogo abriu, pede confirmação antes de eliminar.
+- **#R** e **Esboço**: a edição é marcada como patrulhada só depois de salva com sucesso.
+- Resumos e pedidos: textos com `$` (ex.: nomes de usuário) entram como estão; `}}` solto em observações não quebra mais a predefinição; o campo Página dos avisos também é escapado.
+- **Restaurar versão**: com o autor oculto, o resumo não traz mais uma ligação vazia.
+
 ## Repositório — 25/11/2026
+- Testes automatizados (`npm test`, em `tests/`): funções puras e regressões dos achados de segurança da auditoria, com jsdom, jQuery UI e uma API simulada. Rodam no CI antes de gerar e publicar; se falharem, nada é publicado.
+- A publicação na wiki passa a ser um trabalho separado no ambiente `wiki`, que pode exigir aprovação manual.
 - O histórico de versões passa a ser publicado em `Usuário:Little Sunshine/Ronda/Changelog`, em wikitexto, e a documentação (`docs/documentacao.wiki`) em `Usuário:Little Sunshine/Ronda`, com a versão da infobox ligada à entrada do histórico. Edições feitas na wiki não são sobrescritas sem confirmação.
 
 ## 0.7.15 — 25/11/2026

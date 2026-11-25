@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.15',
+		version: '0.7.16',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -373,6 +373,14 @@ ronda.joinReason = function ( selected, extra ) {
 	return selected || extra;
 };
 
+ronda.literal = function ( value ) {
+	var text = value === null || value === undefined ? '' : String( value );
+
+	return function () {
+		return text;
+	};
+};
+
 ronda.templateParams = function ( text, name ) {
 	var re = new RegExp( '\\{\\{\\s*(?:subst:)?[' + name.charAt( 0 ).toUpperCase() + name.charAt( 0 ).toLowerCase() + ']' +
 			name.slice( 1 ).replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ).replace( / /g, '[ _]' ) + '\\s*(?=[|}])' ),
@@ -426,7 +434,10 @@ ronda.templateSafe = function ( text ) {
 		if ( m === '[[' || m === '{{' ) {
 			depth++;
 		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
+			if ( !depth ) {
+				return m === '}}' ? '&#125;&#125;' : m;
+			}
+			depth--;
 		} else if ( !depth ) {
 			return '{{!}}';
 		}

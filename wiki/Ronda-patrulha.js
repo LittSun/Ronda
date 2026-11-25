@@ -569,7 +569,7 @@ function showForm( ctx, mode, talk, plan ) {
 			chosen = [];
 
 		items.forEach( function ( it ) {
-			var values = { pagina: page },
+			var values = { pagina: ronda.templateSafe( page ) },
 				level = it.$level ? Number( it.$level.val() ) : null;
 
 			if ( !it.cb.isChecked() ) {
@@ -2347,10 +2347,10 @@ function quickPlan( revs, user ) {
 }
 
 function fillSummary( tpl, restoredUser, user, revid, reason ) {
-	return tpl.replace( /\$1/g, restoredUser || '' )
-		.replace( /\$2/g, user || '' )
-		.replace( /\$3/g, revid || '' )
-		.replace( /\$4/g, reason || '' )
+	return tpl.replace( /\$1/g, ronda.literal( restoredUser ) )
+		.replace( /\$2/g, ronda.literal( user ) )
+		.replace( /\$3/g, ronda.literal( revid ) )
+		.replace( /\$4/g, ronda.literal( reason ) )
 		.replace( /:\s*$/, '' );
 }
 
@@ -2524,7 +2524,8 @@ function restore( title, revid, $box ) {
 			return ronda.api.edit( title, function () {
 				return ronda.params( {
 					text: rev.slots.main.content,
-					summary: fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' ) + ( reason ? ' (' + reason + ')' : '' ),
+					summary: ( rev.user ? fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' )
+						: ronda.msg( 'patrulha-restaurada-versao-autor-oculto', rev.revid ) ) + ( reason ? ' (' + reason + ')' : '' ),
 					nocreate: true,
 					watchlist: ronda.config.watchlist
 				} );

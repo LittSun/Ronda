@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.15|0.7.15]]
+|versão             = [[/Changelog#0.7.16|0.7.16]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -117,11 +117,11 @@ Para IPs, inclui informações sobre faixas /24 ou /64, WHOIS, localização, pr
 No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}}, {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}, {{Usuário:Little Sunshine/Ronda/Botão|#R}}, {{Usuário:Little Sunshine/Ronda/Botão|ER}} e {{Usuário:Little Sunshine/Ronda/Botão|ESR}} modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
 
 === Movimentação e eliminação ===
-{{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
+{{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. Essa eliminação nunca vem marcada: é preciso marcar a opção e, se o destino não for um redirecionamento simples para a página, digitar o título dele para confirmar. Com o destino ocupado, Enter não move nada. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
 
 * {{Usuário:Little Sunshine/Ronda/Botão|ER}}: apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
 * {{Usuário:Little Sunshine/Ronda/Botão|ESR}}: sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
-* {{Usuário:Little Sunshine/Ronda/Botão|Consenso}}: arquiva a discussão anterior, quando houver, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
+* {{Usuário:Little Sunshine/Ronda/Botão|Consenso}}: se já houver uma discussão de eliminação recente (provavelmente aberta), não abre outra; se a anterior for antiga, pede confirmação para arquivá-la. Depois, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
 
 Uma página já marcada para outro processo de eliminação não pode receber ER, ESR ou consenso pelo Ronda.
 
@@ -133,9 +133,9 @@ Estas ferramentas aparecem apenas para usuários com os direitos necessários. {
 * {{Usuário:Little Sunshine/Ronda/Botão|Desligar|tipo=admin}}: remove ligações para a página e usos de ficheiros, processando uma página por vez e registrando o resultado.
 * {{Usuário:Little Sunshine/Ronda/Botão|Bloquear|tipo=admin}}: permite bloqueios totais ou parciais, alteração, acréscimo e remoção de bloqueios existentes. Exibe os bloqueios ativos, preenche as opções ao alterar um deles e avisa quando um IP já está abrangido por um bloqueio de intervalo. As notificações usam o [[MediaWiki:Gadget-blockNotificationButton.api.js|módulo comunitário]] quando aplicável; notificações de CPV e proxy são enviadas pelo Ronda.
 * {{Usuário:Little Sunshine/Ronda/Botão|Proteger|tipo=admin}}: define nível e duração para cada ação, com opção de manter a duração atual. Edição e moção ficam vinculadas por padrão, mas podem ser configuradas separadamente.
-* {{Usuário:Little Sunshine/Ronda/Botão|Lote|tipo=admin}}: elimina, restaura ou protege páginas a partir de ligações, categorias, criações de um usuário, prefixos ou listas digitadas. Permite filtrar por domínio, texto, expressão regular ou comparação com outra lista. Ao eliminar páginas de usuário, as discussões de usuário só são eliminadas com uma opção própria, desmarcada por padrão. Usa os motivos oficiais, reunindo os dos domínios carregados quando necessário.
+* {{Usuário:Little Sunshine/Ronda/Botão|Lote|tipo=admin}}: elimina, restaura ou protege páginas a partir de ligações, categorias, criações de um usuário, prefixos ou listas digitadas. Permite filtrar por domínio, texto, expressão regular ou comparação com outra lista. Ao eliminar páginas de usuário, as discussões de usuário só são eliminadas com uma opção própria, desmarcada por padrão. Usa os motivos oficiais, reunindo os dos domínios carregados quando necessário. Para proteger, o nível precisa ser escolhido (remover a proteção é uma opção à parte), e toda ação pede confirmação com o número de páginas.
 
-'''Limites dos reversores:''' podem bloquear somente IPs e contas não confirmadas, por vandalismo leve ou destrutivo e por até 24 horas. Não podem aplicar bloqueios parciais, impedir criação de contas nem remover bloqueios feitos por outros. O formulário restringe motivos e durações. Para contas confirmadas, oferece pedidos de notificação de vandalismo ou incidente. Bloqueios fora desses limites constituem abuso da ferramenta.
+'''Limites dos reversores:''' podem bloquear somente IPs e contas não confirmadas, por vandalismo leve ou destrutivo e por até 24 horas. Não podem aplicar bloqueios parciais, impedir criação de contas nem alterar ou remover bloqueios feitos por outros. O formulário restringe motivos e durações. Para contas confirmadas, oferece pedidos de notificação de vandalismo ou incidente. Bloqueios fora desses limites constituem abuso da ferramenta.
 
 Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda segue os critérios do FastButtons: não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
 

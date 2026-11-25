@@ -6,9 +6,11 @@
 #   versões e a documentação, publicados em Usuário:Little Sunshine/Ronda/Changelog
 #   e Usuário:Little Sunshine/Ronda.
 # Em pull requests, só verifica e gera (os arquivos ficam na aba Actions).
-# No main, grava wiki/ e dist/ num único commit do robô e publica na wiki as
-# páginas que mudaram, com a senha de robô dos segredos WIKI_BOT_USER e
-# WIKI_BOT_PASSWORD (sem eles, a publicação é pulada).
+# Os testes (npm test) rodam antes de gerar; se falharem, nada é gravado nem publicado.
+# No main, grava wiki/ e dist/ num único commit do robô e, num trabalho separado
+# no ambiente "wiki" (que pode exigir aprovação), publica na wiki as páginas que
+# mudaram, com a senha de robô dos segredos WIKI_BOT_USER e WIKI_BOT_PASSWORD
+# (sem eles, a publicação é pulada).
 # Em tags v* (ex.: v1.0.0), anexa os arquivos à versão no GitHub.
 name: Construir
 
@@ -61,7 +63,7 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      - name: Verificar e gerar
+      - name: Verificar, testar e gerar
         run: npm run construir
 
       - name: Disponibilizar para download (aba Actions)
@@ -87,22 +89,6 @@ jobs:
             git push
           fi
 
-      - name: Publicar na wiki
-        if: >-
-          github.ref == 'refs/heads/main' &&
-          (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publicar))
-        env:
-          WIKI_BOT_USER: ${{ secrets.WIKI_BOT_USER }}
-          WIKI_BOT_PASSWORD: ${{ secrets.WIKI_BOT_PASSWORD }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.simular }}
-          FORCE_DOC: ${{ github.event_name == 'workflow_dispatch' && inputs.forcar_doc }}
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: |
-          versao=$(cat wiki/Ronda-Versao.wiki)
-          titulo=$(printf '%s' "$COMMIT_MSG" | head -n1 | cut -c1-150)
-          export WIKI_SUMMARY="Atualização do Ronda $versao (GitHub ${GITHUB_SHA::7}${titulo:+: $titulo})"
-          npm run publicar
-
       - name: Compactar para a versão
         if: startsWith(github.ref, 'refs/tags/v')
         run: cd wiki && zip -r ../Ronda-wiki.zip .
@@ -115,3 +101,38 @@ jobs:
             Ronda-wiki.zip
             dist/Ronda-console.js
           generate_release_notes: true
+
+  # Publicação num trabalho separado, no ambiente "wiki": com revisores obrigatórios
+  # configurados em Settings › Environments › wiki, cada publicação espera aprovação.
+  # Só roda se a construção (com os testes) passou.
+  publicar:
+    needs: construir
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publicar))
+    runs-on: ubuntu-latest
+    environment: wiki
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Baixar os arquivos gerados
+        uses: actions/download-artifact@v4
+        with:
+          name: Ronda
+
+      - name: Publicar na wiki
+        env:
+          WIKI_BOT_USER: ${{ secrets.WIKI_BOT_USER }}
+          WIKI_BOT_PASSWORD: ${{ secrets.WIKI_BOT_PASSWORD }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.simular }}
+          FORCE_DOC: ${{ github.event_name == 'workflow_dispatch' && inputs.forcar_doc }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          versao=$(cat wiki/Ronda-Versao.wiki)
+          titulo=$(printf '%s' "$COMMIT_MSG" | head -n1 | cut -c1-150)
+          export WIKI_SUMMARY="Atualização do Ronda $versao (GitHub ${GITHUB_SHA::7}${titulo:+: $titulo})"
+          node ferramentas/publicar-wiki.js
