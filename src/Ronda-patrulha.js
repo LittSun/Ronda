@@ -1951,6 +1951,7 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 	L.$status = $status = L.row( ronda.msg( 'patrulha-up-situacao' ) );
 	$facts = L.row( ronda.msg( 'patrulha-up-conta' ) );
 	L.$blocks = L.row( ronda.msg( 'patrulha-up-bloqueios' ) );
+	L.$otherWikis = L.row( ronda.msg( 'patrulha-up-outras-wikis' ) );
 	L.$contribs = L.row( ronda.msg( 'patrulha-up-contribuicoes' ) );
 	L.$act = L.row( ronda.msg( 'patrulha-up-atividade' ) );
 	$warn = L.row( ronda.msg( 'patrulha-up-avisos', days ) );
@@ -2075,19 +2076,35 @@ function renderExtra( ctx, user, isIP, extra, L ) {
 		) );
 	}
 
-	// Bloqueios em outras wikis
+	// Bloqueios em outras wikis: linha própria, discreta; as primeiras e "mais N" ao clicar
 	if ( extra.otherBlocks && extra.otherBlocks.length ) {
-		$status.append( $status.children().length ? ' ' : '', $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
-			$( '<b></b>' ).text( ronda.msg( 'patrulha-bloqueado-em-outras-wikis', extra.otherBlocks.length ) ),
-			' ',
-			extra.otherBlocks.map( function ( b, i ) {
-				return $( '<span></span>' ).append( i ? ', ' : '', external(
-					b.url ? b.url + '/wiki/Special:Log/block?' + $.param( { page: 'User:' + user } ) : '#',
-					b.host,
-					expiryText( b.expiry ) + ( b.reason ? ' — ' + plain( b.reason ) : '' )
-				) );
-			} )
-		) );
+		( function ( list ) {
+			var shown = 5,
+				$rest = $( '<span></span>' ).hide();
+
+			function item( b ) {
+				return $( '<span></span>' ).append(
+					external( b.url ? b.url + '/wiki/Special:Log/block?' + $.param( { page: 'User:' + user } ) : '#', b.host,
+						b.reason ? plain( b.reason ) : '' ),
+					document.createTextNode( ' (' + ( /^infinit/.test( b.expiry || '' ) ? ronda.msg( 'patrulha-duracao-indefinido' )
+						: ronda.msg( 'patrulha-ate', formatDate( b.expiry ) ) ) + ')' )
+				);
+			}
+
+			L.$otherWikis.append( $( '<span class="ronda-up-hot"></span>' ).text( ronda.msg( 'patrulha-bloqueado-em-n-wikis', list.length ) ), ' ' );
+			list.forEach( function ( b, i ) {
+				( i < shown ? L.$otherWikis : $rest ).append( i ? ', ' : '', item( b ) );
+			} );
+			if ( list.length > shown ) {
+				L.$otherWikis.append( $rest, ' ', $( '<a href="#" role="button"></a>' )
+					.text( ronda.msg( 'patrulha-e-mais-n', list.length - shown ) )
+					.on( 'click', function ( e ) {
+						e.preventDefault();
+						$rest.show();
+						$( this ).remove();
+					} ) );
+			}
+		}( extra.otherBlocks ) );
 	}
 
 	// Bloqueios anteriores
@@ -2571,7 +2588,8 @@ ronda.registerModule( {
  *   reverter               direto
  *   reverter (vandalismo)  direto e, depois, abre o Avisar com "Vandalismo"
  *                          e a página preenchidos (nível sugerido)
- * Com o direito rollback usa a reversão rápida da API; sem ele, desfaz
+ * Só "reverter (vandalismo)" usa a reversão rápida da API, e só para quem tem
+ * o direito rollback; os demais (e quem não tem o direito) desfazem
  * (undo/undoafter) até a última versão de outra pessoa. Se outra pessoa
  * editou depois, não reverte.
  * "restaurar" aparece nas versões antigas: no diff (versão da esquerda), na
@@ -2646,8 +2664,8 @@ function revertNow( title, user, mode, reason ) {
 	} ).then( function ( data ) {
 		var revs = ( data.query.pages[ 0 ] || {} ).revisions || [],
 			plan = quickPlan( revs, user ),
-			tpl = mode === 'agf' ? cfg().agfSummary : mode === 'vandal' ? cfg().vandalSummary
-				: ronda.can( 'rollback' ) ? cfg().rollbackSummary : cfg().summary,
+			useRollback = mode === 'vandal' && ronda.can( 'rollback' ),
+			tpl = mode === 'agf' ? cfg().agfSummary : mode === 'vandal' ? cfg().vandalSummary : cfg().summary,
 			summary;
 
 		if ( !plan.ok ) {
@@ -2655,7 +2673,7 @@ function revertNow( title, user, mode, reason ) {
 		}
 		summary = fillSummary( tpl, plan.good.user, user, plan.good.revid, reason );
 
-		if ( ronda.can( 'rollback' ) ) {
+		if ( useRollback ) {
 			return ronda.api.postWithToken( 'rollback', ronda.params( {
 				action: 'rollback',
 				title: title,

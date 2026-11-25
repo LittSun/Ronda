@@ -4,9 +4,10 @@ O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `pack
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
 ## 0.7.14 — 25/11/2026
+- **Reversão rápida**: só o link **reverter (vandalismo)** usa a reversão rápida (rollback), para reversores; **reverter** e **reverter (BF)** passam a usar o desfazimento comum, com o resumo correspondente.
 - **Usuário**: nova disposição do painel. À esquerda, uma tabela com um tema por linha (Situação, Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa); à direita, uma coluna com **Ações** (avisar, bloquear, reverter todas no topo, eliminar as criadas), **Ver**, **CheckUser** e **IP**. Em telas estreitas a coluna desce para baixo da tabela.
 - **Usuário**: linha do **registro do filtro de abusos** nos últimos 30 dias, com o total (link para o registro), quantas foram impedidas (em destaque) ou só avisadas, e **ver ocorrências**, que abre as dez mais recentes com hora, filtro, página e ação.
-- **Usuário**: aviso de **bloqueio em outras wikis** na situação da conta, com o link para o registro de bloqueios de cada wiki e a duração e o motivo na dica.
+- **Usuário**: linha **Outras wikis** com os bloqueios locais em outros projetos: cada wiki com a duração e o link para o registro de bloqueios (motivo na dica); com muitas, mostra cinco e "e mais N".
 - **Usuário**: contagem de **edições ocultadas** (conteúdo ou resumo) entre as 500 mais recentes, com as suprimidas à parte.
 - **Usuário**: o último bloqueio em "Bloqueios anteriores" mostra a duração em português ("3 semanas" em vez de "3 weeks") e o motivo no próprio texto, não só na dica.
 
