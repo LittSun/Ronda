@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.15 — 25/11/2026
+- **ER**: campo **Aviso a mais**, para mandar ao criador, junto da notificação de eliminação e na mesma edição da discussão, um aviso do catálogo (vandalismo, spam, testes…), com os favoritos no topo. Nos avisos em série, o nível pode ser escolhido ou ficar em "nível sugerido", calculado pelos avisos dos últimos dias. Vale também quando a notificação está em "Não avisar" e segue os mesmos critérios de quem pode ser avisado.
+
 ## 0.7.14 — 25/11/2026
 - **Reversão rápida**: só o link **reverter (vandalismo)** usa a reversão rápida (rollback), para reversores; **reverter** e **reverter (BF)** passam a usar o desfazimento comum, com o resumo correspondente.
 - **Usuário**: nova disposição do painel. À esquerda, uma tabela com um tema por linha (Situação, Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa); à direita, uma coluna com **Ações** (avisar, bloquear, reverter todas no topo, eliminar as criadas), **Ver**, **CheckUser** e **IP**. Em telas estreitas a coluna desce para baixo da tabela.

@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = 0.7.14
+|versão             = 0.7.15
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -118,7 +118,7 @@ No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção
 === Movimentação e eliminação ===
 {{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
 
-* {{Usuário:Little Sunshine/Ronda/Botão|ER}}: apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1.
+* {{Usuário:Little Sunshine/Ronda/Botão|ER}}: apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
 * {{Usuário:Little Sunshine/Ronda/Botão|ESR}}: sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
 * {{Usuário:Little Sunshine/Ronda/Botão|Consenso}}: arquiva a discussão anterior, quando houver, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
 
