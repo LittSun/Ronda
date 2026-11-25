@@ -4,6 +4,7 @@ O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `pack
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
 ## 0.7.14 — 25/11/2026
+- **Usuário**: nova disposição do painel. À esquerda, uma tabela com um tema por linha (Situação, Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa); à direita, uma coluna com **Ações** (avisar, bloquear, reverter todas no topo, eliminar as criadas), **Ver**, **CheckUser** e **IP**. Em telas estreitas a coluna desce para baixo da tabela.
 - **Usuário**: linha do **registro do filtro de abusos** nos últimos 30 dias, com o total (link para o registro), quantas foram impedidas (em destaque) ou só avisadas, e **ver ocorrências**, que abre as dez mais recentes com hora, filtro, página e ação.
 - **Usuário**: aviso de **bloqueio em outras wikis** na situação da conta, com o link para o registro de bloqueios de cada wiki e a duração e o motivo na dica.
 - **Usuário**: contagem de **edições ocultadas** (conteúdo ou resumo) entre as 500 mais recentes, com as suprimidas à parte.
