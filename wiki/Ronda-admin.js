@@ -221,11 +221,19 @@ function showForm( ctx, page, groups ) {
 
 		ronda.ui.setBusy( $dlg, true );
 
-		ronda.post( {
-			action: 'delete',
-			title: ctx.page,
-			reason: reason,
-			deletetalk: !!( cbTalk && cbTalk.isChecked() )
+		ronda.api.get( { action: 'query', titles: ctx.page, prop: 'info' } ).then( function ( d ) {
+			var now = ( d.query.pages || [] )[ 0 ] || {};
+
+			if ( page.lastrevid && now.lastrevid && now.lastrevid !== page.lastrevid &&
+				!window.confirm( ronda.msg( 'admin-pagina-mudou-confirmar' ) ) ) {
+				return $.Deferred().reject( 'ronda-cancelled' ).promise();
+			}
+			return ronda.post( {
+				action: 'delete',
+				title: ctx.page,
+				reason: reason,
+				deletetalk: !!( cbTalk && cbTalk.isChecked() )
+			} );
 		} ).then( function () {
 			mw.notify( ronda.msg( 'admin-pagina-eliminada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 
@@ -261,7 +269,9 @@ function showForm( ctx, page, groups ) {
 			}
 		}, function ( code, data ) {
 			ronda.ui.setBusy( $dlg, false );
-			ronda.fail( code, data );
+			if ( code !== 'ronda-cancelled' ) {
+				ronda.fail( code, data );
+			}
 		} );
 	}
 
@@ -1031,9 +1041,11 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 		own = blocks.filter( function ( b ) {
 			return sameTarget( b.user, user );
 		} ),
-		current = own[ 0 ],
-		removing = null,
 		me = mw.config.get( 'wgUserName' ),
+		current = limited ? own.filter( function ( b ) {
+			return b.by === me;
+		} )[ 0 ] || null : own[ 0 ],
+		removing = null,
 		$mode = $( '<select></select>' ),
 		$editArea = $( '<div></div>' ),
 		$unblockReason = ronda.ui.text( '', ronda.msg( 'admin-desbloqueio-motivo-exemplo' ) ),
@@ -1170,7 +1182,9 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 	}
 
 	if ( own.length ) {
-		$( '<optgroup></optgroup>' ).attr( 'label', ronda.msg( 'admin-multibloqueio-grupo-alterar' ) ).append( own.map( function ( b ) {
+		$( '<optgroup></optgroup>' ).attr( 'label', ronda.msg( 'admin-multibloqueio-grupo-alterar' ) ).append( own.filter( function ( b ) {
+			return !limited || b.by === me;
+		} ).map( function ( b ) {
 			return $( '<option></option>' ).val( 'edit:' + b.id ).text( ronda.msg( 'admin-multibloqueio-alterar', blockLine( b ) ) );
 		} ) ).appendTo( $mode );
 		$( '<option value="new"></option>' ).text( ronda.msg( 'admin-multibloqueio-novo', own.length ) ).appendTo( $mode );
@@ -1256,6 +1270,10 @@ function showForm( ctx, user, isIP, blocks, reasonGroups ) {
 			expiry: expiry,
 			reason: reason
 		};
+		if ( current && limited && current.by !== me ) {
+			mw.notify( ronda.msg( 'admin-reversor-so-altera-os-proprios' ), { type: 'error', title: ronda.msg( 'core-nome' ) } );
+			return;
+		}
 		if ( current ) {
 			params.id = current.id;
 		} else {
@@ -1751,11 +1769,12 @@ function openBatch( ctx, options ) {
 					$( '<option></option>' ).val( a[ 0 ] ).text( a[ 1 ] ).appendTo( $action );
 				}
 			} );
-		[ '' ].concat( restr.levels.filter( Boolean ) ).forEach( function ( l ) {
-			var label = l ? msgOr( 'protect-level-' + l, l ) : msgOr( 'protect-default', ronda.msg( 'admin-todos-os-usuarios' ) );
-
-			$( '<option></option>' ).val( l ).text( label ).appendTo( $editLevel );
-			$( '<option></option>' ).val( l ).text( label ).appendTo( $moveLevel );
+		[ $editLevel, $moveLevel ].forEach( function ( $sel ) {
+			$( '<option value=""></option>' ).text( ronda.msg( 'admin-lote-escolha-o-nivel' ) ).appendTo( $sel );
+			restr.levels.filter( Boolean ).forEach( function ( l ) {
+				$( '<option></option>' ).val( l ).text( msgOr( 'protect-level-' + l, l ) ).appendTo( $sel );
+			} );
+			$( '<option value="all"></option>' ).text( ronda.msg( 'admin-lote-remover-protecao' ) ).appendTo( $sel );
 		} );
 		$expiry.find( 'option[value="other"]' ).remove();
 		$protectBox.append(
@@ -1912,11 +1931,23 @@ function openBatch( ctx, options ) {
 				expiry = ronda.ui.expiryValue( $expiry, $() ),
 				ok = !!reasonFields && ronda.ui.require( reasonFields.$extra, !!reason );
 
+			if ( a === 'protect' ) {
+				ok = ronda.ui.require( $editLevel, !!$editLevel.val() ) && ok;
+				if ( chosen.some( function ( p ) {
+					return p.exists;
+				} ) ) {
+					ok = ronda.ui.require( $moveLevel, !!$moveLevel.val() ) && ok;
+				}
+			}
 			if ( !ok ) {
 				return;
 			}
 			if ( !chosen.length ) {
 				mw.notify( ronda.msg( 'admin-escolha-ao-menos-uma-pagina' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+				return;
+			}
+			if ( !window.confirm( ronda.msg( a === 'delete' ? 'admin-lote-confirmar-eliminar'
+				: a === 'undelete' ? 'admin-lote-confirmar-restaurar' : 'admin-lote-confirmar-proteger', chosen.length ) ) ) {
 				return;
 			}
 
@@ -1932,8 +1963,8 @@ function openBatch( ctx, options ) {
 						return ronda.post( { action: 'undelete', title: p.title, reason: reason } );
 					}
 					protections = p.exists
-						? 'edit=' + ( $editLevel.val() || 'all' ) + '|move=' + ( $moveLevel.val() || 'all' )
-						: 'create=' + ( $editLevel.val() || 'all' );
+						? 'edit=' + $editLevel.val() + '|move=' + $moveLevel.val()
+						: 'create=' + $editLevel.val();
 					return ronda.post( { action: 'protect', title: p.title, protections: protections, expiry: expiry, reason: reason } );
 				} };
 			} ), function ( done ) {

@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.15',
+		version: '0.7.16',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -481,6 +481,18 @@ ronda.joinReason = function ( selected, extra ) {
 };
 
 /**
+ * Substituto para String#replace que insere o texto como está: sem função, padrões
+ * como $&, $1 ou $$ no texto do usuário seriam interpretados pelo replace.
+ */
+ronda.literal = function ( value ) {
+	var text = value === null || value === undefined ? '' : String( value );
+
+	return function () {
+		return text;
+	};
+};
+
+/**
  * Parâmetros da primeira chamada de uma predefinição no texto, respeitando
  * predefinições e ligações aninhadas (a barra de [[A|b]] não separa parâmetros).
  * @param {string} text
@@ -537,6 +549,7 @@ ronda.templateParams = function ( text, name ) {
 /**
  * Escapa barras verticais para uso em parâmetros de predefinição.
  * As que estão dentro de [[…]] e {{…}} ficam como estão: são do próprio link ou predefinição.
+ * Um "}}" sem abertura correspondente vira &#125;&#125;, para não fechar a predefinição.
  */
 ronda.templateSafe = function ( text ) {
 	var depth = 0;
@@ -545,7 +558,11 @@ ronda.templateSafe = function ( text ) {
 		if ( m === '[[' || m === '{{' ) {
 			depth++;
 		} else if ( m === ']]' || m === '}}' ) {
-			depth = Math.max( 0, depth - 1 );
+			// Fechamento solto (sem abertura antes) fecharia a predefinição: vira entidade
+			if ( !depth ) {
+				return m === '}}' ? '&#125;&#125;' : m;
+			}
+			depth--;
 		} else if ( !depth ) {
 			return '{{!}}';
 		}
