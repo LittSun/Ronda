@@ -10,12 +10,22 @@
  *   WIKI_BOT_USER       nome da senha de robô, ex.: "Little Sunshine@Ronda" (obrigatório)
  *   WIKI_BOT_PASSWORD   senha de robô (obrigatório)
  *   WIKI_API            API da wiki (padrão: https://pt.wikipedia.org/w/api.php)
- *   RONDA_BASE          prefixo das páginas (padrão: "Usuário:Little Sunshine/Scripts/")
+ *   RONDA_BASE          prefixo das páginas de código (padrão: "Usuário:Little Sunshine/Scripts/")
+ *   RONDA_DOC_PAGE      página da documentação (padrão: "Usuário:Little Sunshine/Ronda");
+ *                       o histórico de versões vai para a subpágina /Changelog
  *   WIKI_SUMMARY        resumo das edições (padrão: "Atualização do Ronda <versão>")
  *   DRY_RUN             "true" = só mostra o que mudaria, sem editar
+ *   FORCE_DOC           "true" = substitui a documentação e o histórico mesmo se editados na wiki
  *
- * A senha de robô precisa das permissões "Editar páginas existentes" e
+ * A senha de robô precisa das permissões "Editar páginas existentes",
+ * "Criar, editar e mover páginas" (para criar o /Changelog na primeira vez) e
  * "Editar o seu CSS/JSON/JavaScript de usuário".
+ *
+ * A documentação e o histórico também podem ser editados na wiki por pessoas.
+ * Para não apagar essas edições, a página só é substituída se a última edição
+ * dela foi feita por esta publicação (resumo começando por "Atualização do Ronda");
+ * se não, é pulada com um aviso, para que a mudança seja levada antes para o
+ * repositório (docs/documentacao.wiki ou CHANGELOG.md).
  */
 'use strict';
 
@@ -25,14 +35,21 @@ const path = require( 'path' );
 const dir = path.resolve( __dirname, '..', process.argv[ 2 ] || 'wiki' );
 const API = process.env.WIKI_API || 'https://pt.wikipedia.org/w/api.php';
 const BASE = process.env.RONDA_BASE || 'Usuário:Little Sunshine/Scripts/';
+const DOC = process.env.RONDA_DOC_PAGE || 'Usuário:Little Sunshine/Ronda';
+const OWN_SUMMARY = /^Atualização do Ronda\b/;
+const FORCE_DOC = /^(1|true|sim)$/i.test( process.env.FORCE_DOC || '' );
 const USER = process.env.WIKI_BOT_USER;
 const PASS = process.env.WIKI_BOT_PASSWORD;
 const DRY = /^(1|true|sim)$/i.test( process.env.DRY_RUN || '' );
 const UA = 'RondaPublisher/1.0 (https://github.com/LittSun/ronda; User:Little Sunshine)';
 
-// Ordem de publicação: o carregador por último, para que ele só peça arquivos já atualizados
+// Ordem de publicação: o carregador por último, para que ele só peça arquivos já atualizados;
+// depois, o histórico de versões e a documentação (protegidos contra sobrescrever edições feitas na wiki)
 const FILES = [ 'Ronda-mensagens.js', 'Ronda-core.js', 'Ronda-catalogo.js', 'Ronda-patrulha.js', 'Ronda-paginas.js',
-	'Ronda-admin.js', 'Ronda.css', 'Ronda-loader.js' ];
+	'Ronda-admin.js', 'Ronda.css', 'Ronda-loader.js' ].map( ( f ) => ( { file: f, title: BASE + f } ) ).concat( [
+	{ file: 'Ronda-Changelog.wiki', title: DOC + '/Changelog', guard: true, optional: true },
+	{ file: 'Ronda-Documentacao.wiki', title: DOC, guard: true, optional: true }
+] );
 
 const cookies = {};
 
@@ -85,11 +102,16 @@ async function login() {
 	console.log( 'Conectado como ' + r.login.lgusername );
 }
 
+/** Conteúdo e resumo da última edição; null se a página não existe */
 async function current( title ) {
-	const r = await api( { action: 'query', prop: 'revisions', titles: title, rvprop: 'content', rvslots: 'main' } );
+	const r = await api( { action: 'query', prop: 'revisions', titles: title, rvprop: 'content|comment|user', rvslots: 'main' } );
 	const p = r.query.pages[ 0 ];
 
-	return p.missing ? null : p.revisions[ 0 ].slots.main.content;
+	return p.missing ? null : {
+		text: p.revisions[ 0 ].slots.main.content,
+		comment: p.revisions[ 0 ].comment || '',
+		user: p.revisions[ 0 ].user || ''
+	};
 }
 
 async function main() {
@@ -110,18 +132,30 @@ async function main() {
 		token = ( await api( { action: 'query', meta: 'tokens', type: 'csrf' } ) ).query.tokens.csrftoken;
 	}
 
-	for ( const f of FILES ) {
-		const title = BASE + f;
-		const text = fs.readFileSync( path.join( dir, f ), 'utf8' );
-		const old = await current( title );
+	for ( const page of FILES ) {
+		const title = page.title;
+		const file = path.join( dir, page.file );
 
-		if ( old !== null && old.replace( /\s+$/, '' ) === text.replace( /\s+$/, '' ) ) {
+		if ( page.optional && !fs.existsSync( file ) ) {
+			continue;
+		}
+		const text = fs.readFileSync( file, 'utf8' );
+		const cur = await current( title );
+		const old = cur && cur.text;
+
+		if ( old !== null && old !== undefined && old.replace( /\s+$/, '' ) === text.replace( /\s+$/, '' ) ) {
 			console.log( '= ' + title + ' (sem alterações)' );
+			continue;
+		}
+		if ( page.guard && cur && !FORCE_DOC && !OWN_SUMMARY.test( cur.comment ) ) {
+			console.log( '::warning::' + title + ' foi editada na wiki por ' + cur.user + ' ("' + cur.comment.slice( 0, 80 )
+				+ '") e não foi substituída. Leve a mudança para o repositório e rode o workflow com '
+				+ '"Substituir a documentação mesmo se editada na wiki".' );
 			continue;
 		}
 		changed++;
 		if ( DRY ) {
-			console.log( '~ ' + title + ' (seria ' + ( old === null ? 'criada' : 'atualizada' ) + ')' );
+			console.log( '~ ' + title + ' (seria ' + ( !cur ? 'criada' : 'atualizada' ) + ')' );
 			continue;
 		}
 		const r = await api( {

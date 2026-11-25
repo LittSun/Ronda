@@ -1,7 +1,10 @@
 # Verifica o código e gera, a partir de src/:
 # - wiki/ — os arquivos prontos para a wiki (sem comentários, com o cabeçalho
 #   @target e as ligações entre arquivos);
-# - dist/Ronda-console.js — o pacote único para colar no console.
+# - dist/Ronda-console.js — o pacote único para colar no console;
+# - wiki/Ronda-Changelog.wiki e wiki/Ronda-Documentacao.wiki — o histórico de
+#   versões e a documentação, publicados em Usuário:Little Sunshine/Ronda/Changelog
+#   e Usuário:Little Sunshine/Ronda.
 # Em pull requests, só verifica e gera (os arquivos ficam na aba Actions).
 # No main, grava wiki/ e dist/ num único commit do robô e publica na wiki as
 # páginas que mudaram, com a senha de robô dos segredos WIKI_BOT_USER e
@@ -17,6 +20,8 @@ on:
       - 'ferramentas/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'CHANGELOG.md'
+      - 'docs/documentacao.wiki'
       - '.github/workflows/construir.yml'
     tags: [ 'v*' ]
   pull_request:
@@ -28,6 +33,10 @@ on:
         default: true
       simular:
         description: 'Só simular (mostra o que mudaria, sem editar)'
+        type: boolean
+        default: false
+      forcar_doc:
+        description: 'Substituir a documentação e o histórico mesmo se editados na wiki'
         type: boolean
         default: false
 
@@ -86,6 +95,7 @@ jobs:
           WIKI_BOT_USER: ${{ secrets.WIKI_BOT_USER }}
           WIKI_BOT_PASSWORD: ${{ secrets.WIKI_BOT_PASSWORD }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.simular }}
+          FORCE_DOC: ${{ github.event_name == 'workflow_dispatch' && inputs.forcar_doc }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           versao=$(cat wiki/Ronda-Versao.wiki)

@@ -8,7 +8,12 @@
  *   a ligação para a documentação, as ligações para todos os arquivos e o <nowiki>
  *   (no CSS, as mesmas linhas como comentários de CSS);
  * - confere se o resultado continua sendo JavaScript válido.
- * Também grava Ronda-Versao.wiki com a versão de ronda.version.
+ * Também grava:
+ * - Ronda-Versao.wiki, com a versão de ronda.version;
+ * - Ronda-Changelog.wiki, o CHANGELOG.md convertido em wikitexto (cada versão
+ *   com uma âncora de mesmo nome, ex.: [[/Changelog#0.7.13]]);
+ * - Ronda-Documentacao.wiki, docs/documentacao.wiki com a versão da infobox
+ *   atualizada e ligada ao histórico.
  *
  * Uso (na raiz do repositório):  npm install && npm run wiki
  *   ou: node ferramentas/gerar-wiki.js [pasta de saída]   (padrão: wiki/ na raiz)
@@ -120,7 +125,7 @@ Object.keys( FILES ).forEach( ( f ) => {
 } );
 
 // Versão (para a página de versão da documentação)
-( function () {
+const version = ( function () {
 	const m = /version:\s*'([^']+)'/.exec( fs.readFileSync( path.join( dir, 'Ronda-core.js' ), 'utf8' ) );
 
 	if ( !m ) {
@@ -128,4 +133,84 @@ Object.keys( FILES ).forEach( ( f ) => {
 	}
 	fs.writeFileSync( path.join( out, 'Ronda-Versao.wiki' ), m[ 1 ] );
 	console.log( 'Versão ' + m[ 1 ] + ' → ' + path.relative( root, out ) + '/' );
+	return m[ 1 ];
+}() );
+
+/**
+ * Markdown do CHANGELOG → wikitexto. Cobre o que o arquivo usa: títulos "## ",
+ * listas "- " (e aninhadas), **negrito**, `código` e [texto](endereço).
+ * Fora do código, {{ e [[ ficam em <nowiki> para não virarem predefinição ou ligação.
+ */
+function inlineWiki( line ) {
+	const parts = line.split( /(`[^`]*`)/ );
+
+	return parts.map( ( part, i ) => {
+		if ( i % 2 ) {
+			return '<code><nowiki>' + part.slice( 1, -1 ) + '</nowiki></code>';
+		}
+		return part
+			.replace( /\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '[$2 $1]' )
+			.replace( /\[([^\]]+)\]\(([^)\s]+)\)/g, '$1' ) // ligações para arquivos do repositório: só o texto
+			.replace( /\{\{|\}\}|\[\[|\]\]/g, ( m ) => '<nowiki>' + m + '</nowiki>' )
+			.replace( /\*\*([^*]+)\*\*/g, "'''$1'''" );
+	} ).join( '' );
+}
+
+function changelogWiki( md, docPage ) {
+	const out = [
+		'Histórico de versões do [[' + docPage + '|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#' + version + ']]</nowiki></code>.',
+		'',
+		'<small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>',
+		''
+	];
+	let skip = true;
+
+	md.split( '\n' ).forEach( ( line ) => {
+		const h = /^##\s+(.+?)\s*$/.exec( line );
+		let m;
+
+		if ( h ) {
+			m = /^(\d+(?:\.\d+)+)\b/.exec( h[ 1 ] );
+			// Só seções de versão; as demais (ex.: "Repositório") são de interesse do desenvolvimento
+			skip = !m;
+			if ( !skip ) {
+				out.push( '== <span id="' + m[ 1 ] + '"></span>' + inlineWiki( h[ 1 ] ) + ' ==' );
+			}
+			return;
+		}
+		if ( skip ) {
+			return;
+		}
+		m = /^(\s*)[-*]\s+(.*)$/.exec( line );
+		if ( m ) {
+			out.push( '*'.repeat( 1 + Math.floor( m[ 1 ].length / 2 ) ) + ' ' + inlineWiki( m[ 2 ] ) );
+		} else if ( line.trim() ) {
+			out.push( inlineWiki( line.trim() ) );
+		} else if ( out[ out.length - 1 ] !== '' ) {
+			out.push( '' );
+		}
+	} );
+	return out.join( '\n' ).trim() + '\n';
+}
+
+// Histórico de versões e documentação, para as páginas da wiki
+( function () {
+	const docPage = process.env.RONDA_DOC_PAGE || 'Usuário:Little Sunshine/Ronda',
+		changelog = path.join( root, 'CHANGELOG.md' ),
+		doc = path.join( root, 'docs', 'documentacao.wiki' );
+	let text;
+
+	if ( fs.existsSync( changelog ) ) {
+		fs.writeFileSync( path.join( out, 'Ronda-Changelog.wiki' ), changelogWiki( fs.readFileSync( changelog, 'utf8' ), docPage ) );
+		console.log( 'CHANGELOG.md → Ronda-Changelog.wiki' );
+	}
+	if ( fs.existsSync( doc ) ) {
+		text = fs.readFileSync( doc, 'utf8' );
+		if ( !/^\|\s*versão\s*=.*$/m.test( text ) ) {
+			throw new Error( 'docs/documentacao.wiki: a infobox não tem o campo "versão"' );
+		}
+		text = text.replace( /^(\|\s*versão\s*=\s*).*$/m, '$1[[/Changelog#' + version + '|' + version + ']]' );
+		fs.writeFileSync( path.join( out, 'Ronda-Documentacao.wiki' ), text );
+		console.log( 'docs/documentacao.wiki → Ronda-Documentacao.wiki' );
+	}
 }() );
