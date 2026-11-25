@@ -740,7 +740,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.19',
+		version: '0.7.20',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -2493,9 +2493,10 @@ ronda.openReport = function () {
 			title: ronda.REPORT_PAGE,
 			section: 'new',
 			sectiontitle: title,
-			text: text + ' ~~' + '~~' + ( cbEnv.isChecked() ? '\n\n<small>\n' + env.map( function ( e ) {
+			// Os dados técnicos fazem parte da mensagem: a assinatura vem depois deles
+			text: text + ( cbEnv.isChecked() ? '\n\n' + env.map( function ( e ) {
 				return '* ' + e[ 0 ] + ': <nowiki>' + String( e[ 1 ] ).replace( /<\/?nowiki>/gi, '' ) + '</nowiki>';
-			} ).join( '\n' ) + '\n</small>' : '' ),
+			} ).join( '\n' ) + '\n\n~~' + '~~' : ' ~~' + '~~' ),
 			summary: ronda.msg( 'core-relato-resumo', title )
 		} ).then( function () {
 			ronda.ui.close( $dlg );
