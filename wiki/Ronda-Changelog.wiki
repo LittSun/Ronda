@@ -1,6 +1,9 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.18]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.19]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.19"></span>0.7.19 — 25/11/2026 ==
+* '''Novidades''': o aviso "O Ronda foi atualizado…" some ao clicar em '''Fechar''' ou ao fechar e reabrir o meta-painel pelo nome, e só volta na próxima atualização.
 
 == <span id="0.7.18"></span>0.7.18 — 25/11/2026 ==
 * '''Meta-painel''': clicar no nome '''Ronda''' abre uma faixa com a versão e as novidades dela, opções rápidas (simulação, painéis em segundo plano, links rápidos de reversão), '''Preferências…''', documentação, histórico de versões, código no GitHub e '''Informar erro'''. O link "Preferências do Ronda" sai do menu de ações (continua lá só nas páginas sem barra). O nome também funciona pelo teclado (Enter e Espaço).

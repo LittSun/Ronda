@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.18',
+		version: '0.7.19',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1826,6 +1826,9 @@ ronda.openReport = function () {
 ronda.openMeta = function ( opts ) {
 	var news = !!( opts && opts.news );
 
+	// O aviso de atualização aparece só na abertura automática: some ao fechar ou reabrir o painel
+	$( '#ronda-toolbar .ronda-meta .ronda-meta-head' ).remove();
+
 	return ronda.ui.togglePanel( 'meta', function ( $panel ) {
 		var L = ronda.ui.panelLayout(),
 			$version = L.row( ronda.msg( 'core-meta-versao' ) ),
@@ -1896,11 +1899,11 @@ ronda.openMeta = function ( opts ) {
 				' ',
 				pressable( $( '<a href="#"></a>' ).text( ronda.msg( 'core-fechar' ) ), function ( e ) {
 					e.preventDefault();
-					$panel.hide();
+					$panel.hide().find( '.ronda-meta-head' ).remove();
 				} ),
 				document.createTextNode( ' · ' ),
 				notAgain( function () {
-					$panel.hide();
+					$panel.hide().find( '.ronda-meta-head' ).remove();
 				} )
 			) );
 		}

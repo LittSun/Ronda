@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.18|0.7.18]]
+|versão             = [[/Changelog#0.7.19|0.7.19]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}

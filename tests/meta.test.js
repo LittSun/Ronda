@@ -79,3 +79,20 @@ test( 'Informar erro: seção nova com o relato e as informações técnicas', a
 	assert.match( e.text, /Cliquei e nada\. ~~~~/ );
 	assert.match( e.text, /Versão: <nowiki>/ );
 } );
+
+test( 'Novidades: fechar (ou reabrir pelo nome) tira o aviso de atualização', async () => {
+	const a = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1' } } );
+	const $bar = a.$( '#ronda-toolbar' );
+
+	a.ronda.meta.showNews( $bar );
+	a.$( '.ronda-meta-head a' ).first().trigger( 'click' );
+	a.ronda.openMeta();
+	assert.strictEqual( a.$( '.ronda-meta-head' ).length, 0 );
+
+	const b = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1' } } );
+
+	b.ronda.meta.showNews( b.$( '#ronda-toolbar' ) );
+	b.ronda.openMeta();
+	b.ronda.openMeta();
+	assert.strictEqual( b.$( '.ronda-meta-head' ).length, 0 );
+} );
