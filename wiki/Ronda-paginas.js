@@ -868,7 +868,7 @@ function errorText( code ) {
 	}[ code ] || code;
 }
 
-function tasksFor( page, tagFn, warnCode ) {
+function tasksFor( page, tagFn, warnCode, extraWarn ) {
 	var inForm = ronda.inEditForm(),
 		rcid = ronda.patrolRcid(),
 		tasks = [ { critical: true, label: ronda.msg( 'paginas-marcando', page.title ), fn: tagFn } ];
@@ -879,15 +879,15 @@ function tasksFor( page, tagFn, warnCode ) {
 		} } );
 	}
 
-	if ( warnCode ) {
+	if ( warnCode || extraWarn ) {
 		tasks.push( { label: ronda.msg( 'paginas-aviso-ao-criador' ), fn: function () {
 			if ( inForm ) {
 				ronda.ui.onSave( function () {
-					return ronda.warnCreator( page.title, warnCode );
+					return ronda.warnCreator( page.title, warnCode, null, extraWarn );
 				} );
 				return ronda.msg( 'paginas-sera-enviado-ao-publicar-a-edicao' );
 			}
-			return ronda.warnCreator( page.title, warnCode );
+			return ronda.warnCreator( page.title, warnCode, null, extraWarn );
 		} } );
 	}
 	return tasks;
@@ -903,6 +903,98 @@ function runTasks( $dlg, $progress, $log, tasks, doneText ) {
 	} );
 }
 
+function extraWarnings() {
+	var skip = [ 'Boas-vindas', 'Eliminação', 'Notificação de bloqueio' ],
+		fav = ronda.favorites;
+
+	if ( !ronda.warnings || !ronda.catalog.warnings ) {
+		return [];
+	}
+	return ronda.catalog.warnings.filter( function ( w ) {
+		return skip.indexOf( w.group ) === -1 && !( w.fields || [] ).some( function ( f ) {
+			return f.required;
+		} );
+	} ).sort( function ( a, b ) {
+		return ( fav && fav.has( b.id ) ? 1 : 0 ) - ( fav && fav.has( a.id ) ? 1 : 0 );
+	} );
+}
+
+function extraWarnFields() {
+	var items = extraWarnings(),
+		fav = ronda.favorites,
+		$item = $( '<select></select>' ).append( $( '<option value=""></option>' ).text( ronda.msg( 'paginas-nenhum' ) ) ),
+		$level = $( '<select></select>' ).append(
+			$( '<option value="auto"></option>' ).text( ronda.msg( 'paginas-nivel-sugerido' ) ),
+			$( '<option value="1"></option>' ).text( ronda.msg( 'paginas-nivel-n', 1 ) ),
+			$( '<option value="2"></option>' ).text( ronda.msg( 'paginas-nivel-n', 2 ) ),
+			$( '<option value="3"></option>' ).text( ronda.msg( 'paginas-nivel-n', 3 ) )
+		).hide(),
+		groups = {};
+
+	items.forEach( function ( w ) {
+		var g = fav && fav.has( w.id ) ? ronda.msg( 'paginas-favoritos' ) : w.group;
+
+		if ( !groups[ g ] ) {
+			groups[ g ] = $( '<optgroup></optgroup>' ).attr( 'label', g ).appendTo( $item );
+		}
+		$( '<option></option>' ).val( w.id ).text( w.label ).attr( 'title', w.title || '' ).appendTo( groups[ g ] );
+	} );
+
+	function chosen() {
+		var id = $item.val();
+
+		return items.filter( function ( w ) {
+			return w.id === id;
+		} )[ 0 ] || null;
+	}
+
+	ronda.ui.onChange( $item, function () {
+		var w = chosen();
+
+		$level.toggle( !!( w && w.levels ) );
+	} );
+
+	return {
+		$el: $( '<span></span>' ).append( $item, ' ', $level ),
+		available: items.length > 0,
+		fn: function ( title ) {
+			var w = chosen(),
+				choice = $level.val();
+
+			if ( !w ) {
+				return null;
+			}
+			return function ( creator ) {
+				var talk = mw.config.get( 'wgFormattedNamespaces' )[ 3 ] + ':' + creator,
+					days = ( ronda.config.warnings && ronda.config.warnings.window ) || 30,
+					getLevel = !w.levels ? $.Deferred().resolve( null ).promise()
+						: choice !== 'auto' ? $.Deferred().resolve( Number( choice ) ).promise()
+							: ronda.api.get( { action: 'query', titles: talk, prop: 'revisions',
+								rvprop: 'timestamp|comment|content', rvslots: 'main', rvlimit: 1 } ).then( function ( d1 ) {
+								return ronda.api.get( { action: 'query', titles: talk, prop: 'revisions',
+									rvprop: 'timestamp|comment', rvlimit: 50 } ).then( function ( d2 ) {
+									var cur = ( d1.query.pages[ 0 ].revisions || [] )[ 0 ],
+										prev = ronda.warnings.previous( w, d2.query.pages[ 0 ].revisions || [],
+											cur ? cur.slots.main.content : '', Date.now(), days );
+
+									return ronda.warnings.suggest( prev ).level;
+								} );
+							}, function () {
+								return 1;
+							} );
+
+				return getLevel.then( function ( level ) {
+					return {
+						text: ronda.warnings.build( w, level, { pagina: title },
+							{ marker: !ronda.config.warnings || ronda.config.warnings.marker !== false } ),
+						summary: ronda.warnings.summaryFor( w, level )
+					};
+				} );
+			};
+		}
+	};
+}
+
 function showSpeedy( ctx, page ) {
 	var rules = rulesFor( page ),
 		$rule = $( '<select></select>' ).append( $( '<option value=""></option>' ).text( ronda.msg( 'paginas-escolha-a-regra' ) ) ),
@@ -913,6 +1005,8 @@ function showSpeedy( ctx, page ) {
 			$( '<option value=""></option>' ).text( ronda.msg( 'paginas-nao-avisar' ) )
 		),
 		$warnRow = ronda.ui.row( ronda.msg( 'paginas-aviso-ao-criador' ), $warn ),
+		extra = extraWarnFields(),
+		$extraRow = ronda.ui.row( ronda.msg( 'paginas-aviso-a-mais' ), extra.$el ).toggle( extra.available ),
 		$progress = $( '<div class="ronda-progress"></div>' ).hide(),
 		$log = $( '<ul class="ronda-log"></ul>' ),
 		$content = $( '<div></div>' ),
@@ -944,7 +1038,7 @@ function showSpeedy( ctx, page ) {
 		) ) );
 	}
 
-	$content.append( ronda.ui.row( ronda.msg( 'paginas-regra' ), $rule ), ronda.ui.row( ronda.msg( 'paginas-observacao' ), $obs ), $warnRow, $progress, $log );
+	$content.append( ronda.ui.row( ronda.msg( 'paginas-regra' ), $rule ), ronda.ui.row( ronda.msg( 'paginas-observacao' ), $obs ), $warnRow, $extraRow, $progress, $log );
 
 	function submit() {
 		var r = selected(),
@@ -961,7 +1055,7 @@ function showSpeedy( ctx, page ) {
 				'Página proposta para [[WP:ER|eliminação rápida]] (regra [[WP:' + r.rule + '|' + r.rule + ']])', false );
 		}, !r.noWarn && warnType ? ( warnType === 'er'
 			? 'Aviso-ER|' + page.title + '|' + r.rule + ( obs.trim() ? '|3=' + paramSafe( obs.trim() ) : '' )
-			: 'Aviso-não remova|' + page.title + '|er' ) : null );
+			: 'Aviso-não remova|' + page.title + '|er' ) : null, extra.fn( page.title ) );
 		tasks[ 0 ].label += ' (' + r.rule + ')';
 
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-rapida' ) );

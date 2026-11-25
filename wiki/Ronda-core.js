@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.14',
+		version: '0.7.15',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -430,20 +430,37 @@ ronda.eligibleCreator = function ( title ) {
 	} );
 };
 
-ronda.warnCreator = function ( title, code, summary ) {
+ronda.warnCreator = function ( title, code, summary, extra ) {
 	return ronda.eligibleCreator( title ).then( function ( creator ) {
 		if ( !creator ) {
 			return ronda.msg( 'core-sem-aviso-criador-nao-elegivel' );
 		}
 
-		return ronda.post( {
-			action: 'edit',
-			title: mw.config.get( 'wgFormattedNamespaces' )[ 3 ] + ':' + creator,
-			appendtext: '\n\n{{subst:' + code + '}} ~~' + '~~',
-			summary: summary || 'Aviso sobre a eliminação da página "[[' + title + ']]"',
-			watchlist: ronda.config.watchlist
-		} ).then( function () {
-			return ronda.msg( 'core-aviso-enviado-a', creator );
+		return $.when( extra ? extra( creator ) : null ).then( function ( add ) {
+			var parts = [],
+				summaries = [];
+
+			if ( code ) {
+				parts.push( '{{subst:' + code + '}} ~~' + '~~' );
+				summaries.push( summary || 'Aviso sobre a eliminação da página "[[' + title + ']]"' );
+			}
+			if ( add && add.text ) {
+				parts.push( add.text );
+				summaries.push( add.summary );
+			}
+			if ( !parts.length ) {
+				return ronda.msg( 'core-sem-aviso-criador-nao-elegivel' );
+			}
+
+			return ronda.post( {
+				action: 'edit',
+				title: mw.config.get( 'wgFormattedNamespaces' )[ 3 ] + ':' + creator,
+				appendtext: '\n\n' + parts.join( '\n\n' ),
+				summary: summaries.join( '; ' ),
+				watchlist: ronda.config.watchlist
+			} ).then( function () {
+				return ronda.msg( 'core-aviso-enviado-a', creator );
+			} );
 		} );
 	} );
 };
