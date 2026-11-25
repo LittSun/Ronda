@@ -95,6 +95,78 @@
 	margin: 0.1em 0;
 }
 
+#ronda-toolbar .ronda-up-grid {
+	display: flex;
+	align-items: flex-start;
+	gap: 1em;
+}
+
+#ronda-toolbar .ronda-up-table {
+	flex: 1 1 auto;
+	border-collapse: collapse;
+}
+
+#ronda-toolbar .ronda-up-table th,
+#ronda-toolbar .ronda-up-table td {
+	padding: 0.15em 0.6em 0.15em 0;
+	border-bottom: 1px solid var( --border-color-muted, #eaecf0 );
+	text-align: left;
+	vertical-align: top;
+}
+
+#ronda-toolbar .ronda-up-table th {
+	width: 1%;
+	padding-right: 1em;
+	font-weight: normal;
+	color: var( --color-subtle, #54595d );
+	white-space: nowrap;
+}
+
+#ronda-toolbar .ronda-up-table tr:last-child th,
+#ronda-toolbar .ronda-up-table tr:last-child td {
+	border-bottom: 0;
+}
+
+#ronda-toolbar .ronda-up-side {
+	flex: 0 0 19em;
+	padding-left: 0.8em;
+	border-left: 1px solid var( --border-color-subtle, #c8ccd1 );
+}
+
+#ronda-toolbar .ronda-badge a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+#ronda-toolbar .ronda-up-group + .ronda-up-group {
+	margin-top: 0.4em;
+}
+
+#ronda-toolbar .ronda-up-heading {
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var( --color-subtle, #54595d );
+}
+
+#ronda-toolbar .ronda-up-main {
+	font-weight: bold;
+}
+
+@media screen and ( max-width: 720px ) {
+	#ronda-toolbar .ronda-up-grid {
+		flex-direction: column;
+	}
+
+	#ronda-toolbar .ronda-up-side {
+		flex-basis: auto;
+		padding: 0.4em 0 0;
+		border-left: 0;
+		border-top: 1px solid var( --border-color-subtle, #c8ccd1 );
+	}
+}
+
 #ronda-toolbar .ronda-up-list {
 	margin: 0.2em 0 0.2em 1.6em;
 	padding: 0;

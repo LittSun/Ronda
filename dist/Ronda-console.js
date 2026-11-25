@@ -8,7 +8,7 @@ window.rondaConfig = { dryRun: true };
 mw.loader.using( ["jquery.ui","mediawiki.api","mediawiki.util","mediawiki.user","mediawiki.storage","mediawiki.notification"] ).then( function () {
 // Permite colar de novo sem duplicar a barra
 $( '#ronda-toolbar, #ca-ronda-toggle, #ronda-console-css' ).remove();
-$( '<style id="ronda-console-css"></style>' ).text( "/**\n * Ronda — estilo\n *\n * Os diálogos usam o tema nativo do jQuery UI do skin (cores, botões, barra\n * de título). Aqui ficam só:\n * - a barra de botões da página, com um estilo próprio e discreto;\n * - o mínimo de layout dos formulários (espaçamentos e larguras);\n * - o modo móvel e o modo escuro nativo (o tema do jQuery UI só tem cores claras).\n * Cores vêm das variáveis do MediaWiki (Codex), com valores de reserva.\n */\n\n/* ------------------------------------------------------------------ *\n * Barra de botões da página\n * ------------------------------------------------------------------ */\n\n#ronda-toolbar {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.6em;\n\tmargin: 0.5em 0 0.8em;\n\tpadding: 0.3em 0.5em;\n\tfont-size: 0.875em;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa );\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tborder-radius: 2px;\n}\n\n#ronda-toolbar .ronda-brand img {\n\tvertical-align: middle;\n\twidth: auto;\n\tmargin: -0.15em 0.3em 0 0;\n}\n\n#ronda-toolbar .ronda-brand {\n\tfont-weight: bold;\n\tcolor: var( --color-subtle, #54595d );\n\tcursor: default;\n}\n\n/* Separador entre o grupo de patrulha e o administrativo */\n#ronda-toolbar .ronda-toolbar-admin {\n\tpadding-left: 0.6em;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\n#ronda-toolbar .ronda-btn.ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n/* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */\n#ronda-toolbar .ronda-btn .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n/* Ações administrativas em vermelho */\n#ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Marca do modo de simulação */\n#ronda-toolbar .ronda-dry {\n\tpadding: 0.1em 0.5em;\n\tfont-size: 0.85em;\n}\n\n/* Faixas dentro da barra: Usuário, Busca, PetScan, Informações, Listar */\n#ronda-toolbar .ronda-userpanel {\n\tflex-basis: 100%;\n\tpadding-top: 0.3em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tline-height: 1.6;\n}\n\n/* Boas-vindas (uma vez por conta) */\n#ronda-toolbar .ronda-welcome {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.6em;\n\tline-height: 1.5;\n}\n\n#ronda-toolbar .ronda-welcome p {\n\tmargin: 0 0 0.4em;\n}\n\n#ronda-toolbar .ronda-welcome-actions {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.8em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n#ronda-toolbar .ronda-up-line {\n\tmargin: 0.1em 0;\n}\n\n/* Ocorrências do filtro de abusos, abertas ao clicar */\n#ronda-toolbar .ronda-up-list {\n\tmargin: 0.2em 0 0.2em 1.6em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-badge {\n\tpadding: 0.1em 0.5em;\n}\n\n#ronda-toolbar .ronda-up-hot {\n\tfont-weight: bold;\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n#ronda-toolbar .ronda-up-action {\n\tfont-weight: bold;\n}\n\n/* Informações e Listar: o que está bem (verde) e o que falta (vermelho) */\n#ronda-toolbar .ronda-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n#ronda-toolbar .ronda-bad {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Listar: a lista aberta */\n#ronda-toolbar .ronda-up-current {\n\tfont-weight: bold;\n\tcolor: var( --color-base, #202122 );\n\ttext-decoration: none;\n\tcursor: default;\n}\n\n/* Listar: um resultado por linha */\n#ronda-toolbar .ronda-feed {\n\tmargin: 0.2em 0 0;\n\tpadding: 0;\n\tlist-style: none;\n}\n\n#ronda-toolbar .ronda-feed li {\n\tmargin: 0;\n\toverflow: hidden;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\n#ronda-toolbar .ronda-feed-muted,\n#ronda-toolbar .ronda-feed-comment {\n\tcolor: var( --color-subtle, #72777d );\n}\n\n#ronda-toolbar .ronda-feed-comment {\n\tfont-style: italic;\n}\n\n#ronda-toolbar .ronda-feed-big {\n\tfont-weight: bold;\n}\n\n#ronda-toolbar .ronda-up-admin {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* ------------------------------------------------------------------ *\n * Formulários dos diálogos (só layout)\n * ------------------------------------------------------------------ */\n\n.ronda-form .ronda-row {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-row > label {\n\tdisplay: block;\n\tmargin-bottom: 0.2em;\n\tfont-weight: bold;\n}\n\n.ronda-form .ronda-input,\n.ronda-form select {\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n\n.ronda-form table select,\n.ronda-form select.ronda-level {\n\twidth: auto;\n}\n\n/* Proteger: corrente que liga edição e moção, entre as duas linhas */\n.ronda-form .ronda-chain-cell {\n\tvertical-align: middle;\n\ttext-align: center;\n\tpadding: 0 0.3em;\n}\n\n.ronda-form .ronda-chain.ui-button {\n\tmargin: 0;\n}\n\n.ronda-form .ronda-chain .ui-button-text {\n\tpadding: 0.3em 0.4em;\n\tline-height: 0;\n}\n\n/* Mover: domínio e título na mesma linha */\n.ronda-form .ronda-move-title {\n\tdisplay: flex;\n\tgap: 0.4em;\n}\n\n.ronda-form .ronda-move-title .ronda-input {\n\tflex: 1;\n}\n\n.ronda-form .ronda-check {\n\tmargin: 0.3em 0;\n}\n\n.ronda-form fieldset {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-refresh {\n\tmargin-top: 0.3em;\n\ttext-align: right;\n}\n\n.ronda-form .ronda-msg {\n\tmargin: 0 0 0.6em;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-msg .ui-icon {\n\tfloat: left;\n\tmargin: 0.1em 0.4em 0 0;\n}\n\n/* Opções de Manutenção e Avisar: caixas de seleção lado a lado */\n.ronda-form .ronda-tag {\n\tdisplay: inline-block;\n\tvertical-align: top;\n\tmargin: 0.1em 1em 0.1em 0;\n}\n\n.ronda-form .ronda-tag.ronda-tag-open {\n\tdisplay: block;\n}\n\n/* Presente na página e desmarcada = será removida */\n.ronda-form .ronda-tag-present > input:not( :checked ) + label {\n\ttext-decoration: line-through;\n}\n\n.ronda-form .ronda-tag-params {\n\tmargin: 0.3em 0 0.4em 1em;\n}\n\n.ronda-form .ronda-tag-params .ronda-input {\n\tmargin-top: 0.3em;\n}\n\n.ronda-form .ronda-checks .ronda-check {\n\tmargin: 0.1em 0;\n}\n\n.ronda-form .ronda-checks.ui-state-error {\n\tpadding: 0.2em;\n}\n\n.ronda-form fieldset.ronda-batch-filters {\n\tmargin: 0.5em 0;\n}\n\n.ronda-form .ronda-batch-count {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form fieldset.ronda-warn-group {\n\tmargin: 0.5em 0;\n}\n\n/* Avisos favoritos: estrela ao lado do nome */\n.ronda-form .ronda-fav {\n\tmargin-left: 0.3em;\n\ttext-decoration: none;\n\tcolor: var( --color-subtle, #72777d );\n}\n\n.ronda-form .ronda-fav[ aria-pressed='true' ] {\n\tcolor: var( --color-warning, #a66200 );\n}\n\n.ronda-form .ronda-warn-note {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form .ronda-list {\n\tmax-height: 16em;\n\toverflow: auto;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-list label {\n\tdisplay: block;\n}\n\n.ronda-form .ronda-list .ronda-check label {\n\tdisplay: inline;\n}\n\n.ronda-form .ronda-bundle {\n\tmargin: 0.4em 0 0.6em 1.4em;\n}\n\n.ronda-form .ronda-progress {\n\theight: 1em;\n\tmargin-top: 0.6em;\n}\n\n.ronda-form .ronda-log {\n\tmax-height: 10em;\n\toverflow: auto;\n\tmargin: 0.6em 0 0 1.4em;\n}\n\n.ronda-form .ronda-log:empty {\n\tdisplay: none;\n}\n\n/* ------------------------------------------------------------------ *\n * Links rápidos (reverter / restaurar) em diffs, histórico e listas\n * ------------------------------------------------------------------ */\n\n.ronda-quick {\n\twhite-space: nowrap;\n\tfont-size: 0.92em;\n}\n\n.ronda-quick .ronda-quick-vandal {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n.ronda-quick .ronda-quick-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n.ronda-quick .ronda-quick-error {\n\tcolor: var( --color-error, #d73333 );\n}\n\n/* Prévia dos avisos */\n.ronda-preview {\n\tmax-height: 60vh;\n\toverflow: auto;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo móvel (Minerva) e telas estreitas\n * ------------------------------------------------------------------ */\n\n/* Barra recolhida: só o nome (que expande ao toque) */\n#ronda-toolbar.ronda-collapsed > :not( .ronda-brand ) {\n\tdisplay: none;\n}\n\n#ronda-toolbar .ronda-brand-toggle {\n\tcursor: pointer;\n}\n\n#ronda-toolbar .ronda-prefs-link {\n\tmargin-left: auto;\n\tfont-size: 0.9em;\n}\n\n#ronda-toolbar.ronda-mobile {\n\tmargin: 0.5em 0;\n\tfont-size: 1em;\n}\n\n/* Alvos de toque maiores */\n#ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {\n\tpadding: 0.45em 0.8em;\n}\n\n#ronda-toolbar.ronda-mobile .ronda-toolbar-group {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 0.3em;\n}\n\n#ronda-toolbar.ronda-mobile .ronda-toolbar-admin {\n\tpadding-left: 0;\n\tborder-left: 0;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-input,\n.ronda-dialog-narrow .ronda-form select,\n.ronda-dialog-narrow .ronda-form textarea {\n\tfont-size: 16px; /* evita o zoom automático do iOS */\n}\n\n.ronda-dialog-narrow .ui-dialog-buttonpane .ui-dialog-buttonset {\n\tfloat: none;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tjustify-content: flex-end;\n\tgap: 0.3em;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-tag {\n\tdisplay: block;\n\tmargin: 0.3em 0;\n}\n\n@media ( max-width: 720px ) {\n\t#ronda-toolbar {\n\t\tgap: 0.3em;\n\t}\n\n\t.ronda-quick {\n\t\twhite-space: normal;\n\t}\n}\n\n/* ------------------------------------------------------------------ *\n * Modo escuro nativo (Vector 2022 / Minerva): skin-theme-clientpref-night,\n * ou \"automático\" com o sistema em modo escuro. O tema do jQuery UI do\n * MediaWiki só tem cores claras (e usa !important nos botões e na barra de\n * título); aqui a barra, os diálogos, campos, menus e dicas do Ronda passam a\n * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.\n * ------------------------------------------------------------------ */\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-default,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle, #27292d ) !important;\n\tborder-color: var( --border-color-base, #72777d ) !important;\n\tcolor: var( --color-base, #eaecf0 );\n\tbox-shadow: none;\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-hover,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-active,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog.ui-dialog,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-content,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane,\nhtml.skin-theme-clientpref-night .ronda-tooltip.ui-tooltip,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu {\n\tbackground: var( --background-color-base, #101418 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-titlebar.ui-widget-header {\n\tbackground: var( --background-color-neutral, #27292d ) !important;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane {\n\tborder-top-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog fieldset.ui-widget-content,\nhtml.skin-theme-clientpref-night .ronda-dialog .ronda-list.ui-widget-content {\n\tbackground: transparent;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: inherit;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"text\" ],\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"number\" ],\nhtml.skin-theme-clientpref-night .ronda-form textarea,\nhtml.skin-theme-clientpref-night .ronda-form select {\n\tbackground: var( --background-color-base, #101418 );\n\tborder: 1px solid var( --border-color-interactive, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form input.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form select.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form textarea.ui-state-error {\n\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\tborder-color: var( --color-error, #fd7865 );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-state-highlight {\n\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight a,\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error a {\n\tcolor: var( --color-progressive, #88a3e8 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-highlight {\n\tbackground: transparent;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error {\n\tcolor: var( --color-error, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar {\n\tbackground: var( --background-color-neutral, #27292d );\n\tborder-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar-value {\n\tbackground: var( --background-color-progressive, #36c );\n\tborder-color: var( --background-color-progressive, #36c );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-icon,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-icon {\n\tfilter: invert( 1 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-blue .ui-icon,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-red .ui-icon {\n\tfilter: none;\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a {\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\n@media screen and ( prefers-color-scheme: dark ) {\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-default,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle, #27292d ) !important;\n\t\tborder-color: var( --border-color-base, #72777d ) !important;\n\t\tcolor: var( --color-base, #eaecf0 );\n\t\tbox-shadow: none;\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-hover,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-active,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ronda-btn-admin.ui-button {\n\t\tcolor: var( --color-destructive, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog.ui-dialog,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-content,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane,\n\thtml.skin-theme-clientpref-os .ronda-tooltip.ui-tooltip,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-titlebar.ui-widget-header {\n\t\tbackground: var( --background-color-neutral, #27292d ) !important;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane {\n\t\tborder-top-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog fieldset.ui-widget-content,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ronda-list.ui-widget-content {\n\t\tbackground: transparent;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: inherit;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"text\" ],\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"number\" ],\n\thtml.skin-theme-clientpref-os .ronda-form textarea,\n\thtml.skin-theme-clientpref-os .ronda-form select {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder: 1px solid var( --border-color-interactive, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form input.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form select.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form textarea.ui-state-error {\n\t\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\t\tborder-color: var( --color-error, #fd7865 );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-state-highlight {\n\t\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight a,\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error a {\n\t\tcolor: var( --color-progressive, #88a3e8 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-highlight {\n\t\tbackground: transparent;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error {\n\t\tcolor: var( --color-error, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar {\n\t\tbackground: var( --background-color-neutral, #27292d );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar-value {\n\t\tbackground: var( --background-color-progressive, #36c );\n\t\tborder-color: var( --background-color-progressive, #36c );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-icon,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-icon {\n\t\tfilter: invert( 1 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-blue .ui-icon,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-red .ui-icon {\n\t\tfilter: none;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a {\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n}\n" ).appendTo( 'head' );
+$( '<style id="ronda-console-css"></style>' ).text( "/**\n * Ronda — estilo\n *\n * Os diálogos usam o tema nativo do jQuery UI do skin (cores, botões, barra\n * de título). Aqui ficam só:\n * - a barra de botões da página, com um estilo próprio e discreto;\n * - o mínimo de layout dos formulários (espaçamentos e larguras);\n * - o modo móvel e o modo escuro nativo (o tema do jQuery UI só tem cores claras).\n * Cores vêm das variáveis do MediaWiki (Codex), com valores de reserva.\n */\n\n/* ------------------------------------------------------------------ *\n * Barra de botões da página\n * ------------------------------------------------------------------ */\n\n#ronda-toolbar {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.6em;\n\tmargin: 0.5em 0 0.8em;\n\tpadding: 0.3em 0.5em;\n\tfont-size: 0.875em;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa );\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tborder-radius: 2px;\n}\n\n#ronda-toolbar .ronda-brand img {\n\tvertical-align: middle;\n\twidth: auto;\n\tmargin: -0.15em 0.3em 0 0;\n}\n\n#ronda-toolbar .ronda-brand {\n\tfont-weight: bold;\n\tcolor: var( --color-subtle, #54595d );\n\tcursor: default;\n}\n\n/* Separador entre o grupo de patrulha e o administrativo */\n#ronda-toolbar .ronda-toolbar-admin {\n\tpadding-left: 0.6em;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\n#ronda-toolbar .ronda-btn.ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n/* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */\n#ronda-toolbar .ronda-btn .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n/* Ações administrativas em vermelho */\n#ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Marca do modo de simulação */\n#ronda-toolbar .ronda-dry {\n\tpadding: 0.1em 0.5em;\n\tfont-size: 0.85em;\n}\n\n/* Faixas dentro da barra: Usuário, Busca, PetScan, Informações, Listar */\n#ronda-toolbar .ronda-userpanel {\n\tflex-basis: 100%;\n\tpadding-top: 0.3em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tline-height: 1.6;\n}\n\n/* Boas-vindas (uma vez por conta) */\n#ronda-toolbar .ronda-welcome {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.6em;\n\tline-height: 1.5;\n}\n\n#ronda-toolbar .ronda-welcome p {\n\tmargin: 0 0 0.4em;\n}\n\n#ronda-toolbar .ronda-welcome-actions {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.8em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n#ronda-toolbar .ronda-up-line {\n\tmargin: 0.1em 0;\n}\n\n/* Painel Usuário: tabela de informações à esquerda, ações e links à direita */\n#ronda-toolbar .ronda-up-grid {\n\tdisplay: flex;\n\talign-items: flex-start;\n\tgap: 1em;\n}\n\n#ronda-toolbar .ronda-up-table {\n\tflex: 1 1 auto;\n\tborder-collapse: collapse;\n}\n\n#ronda-toolbar .ronda-up-table th,\n#ronda-toolbar .ronda-up-table td {\n\tpadding: 0.15em 0.6em 0.15em 0;\n\tborder-bottom: 1px solid var( --border-color-muted, #eaecf0 );\n\ttext-align: left;\n\tvertical-align: top;\n}\n\n#ronda-toolbar .ronda-up-table th {\n\twidth: 1%;\n\tpadding-right: 1em;\n\tfont-weight: normal;\n\tcolor: var( --color-subtle, #54595d );\n\twhite-space: nowrap;\n}\n\n#ronda-toolbar .ronda-up-table tr:last-child th,\n#ronda-toolbar .ronda-up-table tr:last-child td {\n\tborder-bottom: 0;\n}\n\n#ronda-toolbar .ronda-up-side {\n\tflex: 0 0 19em;\n\tpadding-left: 0.8em;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\n/* Links dentro dos avisos vermelhos (ex.: wikis em que está bloqueado) */\n#ronda-toolbar .ronda-badge a {\n\tcolor: inherit;\n\ttext-decoration: underline;\n}\n\n#ronda-toolbar .ronda-up-group + .ronda-up-group {\n\tmargin-top: 0.4em;\n}\n\n#ronda-toolbar .ronda-up-heading {\n\tfont-size: 0.85em;\n\tfont-weight: bold;\n\tletter-spacing: 0.04em;\n\ttext-transform: uppercase;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n#ronda-toolbar .ronda-up-main {\n\tfont-weight: bold;\n}\n\n/* Tela estreita: a coluna de ações desce para baixo da tabela */\n@media screen and ( max-width: 720px ) {\n\t#ronda-toolbar .ronda-up-grid {\n\t\tflex-direction: column;\n\t}\n\n\t#ronda-toolbar .ronda-up-side {\n\t\tflex-basis: auto;\n\t\tpadding: 0.4em 0 0;\n\t\tborder-left: 0;\n\t\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\t}\n}\n\n/* Ocorrências do filtro de abusos, abertas ao clicar */\n#ronda-toolbar .ronda-up-list {\n\tmargin: 0.2em 0 0.2em 1.6em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-badge {\n\tpadding: 0.1em 0.5em;\n}\n\n#ronda-toolbar .ronda-up-hot {\n\tfont-weight: bold;\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n#ronda-toolbar .ronda-up-action {\n\tfont-weight: bold;\n}\n\n/* Informações e Listar: o que está bem (verde) e o que falta (vermelho) */\n#ronda-toolbar .ronda-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n#ronda-toolbar .ronda-bad {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Listar: a lista aberta */\n#ronda-toolbar .ronda-up-current {\n\tfont-weight: bold;\n\tcolor: var( --color-base, #202122 );\n\ttext-decoration: none;\n\tcursor: default;\n}\n\n/* Listar: um resultado por linha */\n#ronda-toolbar .ronda-feed {\n\tmargin: 0.2em 0 0;\n\tpadding: 0;\n\tlist-style: none;\n}\n\n#ronda-toolbar .ronda-feed li {\n\tmargin: 0;\n\toverflow: hidden;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\n#ronda-toolbar .ronda-feed-muted,\n#ronda-toolbar .ronda-feed-comment {\n\tcolor: var( --color-subtle, #72777d );\n}\n\n#ronda-toolbar .ronda-feed-comment {\n\tfont-style: italic;\n}\n\n#ronda-toolbar .ronda-feed-big {\n\tfont-weight: bold;\n}\n\n#ronda-toolbar .ronda-up-admin {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* ------------------------------------------------------------------ *\n * Formulários dos diálogos (só layout)\n * ------------------------------------------------------------------ */\n\n.ronda-form .ronda-row {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-row > label {\n\tdisplay: block;\n\tmargin-bottom: 0.2em;\n\tfont-weight: bold;\n}\n\n.ronda-form .ronda-input,\n.ronda-form select {\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n\n.ronda-form table select,\n.ronda-form select.ronda-level {\n\twidth: auto;\n}\n\n/* Proteger: corrente que liga edição e moção, entre as duas linhas */\n.ronda-form .ronda-chain-cell {\n\tvertical-align: middle;\n\ttext-align: center;\n\tpadding: 0 0.3em;\n}\n\n.ronda-form .ronda-chain.ui-button {\n\tmargin: 0;\n}\n\n.ronda-form .ronda-chain .ui-button-text {\n\tpadding: 0.3em 0.4em;\n\tline-height: 0;\n}\n\n/* Mover: domínio e título na mesma linha */\n.ronda-form .ronda-move-title {\n\tdisplay: flex;\n\tgap: 0.4em;\n}\n\n.ronda-form .ronda-move-title .ronda-input {\n\tflex: 1;\n}\n\n.ronda-form .ronda-check {\n\tmargin: 0.3em 0;\n}\n\n.ronda-form fieldset {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-refresh {\n\tmargin-top: 0.3em;\n\ttext-align: right;\n}\n\n.ronda-form .ronda-msg {\n\tmargin: 0 0 0.6em;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-msg .ui-icon {\n\tfloat: left;\n\tmargin: 0.1em 0.4em 0 0;\n}\n\n/* Opções de Manutenção e Avisar: caixas de seleção lado a lado */\n.ronda-form .ronda-tag {\n\tdisplay: inline-block;\n\tvertical-align: top;\n\tmargin: 0.1em 1em 0.1em 0;\n}\n\n.ronda-form .ronda-tag.ronda-tag-open {\n\tdisplay: block;\n}\n\n/* Presente na página e desmarcada = será removida */\n.ronda-form .ronda-tag-present > input:not( :checked ) + label {\n\ttext-decoration: line-through;\n}\n\n.ronda-form .ronda-tag-params {\n\tmargin: 0.3em 0 0.4em 1em;\n}\n\n.ronda-form .ronda-tag-params .ronda-input {\n\tmargin-top: 0.3em;\n}\n\n.ronda-form .ronda-checks .ronda-check {\n\tmargin: 0.1em 0;\n}\n\n.ronda-form .ronda-checks.ui-state-error {\n\tpadding: 0.2em;\n}\n\n.ronda-form fieldset.ronda-batch-filters {\n\tmargin: 0.5em 0;\n}\n\n.ronda-form .ronda-batch-count {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form fieldset.ronda-warn-group {\n\tmargin: 0.5em 0;\n}\n\n/* Avisos favoritos: estrela ao lado do nome */\n.ronda-form .ronda-fav {\n\tmargin-left: 0.3em;\n\ttext-decoration: none;\n\tcolor: var( --color-subtle, #72777d );\n}\n\n.ronda-form .ronda-fav[ aria-pressed='true' ] {\n\tcolor: var( --color-warning, #a66200 );\n}\n\n.ronda-form .ronda-warn-note {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form .ronda-list {\n\tmax-height: 16em;\n\toverflow: auto;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-list label {\n\tdisplay: block;\n}\n\n.ronda-form .ronda-list .ronda-check label {\n\tdisplay: inline;\n}\n\n.ronda-form .ronda-bundle {\n\tmargin: 0.4em 0 0.6em 1.4em;\n}\n\n.ronda-form .ronda-progress {\n\theight: 1em;\n\tmargin-top: 0.6em;\n}\n\n.ronda-form .ronda-log {\n\tmax-height: 10em;\n\toverflow: auto;\n\tmargin: 0.6em 0 0 1.4em;\n}\n\n.ronda-form .ronda-log:empty {\n\tdisplay: none;\n}\n\n/* ------------------------------------------------------------------ *\n * Links rápidos (reverter / restaurar) em diffs, histórico e listas\n * ------------------------------------------------------------------ */\n\n.ronda-quick {\n\twhite-space: nowrap;\n\tfont-size: 0.92em;\n}\n\n.ronda-quick .ronda-quick-vandal {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n.ronda-quick .ronda-quick-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n.ronda-quick .ronda-quick-error {\n\tcolor: var( --color-error, #d73333 );\n}\n\n/* Prévia dos avisos */\n.ronda-preview {\n\tmax-height: 60vh;\n\toverflow: auto;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo móvel (Minerva) e telas estreitas\n * ------------------------------------------------------------------ */\n\n/* Barra recolhida: só o nome (que expande ao toque) */\n#ronda-toolbar.ronda-collapsed > :not( .ronda-brand ) {\n\tdisplay: none;\n}\n\n#ronda-toolbar .ronda-brand-toggle {\n\tcursor: pointer;\n}\n\n#ronda-toolbar .ronda-prefs-link {\n\tmargin-left: auto;\n\tfont-size: 0.9em;\n}\n\n#ronda-toolbar.ronda-mobile {\n\tmargin: 0.5em 0;\n\tfont-size: 1em;\n}\n\n/* Alvos de toque maiores */\n#ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {\n\tpadding: 0.45em 0.8em;\n}\n\n#ronda-toolbar.ronda-mobile .ronda-toolbar-group {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 0.3em;\n}\n\n#ronda-toolbar.ronda-mobile .ronda-toolbar-admin {\n\tpadding-left: 0;\n\tborder-left: 0;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-input,\n.ronda-dialog-narrow .ronda-form select,\n.ronda-dialog-narrow .ronda-form textarea {\n\tfont-size: 16px; /* evita o zoom automático do iOS */\n}\n\n.ronda-dialog-narrow .ui-dialog-buttonpane .ui-dialog-buttonset {\n\tfloat: none;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tjustify-content: flex-end;\n\tgap: 0.3em;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-tag {\n\tdisplay: block;\n\tmargin: 0.3em 0;\n}\n\n@media ( max-width: 720px ) {\n\t#ronda-toolbar {\n\t\tgap: 0.3em;\n\t}\n\n\t.ronda-quick {\n\t\twhite-space: normal;\n\t}\n}\n\n/* ------------------------------------------------------------------ *\n * Modo escuro nativo (Vector 2022 / Minerva): skin-theme-clientpref-night,\n * ou \"automático\" com o sistema em modo escuro. O tema do jQuery UI do\n * MediaWiki só tem cores claras (e usa !important nos botões e na barra de\n * título); aqui a barra, os diálogos, campos, menus e dicas do Ronda passam a\n * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.\n * ------------------------------------------------------------------ */\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-default,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle, #27292d ) !important;\n\tborder-color: var( --border-color-base, #72777d ) !important;\n\tcolor: var( --color-base, #eaecf0 );\n\tbox-shadow: none;\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-hover,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-active,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {\n\tbackground: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;\n}\n\nhtml.skin-theme-clientpref-night #ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog.ui-dialog,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-content,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane,\nhtml.skin-theme-clientpref-night .ronda-tooltip.ui-tooltip,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu {\n\tbackground: var( --background-color-base, #101418 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-titlebar.ui-widget-header {\n\tbackground: var( --background-color-neutral, #27292d ) !important;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane {\n\tborder-top-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog fieldset.ui-widget-content,\nhtml.skin-theme-clientpref-night .ronda-dialog .ronda-list.ui-widget-content {\n\tbackground: transparent;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: inherit;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"text\" ],\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"number\" ],\nhtml.skin-theme-clientpref-night .ronda-form textarea,\nhtml.skin-theme-clientpref-night .ronda-form select {\n\tbackground: var( --background-color-base, #101418 );\n\tborder: 1px solid var( --border-color-interactive, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form input.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form select.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form textarea.ui-state-error {\n\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\tborder-color: var( --color-error, #fd7865 );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-state-highlight {\n\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight a,\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error a {\n\tcolor: var( --color-progressive, #88a3e8 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-highlight {\n\tbackground: transparent;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error {\n\tcolor: var( --color-error, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar {\n\tbackground: var( --background-color-neutral, #27292d );\n\tborder-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar-value {\n\tbackground: var( --background-color-progressive, #36c );\n\tborder-color: var( --background-color-progressive, #36c );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-icon,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-icon {\n\tfilter: invert( 1 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-blue .ui-icon,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-red .ui-icon {\n\tfilter: none;\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a {\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\n@media screen and ( prefers-color-scheme: dark ) {\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-default,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle, #27292d ) !important;\n\t\tborder-color: var( --border-color-base, #72777d ) !important;\n\t\tcolor: var( --color-base, #eaecf0 );\n\t\tbox-shadow: none;\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-hover,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-active,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {\n\t\tbackground: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;\n\t}\n\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ronda-btn-admin.ui-button {\n\t\tcolor: var( --color-destructive, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog.ui-dialog,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-content,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane,\n\thtml.skin-theme-clientpref-os .ronda-tooltip.ui-tooltip,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-titlebar.ui-widget-header {\n\t\tbackground: var( --background-color-neutral, #27292d ) !important;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane {\n\t\tborder-top-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog fieldset.ui-widget-content,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ronda-list.ui-widget-content {\n\t\tbackground: transparent;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: inherit;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"text\" ],\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"number\" ],\n\thtml.skin-theme-clientpref-os .ronda-form textarea,\n\thtml.skin-theme-clientpref-os .ronda-form select {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder: 1px solid var( --border-color-interactive, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form input.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form select.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form textarea.ui-state-error {\n\t\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\t\tborder-color: var( --color-error, #fd7865 );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-state-highlight {\n\t\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight a,\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error a {\n\t\tcolor: var( --color-progressive, #88a3e8 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-highlight {\n\t\tbackground: transparent;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error {\n\t\tcolor: var( --color-error, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar {\n\t\tbackground: var( --background-color-neutral, #27292d );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar-value {\n\t\tbackground: var( --background-color-progressive, #36c );\n\t\tborder-color: var( --background-color-progressive, #36c );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-icon,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-icon {\n\t\tfilter: invert( 1 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-blue .ui-icon,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-red .ui-icon {\n\t\tfilter: none;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a {\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n}\n" ).appendTo( 'head' );
 ( function () {
 	var v = $.ui.version.split( '.' ).map( Number ), ok = v[ 0 ] > 1 || ( v[ 0 ] === 1 && v[ 1 ] >= 9 );
 	console.log( '[Ronda] jQuery UI ' + $.ui.version + ( ok ? ' (ok)' : ' — precisa da 1.9 ou mais nova' ) );
@@ -103,7 +103,6 @@ window.rondaMessages = {
 	'patrulha-pagina-relacionada-ao-aviso': 'Página relacionada ao aviso',
 	'patrulha-filtrar-avisos': 'Filtrar avisos…',
 	'patrulha-incluir-boas-vindas': 'Incluir boas-vindas ($1)',
-	'patrulha-ip': 'IP: ',
 	'patrulha-usuario': 'Usuário: ',
 	'patrulha-discussao-ainda-nao-criada': ' — discussão ainda não criada',
 	'patrulha-reversao': 'Reversão',
@@ -194,15 +193,12 @@ window.rondaMessages = {
 	'patrulha-primeira-edicao': 'Primeira edição: ',
 	'patrulha-edicoes': 'Edições: ',
 	'patrulha-grupos': 'Grupos: ',
-	'patrulha-avisos-dias': 'Avisos ($1 dias): ',
 	'patrulha-nenhum-aviso-em-serie': 'nenhum aviso em série',
 	'patrulha-a-discussao-nao-existe': 'a discussão não existe',
 	'patrulha-conta-global': 'conta global',
 	'patrulha-enviar-aviso-acao': 'enviar aviso',
 	'patrulha-alterar-bloqueio': 'alterar bloqueio',
 	'patrulha-bloqueio-global': 'Bloqueio global$1',
-	'patrulha-bloqueios-anteriores': 'Bloqueios anteriores: ',
-	'patrulha-ultimo-por': ' (último: $1, por $2$3$4)',
 	'patrulha-duracao-indefinido': 'sem prazo',
 	'patrulha-duracao-second': '$1 {{PLURAL:$1|segundo|segundos}}',
 	'patrulha-duracao-minute': '$1 {{PLURAL:$1|minuto|minutos}}',
@@ -212,17 +208,33 @@ window.rondaMessages = {
 	'patrulha-duracao-fortnight': '$1 {{PLURAL:$1|quinzena|quinzenas}}',
 	'patrulha-duracao-month': '$1 {{PLURAL:$1|mês|meses}}',
 	'patrulha-duracao-year': '$1 {{PLURAL:$1|ano|anos}}',
-	'patrulha-bloqueado-em-outras-wikis': 'Bloqueado em {{PLURAL:$1|outra wiki|$1 outras wikis}}:',
 	'patrulha-ocultadas': 'Ocultadas: ',
 	'patrulha-ocultadas-suprimidas': ' ($1 suprimidas)',
 	'patrulha-ocultadas-dica': 'Edições com conteúdo ou resumo ocultado, entre as 500 mais recentes',
-	'patrulha-filtro': 'Filtro ($1 dias): ',
 	'patrulha-filtro-impedidas': '$1 {{PLURAL:$1|impedida|impedidas}}',
 	'patrulha-filtro-avisos': '$1 {{PLURAL:$1|aviso|avisos}}',
 	'patrulha-filtro-so-registro': 'só registro',
 	'patrulha-filtro-em': ' em $1 ($2)',
 	'patrulha-filtro-ver': 'ver ocorrências',
 	'patrulha-revertidas': 'Revertidas: ',
+	'patrulha-up-situacao': 'Situação',
+	'patrulha-up-conta': 'Conta',
+	'patrulha-up-bloqueios': 'Bloqueios',
+	'patrulha-up-outras-wikis': 'Outras wikis',
+	'patrulha-bloqueado-em-n-wikis': 'bloqueado em $1:',
+	'patrulha-e-mais-n': 'e mais $1',
+	'patrulha-up-contribuicoes': 'Contribuições',
+	'patrulha-up-atividade': 'Atividade',
+	'patrulha-up-avisos': 'Avisos ($1 d)',
+	'patrulha-up-filtro': 'Filtro ($1 d)',
+	'patrulha-up-faixa': 'Faixa',
+	'patrulha-up-acoes': 'Ações',
+	'patrulha-up-ver': 'Ver',
+	'patrulha-up-checkuser': 'CheckUser',
+	'patrulha-up-ip': 'IP',
+	'patrulha-ip': 'IP: ',
+	'patrulha-ultimo-bloqueio': 'último $1, por $2$3$4',
+	'patrulha-eliminar-as-criadas-n': 'eliminar as criadas ($1)',
 	'patrulha-paginas-criadas': 'Páginas criadas: ',
 	'patrulha-nao-existe-mais': ' não existe mais',
 	'patrulha-nao-existem-mais': ' não existem mais',
@@ -234,9 +246,7 @@ window.rondaMessages = {
 	'patrulha-7-dias': '7 dias: $1$2',
 	'patrulha-dominios': 'Domínios: $1',
 	'patrulha-reverter-todas-no-topo': 'reverter todas no topo ($1)',
-	'patrulha-checkuser': 'CheckUser:',
 	'patrulha-registro-de-verificacoes': 'registro de verificações',
-	'patrulha-faixa': 'Faixa $1: ',
 	'patrulha-informacoes-do-ip': 'informações do IP',
 	'patrulha-consulta-a-ferramenta-de-informacoes-de': 'Consulta a ferramenta de informações de IP da wiki (o acesso fica registrado)',
 	'patrulha-carregando-informacoes-de': 'Carregando informações de $1…',
@@ -4648,20 +4658,62 @@ function ipInfo( revid, $out ) {
 	} );
 }
 
+/*
+ * Disposição do painel: à esquerda, uma tabela com um tema por linha (Situação,
+ * Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa);
+ * à direita, uma coluna com tudo o que se faz ou abre (Ações, Ver, CheckUser, IP).
+ * Linhas e grupos vazios não aparecem.
+ */
+function panelLayout() {
+	var rows = [],
+		groups = [];
+
+	return {
+		/** Linha da tabela; retorna a célula de conteúdo */
+		row: function ( label ) {
+			var $td = $( '<td></td>' );
+
+			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
+			return $td;
+		},
+		/** Grupo da coluna lateral; retorna o contêiner dos itens */
+		group: function ( label ) {
+			var $items = $( '<div class="ronda-up-items"></div>' );
+
+			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
+			return $items;
+		},
+		build: function () {
+			var $rows = rows.filter( function ( $tr ) {
+					return $tr.children( 'td' ).contents().length;
+				} ),
+				$groups = groups.filter( function ( $g ) {
+					return $g.find( '.ronda-up-items' ).contents().length;
+				} );
+
+			return $( '<div class="ronda-up-grid"></div>' ).append(
+				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
+				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
+			);
+		}
+	};
+}
+
+/** Acrescenta itens separados por " · " */
+function addTo( $el, nodes ) {
+	if ( $el.contents().length ) {
+		$el.append( sep() );
+	}
+	$el.append( nodes );
+}
+
 function render( $panel, ctx, user, isIP, info, talk, extra ) {
 	var days = ( ronda.config.warnings && ronda.config.warnings.window ) || 30,
 		warns = recentWarnings( talk, Date.now(), days ),
-		$status = $( '<div class="ronda-up-line"></div>' ),
-		$facts = $( '<div class="ronda-up-line"></div>' ),
-		$warn = $( '<div class="ronda-up-line"></div>' ),
-		$links = $( '<div class="ronda-up-line"></div>' ),
 		avisar = ronda.getModule( 'avisar' ),
 		bloquear = ronda.getModule( 'bloqueio' ),
-		when, editcount, canWarn, canBlock, dates,
-		$hist = $( '<div class="ronda-up-line"></div>' ),
-		$act = $( '<div class="ronda-up-line"></div>' ),
-		$abuse = $( '<div class="ronda-up-line"></div>' ),
-		$extraLinks = $( '<div></div>' );
+		L = panelLayout(),
+		when, editcount, dates, $status, $facts, $warn, $actions, $view;
 
 	$panel.empty();
 
@@ -4672,6 +4724,21 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 		return;
 	}
 
+	// Linhas na ordem em que aparecem; renderExtra preenche as dele
+	L.$status = $status = L.row( ronda.msg( 'patrulha-up-situacao' ) );
+	$facts = L.row( ronda.msg( 'patrulha-up-conta' ) );
+	L.$blocks = L.row( ronda.msg( 'patrulha-up-bloqueios' ) );
+	L.$otherWikis = L.row( ronda.msg( 'patrulha-up-outras-wikis' ) );
+	L.$contribs = L.row( ronda.msg( 'patrulha-up-contribuicoes' ) );
+	L.$act = L.row( ronda.msg( 'patrulha-up-atividade' ) );
+	$warn = L.row( ronda.msg( 'patrulha-up-avisos', days ) );
+	L.$abuse = L.row( ronda.msg( 'patrulha-up-filtro', 30 ) );
+	L.$range = L.row( ronda.msg( 'patrulha-up-faixa' ) );
+	L.$actions = $actions = L.group( ronda.msg( 'patrulha-up-acoes' ) );
+	L.$view = $view = L.group( ronda.msg( 'patrulha-up-ver' ) );
+	L.$cu = L.group( ronda.msg( 'patrulha-up-checkuser' ) );
+	L.$ip = L.group( ronda.msg( 'patrulha-up-ip' ) );
+
 	// Situação
 	if ( info.block ) {
 		$status.append( $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
@@ -4681,7 +4748,7 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 		) );
 	}
 	if ( info.locked ) {
-		$status.append( ' ', $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
+		$status.append( $status.children().length ? ' ' : '', $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
 			$( '<b></b>' ).text( ronda.msg( 'patrulha-travado-globalmente' ) )
 		) );
 	}
@@ -4716,7 +4783,6 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 	}
 
 	// Avisos recentes
-	$warn.append( document.createTextNode( ronda.msg( 'patrulha-avisos-dias', days ) ) );
 	if ( warns.length ) {
 		warns.forEach( function ( w, i ) {
 			$warn.append( i ? sep() : '', $( '<span></span>' )
@@ -4728,31 +4794,25 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 		$warn.append( $( '<i></i>' ).text( talk.exists ? ronda.msg( 'patrulha-nenhum-aviso-em-serie' ) : ronda.msg( 'patrulha-a-discussao-nao-existe' ) ) );
 	}
 
-	// Links
-	$links.append( link( 'Special:Contributions/' + user, ronda.msg( 'patrulha-contribuicoes' ) ) );
-	$links.append(
-		sep(), link( 'Special:Log', 'registros', { user: user } ),
-		sep(), link( 'Special:Log/block', 'bloqueios', { page: mw.config.get( 'wgFormattedNamespaces' )[ 2 ] + ':' + user } )
-	);
+	// Ações: avisar e bloquear primeiro; renderExtra acrescenta as em massa
+	if ( avisar && avisar.isAvailable( ctx ) ) {
+		$actions.append( $( '<div></div>' ).append( action( avisar, ctx, ronda.msg( 'patrulha-enviar-aviso-acao' ) ).addClass( 'ronda-up-main' ) ) );
+	}
+	if ( bloquear && bloquear.isAvailable( ctx ) ) {
+		$actions.append( $( '<div></div>' ).append( action( bloquear, ctx, info.block ? ronda.msg( 'patrulha-alterar-bloqueio' ) : 'bloquear' ).addClass( 'ronda-up-main' ) ) );
+	}
+
+	// Ver
+	addTo( $view, link( 'Special:Contributions/' + user, ronda.msg( 'patrulha-contribuicoes' ) ) );
+	addTo( $view, link( 'Special:Log', 'registros', { user: user } ) );
+	addTo( $view, link( 'Special:Log/block', 'bloqueios', { page: mw.config.get( 'wgFormattedNamespaces' )[ 2 ] + ':' + user } ) );
 	if ( !isIP ) {
-		$links.append( sep(), link( 'Special:CentralAuth/' + user, ronda.msg( 'patrulha-conta-global' ) ) );
+		addTo( $view, link( 'Special:CentralAuth/' + user, ronda.msg( 'patrulha-conta-global' ) ) );
 	}
 
-	// Ações: o aviso fica na linha dos avisos; o bloqueio, na dos links
-	canWarn = avisar && avisar.isAvailable( ctx );
-	canBlock = bloquear && bloquear.isAvailable( ctx );
-	if ( canWarn ) {
-		$warn.append( document.createTextNode( ' — ' ), action( avisar, ctx, ronda.msg( 'patrulha-enviar-aviso-acao' ) ) );
-	}
-	if ( canBlock ) {
-		$links.append( sep(), action( bloquear, ctx, info.block ? ronda.msg( 'patrulha-alterar-bloqueio' ) : 'bloquear' ) );
-	}
+	renderExtra( ctx, user, isIP, extra || {}, L );
 
-	renderExtra( ctx, user, isIP, extra || {}, $status, $hist, $act, $links, $extraLinks, $abuse );
-
-	$panel.append( [ $status.children().length ? $status : null, $facts, $hist.contents().length ? $hist : null,
-		$abuse.contents().length ? $abuse : null,
-		$act.contents().length ? $act : null, $warn, $links, $extraLinks.children().length ? $extraLinks : null ].filter( Boolean ) );
+	$panel.append( L.build() );
 }
 
 function nsName( ns ) {
@@ -4764,25 +4824,25 @@ function external( url, text, title ) {
 }
 
 /** Linhas extras: histórico, atividade, CheckUser, faixa e ferramentas de IP, ações em massa */
-function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $extraLinks, $abuse ) {
+function renderExtra( ctx, user, isIP, extra, L ) {
 	var userPage = mw.config.get( 'wgFormattedNamespaces' )[ 2 ] + ':' + user,
 		act = extra.contribs ? activity( extra.contribs, Date.now() ) : null,
 		range = isIP ? ipRange( user ) : null,
 		lote = ronda.getModule( 'lote' ),
 		gb = extra.globalBlock,
 		enc = encodeURIComponent( user ),
-		$ipOut, $cu, $ip;
+		$status = L.$status,
+		$ipOut, $ip;
 
-	function add( $line, nodes ) {
-		if ( $line.contents().length ) {
-			$line.append( sep() );
-		}
-		$line.append( nodes );
-	}
-
-	/** Linha nova na área de ligações extras (CheckUser, faixa, ferramentas de IP) */
-	function line( nodes ) {
-		return $( '<div class="ronda-up-line"></div>' ).append( nodes ).appendTo( $extraLinks );
+	/** Ação em massa na coluna lateral */
+	function massAction( text, title, onClick ) {
+		L.$actions.append( $( '<div></div>' ).append( $( '<a href="#" role="button" class="ronda-up-action ronda-up-admin"></a>' )
+			.text( text )
+			.attr( 'title', title || '' )
+			.on( 'click', function ( e ) {
+				e.preventDefault();
+				onClick();
+			} ) ) );
 	}
 
 	// Bloqueio global
@@ -4793,30 +4853,44 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 		) );
 	}
 
-	// Bloqueios em outras wikis
+	// Bloqueios em outras wikis: linha própria, discreta; as primeiras e "mais N" ao clicar
 	if ( extra.otherBlocks && extra.otherBlocks.length ) {
-		$status.append( $status.children().length ? ' ' : '', $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
-			$( '<b></b>' ).text( ronda.msg( 'patrulha-bloqueado-em-outras-wikis', extra.otherBlocks.length ) ),
-			' ',
-			extra.otherBlocks.map( function ( b, i ) {
-				return $( '<span></span>' ).append( i ? ', ' : '', external(
-					b.url ? b.url + '/wiki/Special:Log/block?' + $.param( { page: 'User:' + user } ) : '#',
-					b.host,
-					expiryText( b.expiry ) + ( b.reason ? ' — ' + plain( b.reason ) : '' )
-				) );
-			} )
-		) );
+		( function ( list ) {
+			var shown = 5,
+				$rest = $( '<span></span>' ).hide();
+
+			function item( b ) {
+				return $( '<span></span>' ).append(
+					external( b.url ? b.url + '/wiki/Special:Log/block?' + $.param( { page: 'User:' + user } ) : '#', b.host,
+						b.reason ? plain( b.reason ) : '' ),
+					document.createTextNode( ' (' + ( /^infinit/.test( b.expiry || '' ) ? ronda.msg( 'patrulha-duracao-indefinido' )
+						: ronda.msg( 'patrulha-ate', formatDate( b.expiry ) ) ) + ')' )
+				);
+			}
+
+			L.$otherWikis.append( $( '<span class="ronda-up-hot"></span>' ).text( ronda.msg( 'patrulha-bloqueado-em-n-wikis', list.length ) ), ' ' );
+			list.forEach( function ( b, i ) {
+				( i < shown ? L.$otherWikis : $rest ).append( i ? ', ' : '', item( b ) );
+			} );
+			if ( list.length > shown ) {
+				L.$otherWikis.append( $rest, ' ', $( '<a href="#" role="button"></a>' )
+					.text( ronda.msg( 'patrulha-e-mais-n', list.length - shown ) )
+					.on( 'click', function ( e ) {
+						e.preventDefault();
+						$rest.show();
+						$( this ).remove();
+					} ) );
+			}
+		}( extra.otherBlocks ) );
 	}
 
 	// Bloqueios anteriores
 	if ( extra.blocks ) {
-		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-bloqueios-anteriores' ) ),
-			link( 'Special:Log/block', String( extra.blocks.count ), { page: userPage } ) ] );
+		L.$blocks.append( link( 'Special:Log/block', String( extra.blocks.count ), { page: userPage } ) );
 		if ( extra.blocks.last ) {
-			$hist.append( $( '<span></span>' )
+			L.$blocks.append( sep(), $( '<span></span>' )
 				.addClass( extra.blocks.count >= 2 ? 'ronda-up-hot' : '' )
-				.attr( 'title', plain( extra.blocks.last.reason ) )
-				.text( ronda.msg( 'patrulha-ultimo-por', formatDate( extra.blocks.last.timestamp ), extra.blocks.last.by,
+				.text( ronda.msg( 'patrulha-ultimo-bloqueio', formatDate( extra.blocks.last.timestamp ), extra.blocks.last.by,
 					extra.blocks.last.duration ? ', ' + durationText( extra.blocks.last.duration, extra.blocks.last.expiry ) : '',
 					extra.blocks.last.reason ? ' — ' + plain( extra.blocks.last.reason ) : '' ) ) );
 		}
@@ -4824,77 +4898,68 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 
 	// Edições revertidas
 	if ( act && act.sample ) {
-		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-revertidas' ) ), $( '<b></b>' )
+		addTo( L.$contribs, [ document.createTextNode( ronda.msg( 'patrulha-revertidas' ) ), $( '<b></b>' )
 			.addClass( act.reverted / act.sample >= 0.3 ? 'ronda-up-hot' : '' )
 			.text( act.reverted + ' de ' + act.sample ) ] );
 	}
 
-	// Páginas criadas (e o atalho para eliminar as que restam)
+	// Páginas criadas (e, nas ações, o atalho para eliminar as que restam)
 	if ( extra.created && extra.created.total ) {
-		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-paginas-criadas' ) ),
+		addTo( L.$contribs, [ document.createTextNode( ronda.msg( 'patrulha-paginas-criadas' ) ),
 			link( 'Special:Log/create', String( extra.created.total ) + ( extra.created.total >= 500 ? '+' : '' ), { user: user } ),
 			document.createTextNode( extra.created.missing ? ' (' + extra.created.missing
 				+ ( extra.created.missing === 1 ? ronda.msg( 'patrulha-nao-existe-mais' ) : ronda.msg( 'patrulha-nao-existem-mais' ) )
 				+ ( extra.created.total > 200 ? ronda.msg( 'patrulha-entre-as-200-mais-recentes' ) : '' ) + ')' : '' ) ] );
-		if ( lote && extra.created.existing.length && ronda.can( 'delete' ) ) {
-			$hist.append( document.createTextNode( ' — ' ), $( '<a href="#" role="button" class="ronda-up-action ronda-up-admin"></a>' )
-				.text( ronda.msg( 'patrulha-eliminar-as-criadas' ) )
-				.attr( 'title', ronda.msg( 'patrulha-abre-o-lote-com-as-paginas', user ) )
-				.on( 'click', function ( e ) {
-					e.preventDefault();
-					lote.open( $.extend( {}, ctx, { targetUser: user } ), { source: 'created', action: 'delete' } );
-				} ) );
-		}
 	}
 
 	// Contribuições eliminadas
 	if ( extra.deleted !== null && extra.deleted !== undefined ) {
-		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-eliminadas' ) ),
+		addTo( L.$contribs, [ document.createTextNode( ronda.msg( 'patrulha-eliminadas' ) ),
 			link( 'Special:DeletedContributions/' + user, extra.deleted + ( extra.deletedMore ? '+' : '' ) ) ] );
 	}
 
 	// Edições ocultadas (conteúdo ou resumo), entre as contribuições carregadas
 	if ( extra.hidden && extra.hidden.count ) {
-		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-ocultadas' ) ), $( '<b class="ronda-up-hot"></b>' )
+		addTo( L.$contribs, [ document.createTextNode( ronda.msg( 'patrulha-ocultadas' ) ), $( '<b class="ronda-up-hot"></b>' )
 			.text( extra.hidden.count + ( extra.hidden.suppressed ? ronda.msg( 'patrulha-ocultadas-suprimidas', extra.hidden.suppressed ) : '' ) )
 			.attr( 'title', ronda.msg( 'patrulha-ocultadas-dica' ) ) ] );
 	}
 
 	// Registro do filtro de abusos
 	if ( extra.abuse ) {
-		renderAbuse( $abuse, user, extra.abuse );
+		renderAbuse( L.$abuse, user, extra.abuse );
 	}
 
 	// Atividade
 	if ( act && act.last ) {
-		add( $act, [ document.createTextNode( ronda.msg( 'patrulha-ultima-edicao' ) ), $( '<b></b>' ).text( new Date( act.last ).toLocaleString( 'pt-BR' ) ) ] );
-		add( $act, document.createTextNode( '24 h: ' + act.day + ( act.full && act.day === 500 ? '+' : '' ) ) );
-		add( $act, document.createTextNode( ronda.msg( 'patrulha-7-dias', act.week, act.full && act.week === 500 ? '+' : '' ) ) );
-		add( $act, document.createTextNode( ronda.msg( 'patrulha-dominios', act.namespaces.slice( 0, 3 ).map( function ( n ) {
+		addTo( L.$act, [ document.createTextNode( ronda.msg( 'patrulha-ultima-edicao' ) ), $( '<b></b>' ).text( new Date( act.last ).toLocaleString( 'pt-BR' ) ) ] );
+		addTo( L.$act, document.createTextNode( '24 h: ' + act.day + ( act.full && act.day === 500 ? '+' : '' ) ) );
+		addTo( L.$act, document.createTextNode( ronda.msg( 'patrulha-7-dias', act.week, act.full && act.week === 500 ? '+' : '' ) ) );
+		addTo( L.$act, document.createTextNode( ronda.msg( 'patrulha-dominios', act.namespaces.slice( 0, 3 ).map( function ( n ) {
 			return nsName( n[ 0 ] ) + ' (' + n[ 1 ] + ')';
 		} ).join( ', ' ) ) ) );
 	}
 
-	// Reverter todas no topo
+	// Ações em massa
 	if ( act && act.top.length && ronda.can( 'rollback' ) && user !== mw.config.get( 'wgUserName' ) ) {
-		$links.append( sep(), $( '<a href="#" role="button" class="ronda-up-action ronda-up-admin"></a>' )
-			.text( ronda.msg( 'patrulha-reverter-todas-no-topo', act.top.length ) )
-			.on( 'click', function ( e ) {
-				e.preventDefault();
-				rollbackAll( user, act.top );
-			} ) );
+		massAction( ronda.msg( 'patrulha-reverter-todas-no-topo', act.top.length ), '', function () {
+			rollbackAll( user, act.top );
+		} );
+	}
+	if ( lote && extra.created && extra.created.existing.length && ronda.can( 'delete' ) ) {
+		massAction( ronda.msg( 'patrulha-eliminar-as-criadas-n', extra.created.existing.length ),
+			ronda.msg( 'patrulha-abre-o-lote-com-as-paginas', user ), function () {
+				lote.open( $.extend( {}, ctx, { targetUser: user } ), { source: 'created', action: 'delete' } );
+			} );
 	}
 
 	// CheckUser
-	if ( ronda.can( 'checkuser' ) || ronda.can( 'checkuser-log' ) ) {
-		$cu = line( document.createTextNode( ronda.msg( 'patrulha-checkuser' ) ) );
-		if ( ronda.can( 'checkuser' ) ) {
-			$cu.append( ' ', link( 'Special:CheckUser/' + user, 'verificar' ),
-				sep(), link( 'Special:Investigate', 'investigar' ) );
-		}
-		if ( ronda.can( 'checkuser-log' ) ) {
-			$cu.append( ronda.can( 'checkuser' ) ? sep() : ' ', link( 'Special:CheckUserLog/' + user, ronda.msg( 'patrulha-registro-de-verificacoes' ) ) );
-		}
+	if ( ronda.can( 'checkuser' ) ) {
+		addTo( L.$cu, link( 'Special:CheckUser/' + user, 'verificar' ) );
+		addTo( L.$cu, link( 'Special:Investigate', 'investigar' ) );
+	}
+	if ( ronda.can( 'checkuser-log' ) ) {
+		addTo( L.$cu, link( 'Special:CheckUserLog/' + user, ronda.msg( 'patrulha-registro-de-verificacoes' ) ) );
 	}
 
 	if ( !isIP ) {
@@ -4903,19 +4968,19 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 
 	// Faixa
 	if ( range ) {
-		line( [ document.createTextNode( ronda.msg( 'patrulha-faixa', range ) ),
+		L.$range.append( $( '<b></b>' ).text( range ), document.createTextNode( ' — ' ),
 			link( 'Special:Contributions/' + range, ronda.msg( 'patrulha-contribuicoes' ) ), sep(),
 			link( 'Special:BlockList', 'bloqueios', { wpTarget: range } ), sep(),
-			external( 'https://meta.wikimedia.org/wiki/Special:GlobalBlockList?' + $.param( { target: range } ), 'bloqueios globais' ) ] );
+			external( 'https://meta.wikimedia.org/wiki/Special:GlobalBlockList?' + $.param( { target: range } ), 'bloqueios globais' ) );
 	}
 
 	// Ferramentas externas
-	$ip = line( [ document.createTextNode( ronda.msg( 'patrulha-ip' ) ),
+	$ip = L.$ip.append(
 		external( 'https://whois-referral.toolforge.org/gateway.py?lookup=true&ip=' + enc, 'WHOIS' ), sep(),
 		external( 'https://bullseye.toolforge.org/ip/' + enc, 'localização', 'Bullseye' ), sep(),
 		external( 'https://ipcheck.toolforge.org/index.php?ip=' + enc, 'proxy', 'IPCheck' ), sep(),
 		external( 'https://spur.us/context/' + enc, 'Spur' ), sep(),
-		external( 'https://guc.toolforge.org/?by=date&user=' + enc, 'contribuições globais', 'GUC' ) ] );
+		external( 'https://guc.toolforge.org/?by=date&user=' + enc, 'contribuições globais', 'GUC' ) );
 
 	// Informações da própria wiki (IPInfo), só ao clicar: o acesso fica registrado
 	if ( ronda.can( 'ipinfo' ) && extra.contribs && extra.contribs[ 0 ] ) {
@@ -4935,8 +5000,7 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 function renderAbuse( $line, user, abuse ) {
 	var $list;
 
-	$line.append( document.createTextNode( ronda.msg( 'patrulha-filtro', abuse.days ) ),
-		link( 'Special:AbuseLog', String( abuse.count ) + ( abuse.more ? '+' : '' ), { wpSearchUser: user } ) );
+	$line.append( link( 'Special:AbuseLog', String( abuse.count ) + ( abuse.more ? '+' : '' ), { wpSearchUser: user } ) );
 	if ( !abuse.count ) {
 		return;
 	}
@@ -5301,7 +5365,8 @@ ronda.registerModule( {
  *   reverter               direto
  *   reverter (vandalismo)  direto e, depois, abre o Avisar com "Vandalismo"
  *                          e a página preenchidos (nível sugerido)
- * Com o direito rollback usa a reversão rápida da API; sem ele, desfaz
+ * Só "reverter (vandalismo)" usa a reversão rápida da API, e só para quem tem
+ * o direito rollback; os demais (e quem não tem o direito) desfazem
  * (undo/undoafter) até a última versão de outra pessoa. Se outra pessoa
  * editou depois, não reverte.
  * "restaurar" aparece nas versões antigas: no diff (versão da esquerda), na
@@ -5376,8 +5441,8 @@ function revertNow( title, user, mode, reason ) {
 	} ).then( function ( data ) {
 		var revs = ( data.query.pages[ 0 ] || {} ).revisions || [],
 			plan = quickPlan( revs, user ),
-			tpl = mode === 'agf' ? cfg().agfSummary : mode === 'vandal' ? cfg().vandalSummary
-				: ronda.can( 'rollback' ) ? cfg().rollbackSummary : cfg().summary,
+			useRollback = mode === 'vandal' && ronda.can( 'rollback' ),
+			tpl = mode === 'agf' ? cfg().agfSummary : mode === 'vandal' ? cfg().vandalSummary : cfg().summary,
 			summary;
 
 		if ( !plan.ok ) {
@@ -5385,7 +5450,7 @@ function revertNow( title, user, mode, reason ) {
 		}
 		summary = fillSummary( tpl, plan.good.user, user, plan.good.revid, reason );
 
-		if ( ronda.can( 'rollback' ) ) {
+		if ( useRollback ) {
 			return ronda.api.postWithToken( 'rollback', ronda.params( {
 				action: 'rollback',
 				title: title,
