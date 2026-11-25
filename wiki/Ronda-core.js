@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.18',
+		version: '0.7.19',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1508,8 +1508,8 @@ ronda.openReport = function () {
 	$title.trigger( 'focus' );
 };
 
-ronda.openMeta = function ( opts ) {
-	var news = !!( opts && opts.news );
+ronda.openMeta = function () {
+	markNewsRead();
 
 	return ronda.ui.togglePanel( 'meta', function ( $panel ) {
 		var L = ronda.ui.panelLayout(),
@@ -1575,35 +1575,63 @@ ronda.openMeta = function ( opts ) {
 		}
 
 		$panel.addClass( 'ronda-meta' ).append( L.build() );
-		if ( news ) {
-			$panel.prepend( $( '<div class="ronda-meta-head ui-state-highlight ui-corner-all"></div>' ).append(
-				$( '<b></b>' ).text( ronda.msg( 'core-meta-atualizado', ronda.version ) ),
-				' ',
-				pressable( $( '<a href="#"></a>' ).text( ronda.msg( 'core-fechar' ) ), function ( e ) {
-					e.preventDefault();
-					$panel.hide();
-				} ),
-				document.createTextNode( ' · ' ),
-				notAgain( function () {
-					$panel.hide();
-				} )
-			) );
-		}
 	} );
 };
 
-function showNews( $bar ) {
-	var seen = mw.user.options.get( ronda.NEWS_OPTION );
+ronda.NEWS_READ_OPTION = 'userjs-ronda-novidades-lidas';
 
-	if ( !$bar || mw.user.isAnon() || stripsOff() || seen === ronda.version ||
+function knowsRonda() {
+	return !!( mw.user.options.get( ronda.NEWS_OPTION ) || mw.user.options.get( ronda.NEWS_READ_OPTION ) ||
+		mw.user.options.get( ronda.WELCOME_OPTION ) || mw.user.options.get( ronda.PREFS_OPTION ) );
+}
+
+function markNewsRead() {
+	var $badge = $( '#ronda-toolbar .ronda-news-badge' );
+
+	if ( $badge.length ) {
+		$badge.remove();
+		saveOption( ronda.NEWS_READ_OPTION, ronda.version );
+	}
+}
+
+function showNews( $bar ) {
+	var $strip;
+
+	if ( !$bar || mw.user.isAnon() || !knowsRonda() ) {
+		return;
+	}
+	if ( mw.user.options.get( ronda.NEWS_READ_OPTION ) !== ronda.version ) {
+		$bar.find( '.ronda-brand-caret' ).before( $( '<span class="ronda-news-badge"></span>' )
+			.text( ronda.msg( 'core-novidades-selo' ) ).attr( 'title', ronda.msg( 'core-novidades-selo-dica', ronda.version ) ) );
+	}
+	if ( stripsOff() || mw.user.options.get( ronda.NEWS_OPTION ) === ronda.version ||
 		$bar.hasClass( 'ronda-collapsed' ) || $bar.css( 'display' ) === 'none' ) {
 		return;
 	}
-	if ( !seen && !mw.user.options.get( ronda.WELCOME_OPTION ) && !mw.user.options.get( ronda.PREFS_OPTION ) ) {
-		return;
-	}
 	saveOption( ronda.NEWS_OPTION, ronda.version );
-	ronda.openMeta( { news: true } );
+
+	$strip = ronda.ui.togglePanel( 'news', function ( $panel ) {
+		$panel.addClass( 'ronda-news ui-state-highlight ui-corner-all' ).append(
+			$( '<b></b>' ).text( ronda.msg( 'core-novidades-da-versao', ronda.version ) ),
+			$( '<ul class="ronda-meta-news"></ul>' ).append( ronda.news.map( function ( n ) {
+				return $( '<li></li>' ).text( n );
+			} ) ),
+			$( '<div class="ronda-news-actions"></div>' ).append(
+				$( '<a></a>' ).attr( 'href', mw.util.getUrl( ronda.CHANGELOG_PAGE ) + '#' + ronda.version )
+					.text( ronda.msg( 'core-novidades-historico' ) )
+					.on( 'click', markNewsRead ),
+				document.createTextNode( ' · ' ),
+				pressable( $( '<a href="#"></a>' ).text( ronda.msg( 'core-fechar' ) ), function ( e ) {
+					e.preventDefault();
+					$strip.remove();
+				} ),
+				document.createTextNode( ' · ' ),
+				notAgain( function () {
+					$strip.remove();
+				} )
+			)
+		);
+	} );
 }
 
 ronda.meta = { environment: environment, showNews: showNews };
@@ -1625,6 +1653,7 @@ function addWelcome( $bar ) {
 		$strip.remove();
 		saveOption( ronda.WELCOME_OPTION, '1' );
 		saveOption( ronda.NEWS_OPTION, ronda.version );
+		saveOption( ronda.NEWS_READ_OPTION, ronda.version );
 	}
 
 	$strip = $( '<div class="ronda-welcome ui-state-highlight ui-corner-all"></div>' ).append(

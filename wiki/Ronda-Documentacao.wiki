@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.18|0.7.18]]
+|versão             = [[/Changelog#0.7.19|0.7.19]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -156,7 +156,7 @@ Clicar no nome '''Ronda''', no início da barra, abre o '''meta-painel''', com:
 * a documentação, o histórico de versões e o código no GitHub;
 * '''Informar erro''', que abre um formulário e publica o relato numa seção nova de [[Usuário Discussão:Little Sunshine/Ronda]], com informações técnicas opcionais (versão, página, tema, navegador e erros recentes).
 
-Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam essas opções. Depois de cada atualização, o meta-painel se abre sozinho uma vez, com as novidades da versão. Em qualquer uma dessas faixas, '''Não mostrar mais''' impede que elas voltem a se abrir sozinhas; o meta-painel continua no nome '''Ronda'''.
+Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam essas opções. Depois de cada atualização, uma faixa com as novidades da versão se abre sozinha uma vez, e o nome '''Ronda''' ganha o selo '''novo''' até que o meta-painel seja aberto. Em qualquer uma dessas faixas, '''Não mostrar mais''' impede que elas voltem a se abrir sozinhas; o selo continua avisando das versões novas, e o meta-painel continua no nome '''Ronda'''.
 
 Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. Os painéis {{Usuário:Little Sunshine/Ronda/Botão|Usuário}} e {{Usuário:Little Sunshine/Ronda/Botão|Informações}} são carregados em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 

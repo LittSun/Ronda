@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.19 — 25/11/2026
+- **Novidades**: depois de uma atualização, em vez do meta-painel inteiro, abre sozinha uma faixa só com as novidades da versão, com **histórico completo**, **Fechar** e **Não mostrar mais**. Ela aparece uma vez por versão. O nome "Ronda" ganha um selo **novo**, que fica até o meta-painel ou o histórico ser aberto, mesmo que a faixa tenha sido fechada sem ler. Com "Não mostrar mais", a faixa deixa de abrir, mas o selo continua avisando das versões novas.
+
 ## 0.7.18 — 25/11/2026
 - **Meta-painel**: clicar no nome **Ronda** abre uma faixa com a versão e as novidades dela, opções rápidas (simulação, painéis em segundo plano, links rápidos de reversão), **Preferências…**, documentação, histórico de versões, código no GitHub e **Informar erro**. O link "Preferências do Ronda" sai do menu de ações (continua lá só nas páginas sem barra). O nome também funciona pelo teclado (Enter e Espaço).
 - **Informar erro**: formulário que publica o relato numa seção nova de [[Usuário Discussão:Little Sunshine/Ronda]], com informações técnicas opcionais (versão, página, contexto, tema, simulação, navegador e os erros recentes do Ronda).
