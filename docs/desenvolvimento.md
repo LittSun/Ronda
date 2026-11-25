@@ -60,7 +60,7 @@ Dicas:
 ## Versões
 
 1. Suba o número em **dois** lugares: `version` em `src/Ronda-core.js` e em `package.json` (o `npm run verificar` acusa se ficarem diferentes).
-2. Acrescente a entrada no topo de [CHANGELOG.md](../CHANGELOG.md) e atualize a versão no topo do [README](../README.md). A versão da infobox da documentação é preenchida na geração, ligada ao histórico (`[[/Changelog#0.7.15|0.7.15]]`).
+2. Atualize `ronda.news` em `src/Ronda-core.js` (até três frases curtas com as novidades para quem usa; aparecem no meta-painel e na faixa que se abre depois da atualização). Acrescente a entrada no topo de [CHANGELOG.md](../CHANGELOG.md) e atualize a versão no topo do [README](../README.md). A versão da infobox da documentação é preenchida na geração, ligada ao histórico (`[[/Changelog#0.7.15|0.7.15]]`).
 3. Para marcar uma versão fechada: `git tag v1.0.0 && git push --tags`. O Actions anexa `Ronda-wiki.zip` e `Ronda-console.js` à versão no GitHub.
 
 Esquema: `0.MENOR.CORREÇÃO` até a 1.0, que será a primeira publicada como gadget.

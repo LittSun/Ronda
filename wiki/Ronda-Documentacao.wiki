@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.17|0.7.17]]
+|versão             = [[/Changelog#0.7.18|0.7.18]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -25,9 +25,9 @@ importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [
 
 Salve e recarregue a página. Se a barra não aparecer, faça uma atualização forçada (Ctrl+Shift+R). Para desinstalar, remova a linha.
 
-'''Para experimentar sem gravar alterações''', abra '''Preferências do Ronda''' no menu de ações (aba "Mais") e ative '''Modo de simulação'''. A barra exibirá a indicação "Simulação". Abra uma diferença entre edições ("dif") nas [[Especial:Mudanças recentes|mudanças recentes]] e experimente os botões {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}}. Desative a simulação quando estiver pronto para usar a ferramenta.
+'''Para experimentar sem gravar alterações''', clique em '''Ronda''', no início da barra, e marque '''Modo de simulação'''. A barra exibirá a indicação "Simulação". Abra uma diferença entre edições ("dif") nas [[Especial:Mudanças recentes|mudanças recentes]] e experimente os botões {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}}. Desative a simulação quando estiver pronto para usar a ferramenta.
 
-A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; no celular, toque no nome da ferramenta na própria barra. Essa escolha fica salva no navegador.
+A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; no celular, pelo meta-painel (veja abaixo), e um toque no nome reabre a barra recolhida. Essa escolha fica salva no navegador.
 
 == Funcionalidades ==
 {| class="wikitable"
@@ -148,10 +148,17 @@ Ações com várias etapas exibem progresso e registro de resultados. Nos avisos
 === Uso no celular ===
 No tema Minerva, a barra fica no início do conteúdo, com botões maiores e diálogos adaptados à largura da tela. Toque em '''Ronda''' para recolher ou expandir a barra; as '''Preferências''' ficam nela. {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} também funcionam nas diferenças do modo móvel.
 
-== Preferências e simulação ==
-Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam as preferências, com um botão para abri-las. Ela some ao clicar em qualquer opção e não volta a aparecer.
+== Meta-painel, preferências e simulação ==
+Clicar no nome '''Ronda''', no início da barra, abre o '''meta-painel''', com:
+* a versão instalada e as novidades dela, com ligação para o [[/Changelog|histórico de versões]];
+* opções rápidas, que valem ao recarregar a página: modo de simulação, carregamento dos painéis em segundo plano e links rápidos de reversão;
+* '''Preferências…''', com todas as opções;
+* a documentação, o histórico de versões e o código no GitHub;
+* '''Informar erro''', que abre um formulário e publica o relato numa seção nova de [[Usuário Discussão:Little Sunshine/Ronda]], com informações técnicas opcionais (versão, página, tema, navegador e erros recentes).
 
-Abra '''Preferências do Ronda''' pelo menu de ações ou, no celular, pela barra. Os painéis {{Usuário:Little Sunshine/Ronda/Botão|Usuário}} e {{Usuário:Little Sunshine/Ronda/Botão|Informações}} são carregados em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
+Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam essas opções. Depois de cada atualização, o meta-painel se abre sozinho uma vez, com as novidades da versão. Em qualquer uma dessas faixas, '''Não mostrar mais''' impede que elas voltem a se abrir sozinhas; o meta-painel continua no nome '''Ronda'''.
+
+Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. Os painéis {{Usuário:Little Sunshine/Ronda/Botão|Usuário}} e {{Usuário:Little Sunshine/Ronda/Botão|Informações}} são carregados em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
 

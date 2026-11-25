@@ -3,6 +3,12 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.18 — 25/11/2026
+- **Meta-painel**: clicar no nome **Ronda** abre uma faixa com a versão e as novidades dela, opções rápidas (simulação, painéis em segundo plano, links rápidos de reversão), **Preferências…**, documentação, histórico de versões, código no GitHub e **Informar erro**. O link "Preferências do Ronda" sai do menu de ações (continua lá só nas páginas sem barra). O nome também funciona pelo teclado (Enter e Espaço).
+- **Informar erro**: formulário que publica o relato numa seção nova de [[Usuário Discussão:Little Sunshine/Ronda]], com informações técnicas opcionais (versão, página, contexto, tema, simulação, navegador e os erros recentes do Ronda).
+- **Novidades**: depois de cada atualização, o meta-painel se abre sozinho uma vez, com as novidades da versão. **Não mostrar mais** (também na faixa de boas-vindas) desliga essas faixas de vez. Quem ainda não conhece o Ronda vê primeiro as boas-vindas.
+- **Celular**: a barra recolhida se expande pelo nome; recolher fica no meta-painel.
+
 ## 0.7.17 — 25/11/2026
 - **Informações**: painel reorganizado em tabela, como o Usuário, com novas linhas: **Proteção** (nível e prazo de cada ação, com o registro), **Criação** (quem criou e quando), **Edições** (total, número de editores e de IPs, última edição, edições eliminadas), **Conteúdo** (tamanho, qualidade, estimativa do LiftWing e número de referências), **Manutenção** (marcações presentes), **Ligações** (categorias, afluentes do domínio principal ou aviso de página órfã, outras línguas e item no Wikidata), **Patrulha** (página nova não patrulhada, edições não patrulhadas, com o atalho **marcar como patrulhada**) e **Público** (visualizações dos últimos 30 dias e vigilantes).
 - **Usuário** e **Informações**: os dados são carregados em segundo plano logo depois que a página abre (quando o navegador fica ocioso) ou ao passar o mouse no botão, e o painel abre pronto. Abrir e fechar não repete as consultas. Desligável em Preferências ("Carregar em segundo plano…") ou com `prefetch: false`.
