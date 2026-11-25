@@ -98,6 +98,6 @@ test( 'Informar erro: seção nova com o relato e as informações técnicas', a
 	assert.strictEqual( e.title, 'Usuário Discussão:Little Sunshine/Ronda' );
 	assert.strictEqual( e.section, 'new' );
 	assert.strictEqual( e.sectiontitle, 'Mover falha' );
-	assert.match( e.text, /Cliquei e nada\. ~~~~/ );
-	assert.match( e.text, /Versão: <nowiki>/ );
+	assert.match( e.text, /^Cliquei e nada\.\n\n\* Versão: <nowiki>/ );
+	assert.match( e.text, /\n\n~~~~$/, 'assinatura no fim, depois dos dados' );
 } );

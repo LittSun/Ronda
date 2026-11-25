@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.20 — 25/11/2026
+- **Informar erro**: as informações técnicas fazem parte da mensagem; a assinatura vem no fim, depois delas.
+
 ## 0.7.19 — 25/11/2026
 - **Novidades**: depois de uma atualização, em vez do meta-painel inteiro, abre sozinha uma faixa só com as novidades da versão, com **histórico completo**, **Fechar** e **Não mostrar mais**. Ela aparece uma vez por versão. O nome "Ronda" ganha um selo **novo**, que fica até o meta-painel ou o histórico ser aberto, mesmo que a faixa tenha sido fechada sem ler. Com "Não mostrar mais", a faixa deixa de abrir, mas o selo continua avisando das versões novas.
 
