@@ -1499,29 +1499,40 @@ ronda.consensus = {
  * @return {jQuery.Promise} resolve com o título de destino, ou null se não havia discussão
  */
 /**
- * Discussão de eliminação existente: null se não existe; senão { title, created, recent }.
- * "recent" = criada há menos de PE_OPEN_DAYS dias, ou seja, provavelmente ainda aberta.
+ * Discussão de eliminação existente: null se não existe; senão { title, created, closed }.
+ * Encerrada = na categoria "!Propostas de eliminação encerradas em <ano>" ou com
+ * {{Nomeação concluída}}; sem nenhuma das duas, é tratada como aberta.
  */
-var PE_OPEN_DAYS = 10;
+var PE_CLOSED_CAT = /^Categoria:!Propostas de eliminação encerradas em \d{4}$/,
+	PE_CLOSED_TEMPLATE = 'Predefinição:Nomeação concluída';
 
 function peInfo( title ) {
 	return ronda.api.get( {
 		action: 'query',
 		titles: title,
-		prop: 'revisions',
+		prop: 'revisions|categories|templates',
 		rvprop: 'timestamp',
 		rvdir: 'newer',
-		rvlimit: 1
+		rvlimit: 1,
+		cllimit: 'max',
+		tltemplates: PE_CLOSED_TEMPLATE,
+		tllimit: 'max'
 	} ).then( function ( data ) {
 		var p = data.query.pages[ 0 ] || {},
-			first = ( p.revisions || [] )[ 0 ],
-			created;
+			first = ( p.revisions || [] )[ 0 ];
 
 		if ( p.missing || !first ) {
 			return null;
 		}
-		created = Date.parse( first.timestamp );
-		return { title: p.title, created: created, recent: Date.now() - created < PE_OPEN_DAYS * 864e5 };
+		return {
+			title: p.title,
+			created: Date.parse( first.timestamp ),
+			closed: ( p.categories || [] ).some( function ( c ) {
+				return PE_CLOSED_CAT.test( c.title );
+			} ) || ( p.templates || [] ).some( function ( t ) {
+				return t.title === PE_CLOSED_TEMPLATE;
+			} )
+		};
 	} );
 }
 
@@ -1939,9 +1950,9 @@ function open( ctx ) {
 			return;
 		}
 
-		// Discussão anterior: recente = provavelmente aberta (ex.: marcação removida por vandalismo) → recusa
+		// Discussão anterior não encerrada (ex.: marcação removida por vandalismo) → recusa
 		return peInfo( peTitle( p.title ) ).then( function ( pe ) {
-			if ( pe && pe.recent ) {
+			if ( pe && !pe.closed ) {
 				mw.notify( $( '<span></span>' ).append(
 					document.createTextNode( ronda.msg( 'paginas-pe-aberta', new Date( pe.created ).toLocaleDateString( 'pt-BR' ) ) ),
 					$( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( pe.title ) ).text( pe.title )
@@ -2142,9 +2153,9 @@ function showForm( ctx, page, groups ) {
 		// Nunca marcadas por padrão: eliminar o destino é sempre uma escolha explícita
 		cbDelete = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-o-destino-antes-de-mover' ), false ),
 		cbDeleteTalk = ronda.ui.checkbox( ronda.msg( 'paginas-eliminar-tambem-a-discussao-do-destino' ), false ),
-		// Destino com conteúdo (não um redirecionamento simples para cá): confirmação digitando o título
-		$confirm = ronda.ui.text( '', ronda.msg( 'paginas-digite-o-titulo-do-destino' ) ).attr( 'id', ronda.ui.id( 'move-confirm' ) ),
-		$confirmRow = ronda.ui.row( ronda.msg( 'paginas-confirmacao' ), $confirm ).hide(),
+		// Destino com conteúdo (não um redirecionamento simples para cá): segunda caixa, com o título por extenso
+		cbConfirm = ronda.ui.checkbox( '', false ),
+		$confirmRow = cbConfirm.$element.addClass( 'ronda-move-confirm' ).hide(),
 		$progress = $( '<div class="ronda-progress"></div>' ).hide(),
 		$log = $( '<ul class="ronda-log"></ul>' ),
 		$content = $( '<div></div>' ),
@@ -2182,7 +2193,7 @@ function showForm( ctx, page, groups ) {
 		if ( !s || !state || s.title !== state.title ) {
 			cbDelete.setChecked( false );
 			cbDeleteTalk.setChecked( false );
-			$confirm.val( '' );
+			cbConfirm.setChecked( false );
 		}
 		state = s;
 		$target.empty();
@@ -2213,6 +2224,7 @@ function showForm( ctx, page, groups ) {
 					$target.append( ronda.ui.message( 'error', $( '<span></span>' ).text(
 						ronda.msg( 'paginas-o-destino-nao-e-um-redirecionamento' )
 					) ) );
+					cbConfirm.$element.find( 'label' ).text( ronda.msg( 'paginas-confirmo-eliminar-destino', s.title ) );
 					$confirmRow.toggle( cbDelete.isChecked() );
 				}
 			}
@@ -2328,10 +2340,10 @@ function showForm( ctx, page, groups ) {
 				mw.notify( ronda.msg( 'paginas-confira-o-destino' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
 				return;
 			}
-			if ( s.exists && canDelete && cbDelete.isChecked() && !trivial( s ) &&
-				!ronda.ui.require( $confirm, $confirm.val().trim().replace( /_/g, ' ' ) === s.title ) ) {
+			if ( s.exists && canDelete && cbDelete.isChecked() && !trivial( s ) && !cbConfirm.isChecked() ) {
 				ronda.ui.setBusy( $dlg, false );
-				mw.notify( ronda.msg( 'paginas-digite-o-titulo-para-confirmar', s.title ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+				ronda.ui.require( cbConfirm.$element, false );
+				mw.notify( ronda.msg( 'paginas-marque-a-confirmacao', s.title ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
 				return;
 			}
 			if ( s.exists && !( canDelete && cbDelete.isChecked() ) ) {

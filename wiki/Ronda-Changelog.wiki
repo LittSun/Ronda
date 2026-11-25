@@ -4,10 +4,10 @@ Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão
 
 == <span id="0.7.16"></span>0.7.16 — 25/11/2026 ==
 Correções da auditoria técnica da 0.7.15.
-* '''Mover''' (crítico): eliminar o destino nunca vem marcado. Se o destino não for um redirecionamento de uma edição para a página, a eliminação exige digitar o título dele. Enter só move quando o destino está livre, e o Mover não age sobre um destino cuja situação ainda não foi mostrada no formulário.
+* '''Mover''' (crítico): eliminar o destino nunca vem marcado. Se o destino não for um redirecionamento de uma edição para a página, a eliminação exige marcar uma segunda caixa, que mostra o título do destino. Enter só move quando o destino está livre, e o Mover não age sobre um destino cuja situação ainda não foi mostrada no formulário.
 * '''Lote › Proteger''': sem nível pré-escolhido (antes, o padrão removia a proteção); "Remover proteção" é uma opção à parte. Toda ação do Lote pede confirmação com o número de páginas.
 * '''Bloquear''': reversores só alteram (e removem) bloqueios feitos por eles mesmos; nos demais, só podem acrescentar um bloqueio novo.
-* '''Consenso''': não abre outra proposta se já existir uma discussão de eliminação recente (provavelmente aberta, por exemplo com a marcação removida por vandalismo). Se a anterior for antiga, o arquivamento precisa ser confirmado. Páginas com discussão anterior não entram em propostas conjuntas.
+* '''Consenso''': não abre outra proposta se já existir uma discussão de eliminação não encerrada (por exemplo, com a marcação removida por vandalismo). Encerrada é a discussão com <nowiki>{{</nowiki>Nomeação concluída<nowiki>}}</nowiki> ou na categoria "!Propostas de eliminação encerradas em <ano>"; nesse caso, o arquivamento precisa ser confirmado. Páginas com discussão anterior não entram em propostas conjuntas.
 * '''Eliminar''': se a página foi editada depois que o diálogo abriu, pede confirmação antes de eliminar.
 * '''#R''' e '''Esboço''': a edição é marcada como patrulhada só depois de salva com sucesso.
 * Resumos e pedidos: textos com <code><nowiki>$</nowiki></code> (ex.: nomes de usuário) entram como estão; <code><nowiki>}}</nowiki></code> solto em observações não quebra mais a predefinição; o campo Página dos avisos também é escapado.

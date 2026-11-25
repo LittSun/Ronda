@@ -69,7 +69,7 @@ test( 'SEC-01: clicar em Mover logo depois de digitar não elimina nada', async 
 	assert.strictEqual( a.escritas( 'move' ).length, 0 );
 } );
 
-test( 'SEC-01: destino com conteúdo só é eliminado com a caixa marcada e o título digitado', async () => {
+test( 'SEC-01: destino com conteúdo só é eliminado com as duas caixas marcadas', async () => {
 	const a = ambienteMover( { title: 'Brasil', revisions: [ { slots: { main: { content: 'Texto' } } }, { slots: { main: { content: 'x' } } } ] } );
 	const $d = await abrirMover( a );
 	const $t = $d.find( 'input[type=text]' ).first();
@@ -83,9 +83,9 @@ test( 'SEC-01: destino com conteúdo só é eliminado com a caixa marcada e o t�
 	$cb.prop( 'checked', true ).trigger( 'change' );
 	mover();
 	await a.esperar( 60 );
-	assert.strictEqual( a.escritas( 'delete' ).length, 0, 'sem o título digitado, nada' );
+	assert.strictEqual( a.escritas( 'delete' ).length, 0, 'sem a confirmação, nada' );
 
-	$d.find( 'input[id*=move-confirm]' ).val( 'Brasil' );
+	$d.find( '.ronda-move-confirm input' ).prop( 'checked', true );
 	mover();
 	await a.esperar( 60 );
 	assert.deepStrictEqual( a.escritas().map( ( c ) => c.action ), [ 'delete', 'move' ] );
@@ -154,7 +154,7 @@ test( 'SEC-03: reversor não recebe a opção de alterar bloqueio de outra pesso
 
 /* ---------------- SEC-04: Consenso ---------------- */
 
-function ambienteConsenso( criadaHaDias ) {
+function ambienteConsenso( encerrada ) {
 	return criar( {
 		rights: [ 'edit', 'createpage', 'move' ],
 		ctx: { type: 'view', ns: 0, page: 'Teste', title: 'Teste', exists: true },
@@ -162,26 +162,28 @@ function ambienteConsenso( criadaHaDias ) {
 			if ( p.titles === 'Teste' && p.prop === 'revisions' ) {
 				return pagina( 'Teste', { revisions: [ { slots: { main: { content: 'Texto sem marcação' } } } ] } );
 			}
-			if ( /^Wikipédia:Páginas para eliminar\/Teste$/.test( p.titles || '' ) && p.prop === 'revisions' ) {
-				return pagina( p.titles, { ns: 4, revisions: [ { timestamp: new Date( Date.now() - criadaHaDias * 864e5 ).toISOString() } ] } );
+			if ( /^Wikipédia:Páginas para eliminar\/Teste$/.test( p.titles || '' ) && /revisions/.test( p.prop ) ) {
+				return pagina( p.titles, { ns: 4, revisions: [ { timestamp: '2025-01-10T00:00:00Z' } ],
+					categories: encerrada === 'categoria' ? [ { title: 'Categoria:!Propostas de eliminação encerradas em 2025' } ] : [],
+					templates: encerrada === 'predefinição' ? [ { title: 'Predefinição:Nomeação concluída' } ] : [] } );
 			}
 		}
 	} );
 }
 
-test( 'SEC-04: Consenso com discussão recente (aberta) não abre o formulário', async () => {
-	const a = ambienteConsenso( 2 );
+test( 'SEC-04: Consenso com discussão não encerrada não abre o formulário', async () => {
+	const a = ambienteConsenso( false );
 
 	a.ronda.getModule( 'consenso' ).open( a.ronda.ctx );
 	await a.esperar( 60 );
 
 	assert.strictEqual( a.$( '.ronda-dialog' ).length, 0 );
-	assert.match( a.notificacoes.join( ' ' ), /provavelmente ainda está aberta/ );
+	assert.match( a.notificacoes.join( ' ' ), /não está marcada como encerrada/ );
 	assert.strictEqual( a.escritas().length, 0 );
 } );
 
-test( 'SEC-04: discussão antiga exige marcar o arquivamento antes de qualquer escrita', async () => {
-	const a = ambienteConsenso( 400 );
+test( 'SEC-04: discussão encerrada (categoria) exige marcar o arquivamento antes de qualquer escrita', async () => {
+	const a = ambienteConsenso( 'categoria' );
 
 	a.ronda.getModule( 'consenso' ).open( a.ronda.ctx );
 	await a.esperar( 60 );
@@ -193,4 +195,12 @@ test( 'SEC-04: discussão antiga exige marcar o arquivamento antes de qualquer e
 	await a.esperar( 60 );
 	assert.strictEqual( a.escritas().length, 0 );
 	assert.match( a.notificacoes.join( ' ' ), /arquivá-la/ );
+} );
+
+test( 'SEC-04: {{Nomeação concluída}} também conta como encerrada', async () => {
+	const a = ambienteConsenso( 'predefinição' );
+
+	a.ronda.getModule( 'consenso' ).open( a.ronda.ctx );
+	await a.esperar( 60 );
+	assert.strictEqual( a.$( '.ronda-dialog' ).length, 1 );
 } );
