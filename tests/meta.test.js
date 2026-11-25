@@ -37,28 +37,50 @@ test( 'Meta-painel: opção rápida grava a preferência', async () => {
 	assert.strictEqual( JSON.parse( c.optionvalue ).dryRun, true );
 } );
 
-test( 'Novidades: abrem uma vez depois de uma atualização; "Não mostrar mais" desliga as faixas', async () => {
+test( 'Novidades: faixa só com as novidades, uma vez por versão, e selo "novo" no nome', async () => {
 	const a = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1' } } );
 	const $bar = a.$( '#ronda-toolbar' );
 
+	$bar.find( '.ronda-brand' ).append( '<span class="ronda-brand-caret"> ▾</span>' );
 	a.ronda.meta.showNews( $bar );
-	assert.match( $bar.text(), /foi atualizado/ );
+	assert.match( $bar.text(), /Novidades da versão/ );
+	assert.doesNotMatch( $bar.text(), /Modo de simulação/, 'sem as configurações' );
+	assert.strictEqual( $bar.find( '.ronda-news-badge' ).length, 1 );
 	assert.strictEqual( a.opcoes[ 'userjs-ronda-novidades' ], a.ronda.version );
 
-	a.$( '.ronda-not-again' ).trigger( 'click' );
-	assert.strictEqual( a.opcoes[ 'userjs-ronda-faixas' ], 'off' );
+	// Fechar sem ler: a faixa some, o selo fica
+	$bar.find( '.ronda-news-actions a' ).eq( 1 ).trigger( 'click' );
+	assert.strictEqual( $bar.find( '.ronda-news' ).length, 0 );
+	assert.strictEqual( $bar.find( '.ronda-news-badge' ).length, 1 );
+
+	// Abrir o meta-painel pelo nome: o selo some e a versão fica lida
+	a.ronda.openMeta();
+	assert.strictEqual( $bar.find( '.ronda-news-badge' ).length, 0 );
+	assert.strictEqual( a.opcoes[ 'userjs-ronda-novidades-lidas' ], a.ronda.version );
+} );
+
+test( 'Novidades: na próxima página, sem faixa; com "Não mostrar mais", só o selo', async () => {
+	const v = criar().ronda.version;
+	const a = comBarra( { options: { 'userjs-ronda-novidades': v } } );
+
+	a.$( '#ronda-toolbar .ronda-brand' ).append( '<span class="ronda-brand-caret"> ▾</span>' );
+	a.ronda.meta.showNews( a.$( '#ronda-toolbar' ) );
+	assert.strictEqual( a.$( '.ronda-news' ).length, 0 );
+	assert.strictEqual( a.$( '.ronda-news-badge' ).length, 1, 'ainda não lida' );
 
 	const b = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1', 'userjs-ronda-faixas': 'off' } } );
 
+	b.$( '#ronda-toolbar .ronda-brand' ).append( '<span class="ronda-brand-caret"> ▾</span>' );
 	b.ronda.meta.showNews( b.$( '#ronda-toolbar' ) );
-	assert.doesNotMatch( b.$( '#ronda-toolbar' ).text(), /foi atualizado/ );
+	assert.strictEqual( b.$( '.ronda-news' ).length, 0 );
+	assert.strictEqual( b.$( '.ronda-news-badge' ).length, 1 );
 } );
 
 test( 'Novidades: quem nunca usou vê as boas-vindas, não as novidades', async () => {
 	const a = comBarra();
 
 	a.ronda.meta.showNews( a.$( '#ronda-toolbar' ) );
-	assert.doesNotMatch( a.$( '#ronda-toolbar' ).text(), /foi atualizado/ );
+	assert.strictEqual( a.$( '.ronda-news, .ronda-news-badge' ).length, 0 );
 } );
 
 test( 'Informar erro: seção nova com o relato e as informações técnicas', async () => {
@@ -78,21 +100,4 @@ test( 'Informar erro: seção nova com o relato e as informações técnicas', a
 	assert.strictEqual( e.sectiontitle, 'Mover falha' );
 	assert.match( e.text, /Cliquei e nada\. ~~~~/ );
 	assert.match( e.text, /Versão: <nowiki>/ );
-} );
-
-test( 'Novidades: fechar (ou reabrir pelo nome) tira o aviso de atualização', async () => {
-	const a = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1' } } );
-	const $bar = a.$( '#ronda-toolbar' );
-
-	a.ronda.meta.showNews( $bar );
-	a.$( '.ronda-meta-head a' ).first().trigger( 'click' );
-	a.ronda.openMeta();
-	assert.strictEqual( a.$( '.ronda-meta-head' ).length, 0 );
-
-	const b = comBarra( { options: { 'userjs-ronda-novidades': '0.0.1' } } );
-
-	b.ronda.meta.showNews( b.$( '#ronda-toolbar' ) );
-	b.ronda.openMeta();
-	b.ronda.openMeta();
-	assert.strictEqual( b.$( '.ronda-meta-head' ).length, 0 );
 } );

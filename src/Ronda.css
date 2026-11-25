@@ -475,9 +475,26 @@
 	margin-right: 1em;
 }
 
-#ronda-toolbar .ronda-meta-head {
-	margin-bottom: 0.4em;
-	padding: 0.3em 0.6em;
+/* Selo "novo" no nome, até as novidades serem vistas */
+#ronda-toolbar .ronda-news-badge {
+	margin-left: 0.3em;
+	padding: 0 0.45em;
+	border-radius: 0.8em;
+	background: var( --background-color-progressive, #36c );
+	color: var( --color-inverted-fixed, #fff );
+	font-size: 0.75em;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+/* Faixa de novidades depois de uma atualização */
+#ronda-toolbar .ronda-userpanel.ronda-news {
+	padding: 0.4em 0.6em;
+	border-top-width: 1px;
+}
+
+#ronda-toolbar .ronda-news .ronda-meta-news {
+	margin: 0.2em 0 0.3em 1.2em;
 }
 
 #ronda-toolbar .ronda-not-again {
