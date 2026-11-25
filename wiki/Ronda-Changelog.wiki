@@ -1,6 +1,10 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.16]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.17]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.17"></span>0.7.17 — 25/11/2026 ==
+* '''Informações''': painel reorganizado em tabela, como o Usuário, com novas linhas: '''Proteção''' (nível e prazo de cada ação, com o registro), '''Criação''' (quem criou e quando), '''Edições''' (total, número de editores e de IPs, última edição, edições eliminadas), '''Conteúdo''' (tamanho, qualidade, estimativa do LiftWing e número de referências), '''Manutenção''' (marcações presentes), '''Ligações''' (categorias, afluentes do domínio principal ou aviso de página órfã, outras línguas e item no Wikidata), '''Patrulha''' (página nova não patrulhada, edições não patrulhadas, com o atalho '''marcar como patrulhada''') e '''Público''' (visualizações dos últimos 30 dias e vigilantes).
+* '''Usuário''' e '''Informações''': os dados são carregados em segundo plano logo depois que a página abre (quando o navegador fica ocioso) ou ao passar o mouse no botão, e o painel abre pronto. Abrir e fechar não repete as consultas. Desligável em Preferências ("Carregar em segundo plano…") ou com <code><nowiki>prefetch: false</nowiki></code>.
 
 == <span id="0.7.16"></span>0.7.16 — 25/11/2026 ==
 Correções da auditoria técnica da 0.7.15.

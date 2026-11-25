@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.16',
+		version: '0.7.17',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -45,6 +45,8 @@ var uid = 0,
 			// Vigilância das páginas editadas; 'preferences' segue "Adicionar à lista de
 			// páginas vigiadas as páginas que eu editar" das preferências do MediaWiki
 			watchlist: 'preferences',
+			// Buscar em segundo plano os dados dos painéis Usuário e Informações
+			prefetch: true,
 			unlink: {
 				right: 'delete',      // direito exigido para ver o módulo Desligar
 				namespaces: '0',      // domínios onde as ligações são removidas
@@ -822,6 +824,55 @@ ronda.ui.textarea = function ( value, placeholder ) {
 };
 
 /** Caixa de seleção nativa com <label for> */
+/*
+ * Disposição do painel: à esquerda, uma tabela com um tema por linha (Situação,
+ * Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa);
+ * à direita, uma coluna com tudo o que se faz ou abre (Ações, Ver, CheckUser, IP).
+ * Linhas e grupos vazios não aparecem.
+ */
+ronda.ui.panelLayout = function () {
+	var rows = [],
+		groups = [];
+
+	return {
+		/** Linha da tabela; retorna a célula de conteúdo */
+		row: function ( label ) {
+			var $td = $( '<td></td>' );
+
+			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
+			return $td;
+		},
+		/** Grupo da coluna lateral; retorna o contêiner dos itens */
+		group: function ( label ) {
+			var $items = $( '<div class="ronda-up-items"></div>' );
+
+			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
+			return $items;
+		},
+		build: function () {
+			var $rows = rows.filter( function ( $tr ) {
+					return $tr.children( 'td' ).contents().length;
+				} ),
+				$groups = groups.filter( function ( $g ) {
+					return $g.find( '.ronda-up-items' ).contents().length;
+				} );
+
+			return $( '<div class="ronda-up-grid"></div>' ).append(
+				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
+				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
+			);
+		}
+	};
+};
+
+/** Acrescenta itens separados por " · " */
+ronda.ui.addTo = function ( $el, nodes ) {
+	if ( $el.contents().length ) {
+		$el.append( document.createTextNode( ' · ' ) );
+	}
+	$el.append( nodes );
+};
+
 ronda.ui.checkbox = function ( label, checked ) {
 	var id = ronda.ui.id( 'cb' ),
 		$input = $( '<input type="checkbox">' ).attr( 'id', id ).prop( 'checked', !!checked );
@@ -1196,6 +1247,11 @@ ronda.renderToolbar = function () {
 			.on( 'click', function () {
 				mod.open( ctx );
 			} )
+			.one( 'mouseenter focus', function () {
+				if ( ronda.config.prefetch !== false ) {
+					prefetchModule( mod, ctx );
+				}
+			} )
 			.appendTo( mod.admin ? $adminGroup : $group );
 	} );
 
@@ -1230,6 +1286,7 @@ ronda.PREFS = [
 		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
 	[ 'dryRun', ronda.msg( 'core-modo-de-simulacao-nada-e-gravado' ), 'check' ],
+	[ 'prefetch', ronda.msg( 'core-pre-carregar-paineis' ), 'check' ],
 	{ section: 'Reversão' },
 	[ 'revert.patrol', ronda.msg( 'core-marcar-como-patrulhada-ao-reverter' ), 'check' ],
 	[ 'revert.confirm', ronda.msg( 'core-pedir-confirmacao-antes-de-reverter-pelos' ), 'check' ],
@@ -1638,6 +1695,62 @@ function addWelcome( $bar ) {
 
 ronda.welcome = { show: addWelcome };
 
+/*
+ * Cache de promessas por chave: a primeira chamada busca, as seguintes reaproveitam.
+ * Uma busca que falha sai do cache, para ser tentada de novo.
+ */
+var memoCache = {};
+
+ronda.memo = function ( key, fn ) {
+	if ( !memoCache[ key ] ) {
+		memoCache[ key ] = fn();
+		memoCache[ key ].then( null, function () {
+			delete memoCache[ key ];
+		} );
+	}
+	return memoCache[ key ];
+};
+
+ronda.forget = function ( key ) {
+	delete memoCache[ key ];
+};
+
+/*
+ * Pré-carregamento: módulos com prefetch( ctx ) (os painéis Usuário e Informações)
+ * buscam os dados em segundo plano, quando o navegador fica ocioso, para o painel
+ * abrir pronto. Também ao passar o mouse (ou o foco) sobre o botão.
+ * Desligável com window.rondaConfig = { prefetch: false } ou nas preferências.
+ */
+function prefetchModule( mod, ctx ) {
+	try {
+		if ( mod.prefetch && mod.isAvailable( ctx ) ) {
+			mod.prefetch( ctx );
+		}
+	} catch ( e ) {
+		// eslint-disable-next-line no-console
+		console.warn( '[Ronda] pré-carregamento de ' + mod.id, e );
+	}
+}
+
+function schedulePrefetch( ctx ) {
+	if ( ronda.config.prefetch === false ) {
+		return;
+	}
+	setTimeout( function () {
+		var idle = window.requestIdleCallback || function ( fn ) {
+			return setTimeout( fn, 0 );
+		};
+
+		idle( function () {
+			ronda.modules.forEach( function ( mod ) {
+				prefetchModule( mod, ctx );
+			} );
+		}, { timeout: 4000 } );
+	}, 1500 );
+}
+
+ronda.prefetchModule = prefetchModule;
+
 /** Monta a barra; chamado quando o documento está pronto (depois de todos os módulos) */
 ronda.start = function () {
 	if ( ronda.started ) {
@@ -1671,6 +1784,9 @@ ronda.start = function () {
 
 		addControls( $bar );
 		addWelcome( $bar );
+		if ( $bar ) {
+			schedulePrefetch( ctx );
+		}
 
 		mw.hook( 'ronda.ready' ).fire( ronda );
 	} );

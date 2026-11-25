@@ -3,6 +3,10 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.17 — 25/11/2026
+- **Informações**: painel reorganizado em tabela, como o Usuário, com novas linhas: **Proteção** (nível e prazo de cada ação, com o registro), **Criação** (quem criou e quando), **Edições** (total, número de editores e de IPs, última edição, edições eliminadas), **Conteúdo** (tamanho, qualidade, estimativa do LiftWing e número de referências), **Manutenção** (marcações presentes), **Ligações** (categorias, afluentes do domínio principal ou aviso de página órfã, outras línguas e item no Wikidata), **Patrulha** (página nova não patrulhada, edições não patrulhadas, com o atalho **marcar como patrulhada**) e **Público** (visualizações dos últimos 30 dias e vigilantes).
+- **Usuário** e **Informações**: os dados são carregados em segundo plano logo depois que a página abre (quando o navegador fica ocioso) ou ao passar o mouse no botão, e o painel abre pronto. Abrir e fechar não repete as consultas. Desligável em Preferências ("Carregar em segundo plano…") ou com `prefetch: false`.
+
 ## 0.7.16 — 25/11/2026
 Correções da auditoria técnica da 0.7.15.
 - **Mover** (crítico): eliminar o destino nunca vem marcado. Se o destino não for um redirecionamento de uma edição para a página, a eliminação exige marcar uma segunda caixa, que mostra o título do destino. Enter só move quando o destino está livre, e o Mover não age sobre um destino cuja situação ainda não foi mostrada no formulário.
