@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.13',
+		version: '0.7.14',
 		api: api,
 		modules: [],
 		ctx: null,
