@@ -22,6 +22,7 @@ function criar( opts ) {
 	} );
 	const w = dom.window;
 	const calls = [];
+	const consultas = [];
 	const notificacoes = [];
 	const confirmacoes = [];
 	const user = opts.user || 'Eu';
@@ -55,6 +56,7 @@ function criar( opts ) {
 
 	function Api() {}
 	Api.prototype.get = function ( params ) {
+		consultas.push( params );
 		const r = responder( params );
 
 		// Como o mw.Api de verdade: resolve com ( dados, jqXHR ), o que faz $.when entregar arrays
@@ -82,6 +84,15 @@ function criar( opts ) {
 	Api.prototype.loadMessagesIfMissing = () => D();
 	Api.prototype.getErrorMessage = () => $( '<span>' ).text( 'erro' );
 	Api.prototype.saveOption = () => D();
+
+	// Pedidos externos (métricas, LiftWing): nada sai para a rede
+	const externos = [];
+	$.ajax = function ( o ) {
+		externos.push( o.url );
+		const r = opts.ajax ? opts.ajax( o ) : undefined;
+
+		return r !== undefined ? D( r ) : $.Deferred().reject( { status: 0 } ).promise();
+	};
 
 	const storage = {};
 	w.mw = {
@@ -129,6 +140,8 @@ function criar( opts ) {
 		calls: calls,
 		notificacoes: notificacoes,
 		confirmacoes: confirmacoes,
+		externos: externos,
+		consultas: consultas,
 		/** Espera as promessas pendentes (jQuery 3 resolve de forma assíncrona) */
 		esperar: ( ms ) => new Promise( ( ok ) => setTimeout( ok, ms || 30 ) ),
 		escritas: ( acao ) => calls.filter( ( c ) => !acao || c.action === acao )

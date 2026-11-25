@@ -1881,54 +1881,8 @@ function ipInfo( revid, $out ) {
 	} );
 }
 
-/*
- * Disposição do painel: à esquerda, uma tabela com um tema por linha (Situação,
- * Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa);
- * à direita, uma coluna com tudo o que se faz ou abre (Ações, Ver, CheckUser, IP).
- * Linhas e grupos vazios não aparecem.
- */
-function panelLayout() {
-	var rows = [],
-		groups = [];
-
-	return {
-		/** Linha da tabela; retorna a célula de conteúdo */
-		row: function ( label ) {
-			var $td = $( '<td></td>' );
-
-			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
-			return $td;
-		},
-		/** Grupo da coluna lateral; retorna o contêiner dos itens */
-		group: function ( label ) {
-			var $items = $( '<div class="ronda-up-items"></div>' );
-
-			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
-			return $items;
-		},
-		build: function () {
-			var $rows = rows.filter( function ( $tr ) {
-					return $tr.children( 'td' ).contents().length;
-				} ),
-				$groups = groups.filter( function ( $g ) {
-					return $g.find( '.ronda-up-items' ).contents().length;
-				} );
-
-			return $( '<div class="ronda-up-grid"></div>' ).append(
-				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
-				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
-			);
-		}
-	};
-}
-
-/** Acrescenta itens separados por " · " */
-function addTo( $el, nodes ) {
-	if ( $el.contents().length ) {
-		$el.append( sep() );
-	}
-	$el.append( nodes );
-}
+var panelLayout = ronda.ui.panelLayout,
+	addTo = ronda.ui.addTo;
 
 function render( $panel, ctx, user, isIP, info, talk, extra ) {
 	var days = ( ronda.config.warnings && ronda.config.warnings.window ) || 30,
@@ -2275,14 +2229,25 @@ function isAvailable( ctx ) {
 }
 
 /** Mostra ou esconde a faixa; os dados são buscados só na primeira vez */
+/** Todos os dados do painel, buscados uma vez por usuário (também em segundo plano, por prefetch) */
+function loadAll( user ) {
+	var isIP = mw.util.isIPAddress( user, true );
+
+	return ronda.memo( 'usuario:' + user, function () {
+		return $.when( loadUser( user, isIP ), loadTalk( user ), loadExtra( user, isIP ) ).then( function ( info, talk, extra ) {
+			return { info: info, talk: talk, extra: extra };
+		} );
+	} );
+}
+
 function toggle( ctx ) {
 	var user = ctx.targetUser,
 		isIP = mw.util.isIPAddress( user, true );
 
 	ronda.ui.togglePanel( 'usuario', function ( $panel ) {
 		$panel.text( ronda.msg( 'patrulha-carregando-informacoes-de', user ) );
-		$.when( loadUser( user, isIP ), loadTalk( user ), loadExtra( user, isIP ) ).then( function ( info, talk, extra ) {
-			render( $panel, ctx, user, isIP, info, talk, extra );
+		loadAll( user ).then( function ( d ) {
+			render( $panel, ctx, user, isIP, d.info, d.talk, d.extra );
 		}, function () {
 			$panel.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-as-informacoes', user ) );
 		} );
@@ -2295,7 +2260,10 @@ ronda.registerModule( {
 	title: ronda.msg( 'patrulha-mostrar-ou-esconder-as-informacoes-do' ),
 	order: 2,
 	isAvailable: isAvailable,
-	open: toggle
+	open: toggle,
+	prefetch: function ( ctx ) {
+		loadAll( ctx.targetUser );
+	}
 } );
 
 }( window.ronda ) );

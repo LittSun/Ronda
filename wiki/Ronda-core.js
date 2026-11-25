@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.16',
+		version: '0.7.17',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -26,6 +26,7 @@ var uid = 0,
 
 			icon: 'UserScript Ronda Icon.svg',
 			watchlist: 'preferences',
+			prefetch: true,
 			unlink: {
 				right: 'delete',
 				namespaces: '0',
@@ -643,6 +644,46 @@ ronda.ui.textarea = function ( value, placeholder ) {
 		.attr( 'placeholder', placeholder || '' );
 };
 
+ronda.ui.panelLayout = function () {
+	var rows = [],
+		groups = [];
+
+	return {
+		row: function ( label ) {
+			var $td = $( '<td></td>' );
+
+			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
+			return $td;
+		},
+		group: function ( label ) {
+			var $items = $( '<div class="ronda-up-items"></div>' );
+
+			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
+			return $items;
+		},
+		build: function () {
+			var $rows = rows.filter( function ( $tr ) {
+					return $tr.children( 'td' ).contents().length;
+				} ),
+				$groups = groups.filter( function ( $g ) {
+					return $g.find( '.ronda-up-items' ).contents().length;
+				} );
+
+			return $( '<div class="ronda-up-grid"></div>' ).append(
+				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
+				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
+			);
+		}
+	};
+};
+
+ronda.ui.addTo = function ( $el, nodes ) {
+	if ( $el.contents().length ) {
+		$el.append( document.createTextNode( ' · ' ) );
+	}
+	$el.append( nodes );
+};
+
 ronda.ui.checkbox = function ( label, checked ) {
 	var id = ronda.ui.id( 'cb' ),
 		$input = $( '<input type="checkbox">' ).attr( 'id', id ).prop( 'checked', !!checked );
@@ -958,6 +999,11 @@ ronda.renderToolbar = function () {
 			.on( 'click', function () {
 				mod.open( ctx );
 			} )
+			.one( 'mouseenter focus', function () {
+				if ( ronda.config.prefetch !== false ) {
+					prefetchModule( mod, ctx );
+				}
+			} )
 			.appendTo( mod.admin ? $adminGroup : $group );
 	} );
 
@@ -984,6 +1030,7 @@ ronda.PREFS = [
 		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
 	[ 'dryRun', ronda.msg( 'core-modo-de-simulacao-nada-e-gravado' ), 'check' ],
+	[ 'prefetch', ronda.msg( 'core-pre-carregar-paineis' ), 'check' ],
 	{ section: 'Reversão' },
 	[ 'revert.patrol', ronda.msg( 'core-marcar-como-patrulhada-ao-reverter' ), 'check' ],
 	[ 'revert.confirm', ronda.msg( 'core-pedir-confirmacao-antes-de-reverter-pelos' ), 'check' ],
@@ -1351,6 +1398,51 @@ function addWelcome( $bar ) {
 
 ronda.welcome = { show: addWelcome };
 
+var memoCache = {};
+
+ronda.memo = function ( key, fn ) {
+	if ( !memoCache[ key ] ) {
+		memoCache[ key ] = fn();
+		memoCache[ key ].then( null, function () {
+			delete memoCache[ key ];
+		} );
+	}
+	return memoCache[ key ];
+};
+
+ronda.forget = function ( key ) {
+	delete memoCache[ key ];
+};
+
+function prefetchModule( mod, ctx ) {
+	try {
+		if ( mod.prefetch && mod.isAvailable( ctx ) ) {
+			mod.prefetch( ctx );
+		}
+	} catch ( e ) {
+		console.warn( '[Ronda] pré-carregamento de ' + mod.id, e );
+	}
+}
+
+function schedulePrefetch( ctx ) {
+	if ( ronda.config.prefetch === false ) {
+		return;
+	}
+	setTimeout( function () {
+		var idle = window.requestIdleCallback || function ( fn ) {
+			return setTimeout( fn, 0 );
+		};
+
+		idle( function () {
+			ronda.modules.forEach( function ( mod ) {
+				prefetchModule( mod, ctx );
+			} );
+		}, { timeout: 4000 } );
+	}, 1500 );
+}
+
+ronda.prefetchModule = prefetchModule;
+
 ronda.start = function () {
 	if ( ronda.started ) {
 		return;
@@ -1383,6 +1475,9 @@ ronda.start = function () {
 
 		addControls( $bar );
 		addWelcome( $bar );
+		if ( $bar ) {
+			schedulePrefetch( ctx );
+		}
 
 		mw.hook( 'ronda.ready' ).fire( ronda );
 	} );

@@ -60,6 +60,7 @@ window.rondaMessages = {
 	'core-deixar-de-vigiar': 'Deixar de vigiar',
 	'core-mostrar-o-icone-na-barra': 'Mostrar o ícone na barra',
 	'core-modo-de-simulacao-nada-e-gravado': 'Modo de simulação (nada é gravado)',
+	'core-pre-carregar-paineis': 'Carregar em segundo plano os painéis Usuário e Informações (abrem mais rápido, mas fazem consultas em toda página)',
 	'core-marcar-como-patrulhada-ao-reverter': 'Marcar como patrulhada ao reverter',
 	'core-pedir-confirmacao-antes-de-reverter-pelos': 'Pedir confirmação antes de reverter pelos links rápidos',
 	'core-abrir-o-avisar-depois-de-reverter': 'Abrir o Avisar depois de reverter vandalismo',
@@ -464,6 +465,40 @@ window.rondaMessages = {
 	'paginas-registros': 'Registros',
 	'paginas-visualizacoes': 'Visualizações',
 	'paginas-mais-informacoes': 'Mais informações',
+	'paginas-info-situacao': 'Situação',
+	'paginas-info-protecao': 'Proteção',
+	'paginas-info-criacao': 'Criação',
+	'paginas-info-edicoes': 'Edições',
+	'paginas-info-conteudo': 'Conteúdo',
+	'paginas-info-manutencao': 'Manutenção',
+	'paginas-info-ligacoes': 'Ligações',
+	'paginas-info-patrulha': 'Patrulha',
+	'paginas-info-publico': 'Público',
+	'paginas-ja-eliminada-em': 'já eliminada; última vez em ',
+	'paginas-info-sem-protecao': 'sem proteção',
+	'paginas-info-registro': 'registro',
+	'paginas-info-criada-por': 'por ',
+	'paginas-info-em': ' em $1',
+	'paginas-info-total': 'Total: ',
+	'paginas-info-editores': 'Editores: $1$2',
+	'paginas-info-ips': ' ($1 IPs)',
+	'paginas-info-liftwing': 'estimada pelo LiftWing: $1%',
+	'paginas-info-liftwing-dica': 'Qualidade estimada pelo modelo do LiftWing (0 a 100%)',
+	'paginas-info-referencias': '{{PLURAL:$1|1 referência|$1 referências}}',
+	'paginas-info-marcacoes': '$1: $2',
+	'paginas-info-nenhuma-marcacao': 'nenhuma marcação',
+	'paginas-info-afluentes-principal': 'afluentes no domínio principal',
+	'paginas-info-orfa': 'órfã (sem afluentes no domínio principal)',
+	'paginas-info-linguas': 'em {{PLURAL:$1|outra língua|$1 outras línguas}}',
+	'paginas-info-interwikis': 'interwikis',
+	'paginas-info-sem-wikidata': 'sem item no Wikidata',
+	'paginas-info-nova-nao-patrulhada': 'página nova não patrulhada',
+	'paginas-info-marcar-patrulhada': 'marcar como patrulhada',
+	'paginas-info-patrulhada': 'patrulhada',
+	'paginas-info-edicoes-nao-patrulhadas': '{{PLURAL:$1|1 edição não patrulhada|$1 edições não patrulhadas}}',
+	'paginas-info-tudo-patrulhado': 'tudo patrulhado',
+	'paginas-info-visualizacoes': '$1 visualizações em 30 dias',
+	'paginas-info-historico': 'histórico',
 	'paginas-nao-foi-possivel-obter-as-informacoes': 'Não foi possível obter as informações da página.',
 	'paginas-segunda-pagina': 'Página 2',
 	'paginas-ocultar-o-nome-no-pedido': 'Ocultar o nome no pedido',
@@ -674,7 +709,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.16',
+		version: '0.7.17',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -689,6 +724,8 @@ var uid = 0,
 			// Vigilância das páginas editadas; 'preferences' segue "Adicionar à lista de
 			// páginas vigiadas as páginas que eu editar" das preferências do MediaWiki
 			watchlist: 'preferences',
+			// Buscar em segundo plano os dados dos painéis Usuário e Informações
+			prefetch: true,
 			unlink: {
 				right: 'delete',      // direito exigido para ver o módulo Desligar
 				namespaces: '0',      // domínios onde as ligações são removidas
@@ -1466,6 +1503,55 @@ ronda.ui.textarea = function ( value, placeholder ) {
 };
 
 /** Caixa de seleção nativa com <label for> */
+/*
+ * Disposição do painel: à esquerda, uma tabela com um tema por linha (Situação,
+ * Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa);
+ * à direita, uma coluna com tudo o que se faz ou abre (Ações, Ver, CheckUser, IP).
+ * Linhas e grupos vazios não aparecem.
+ */
+ronda.ui.panelLayout = function () {
+	var rows = [],
+		groups = [];
+
+	return {
+		/** Linha da tabela; retorna a célula de conteúdo */
+		row: function ( label ) {
+			var $td = $( '<td></td>' );
+
+			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
+			return $td;
+		},
+		/** Grupo da coluna lateral; retorna o contêiner dos itens */
+		group: function ( label ) {
+			var $items = $( '<div class="ronda-up-items"></div>' );
+
+			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
+			return $items;
+		},
+		build: function () {
+			var $rows = rows.filter( function ( $tr ) {
+					return $tr.children( 'td' ).contents().length;
+				} ),
+				$groups = groups.filter( function ( $g ) {
+					return $g.find( '.ronda-up-items' ).contents().length;
+				} );
+
+			return $( '<div class="ronda-up-grid"></div>' ).append(
+				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
+				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
+			);
+		}
+	};
+};
+
+/** Acrescenta itens separados por " · " */
+ronda.ui.addTo = function ( $el, nodes ) {
+	if ( $el.contents().length ) {
+		$el.append( document.createTextNode( ' · ' ) );
+	}
+	$el.append( nodes );
+};
+
 ronda.ui.checkbox = function ( label, checked ) {
 	var id = ronda.ui.id( 'cb' ),
 		$input = $( '<input type="checkbox">' ).attr( 'id', id ).prop( 'checked', !!checked );
@@ -1840,6 +1926,11 @@ ronda.renderToolbar = function () {
 			.on( 'click', function () {
 				mod.open( ctx );
 			} )
+			.one( 'mouseenter focus', function () {
+				if ( ronda.config.prefetch !== false ) {
+					prefetchModule( mod, ctx );
+				}
+			} )
 			.appendTo( mod.admin ? $adminGroup : $group );
 	} );
 
@@ -1874,6 +1965,7 @@ ronda.PREFS = [
 		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
 	[ 'dryRun', ronda.msg( 'core-modo-de-simulacao-nada-e-gravado' ), 'check' ],
+	[ 'prefetch', ronda.msg( 'core-pre-carregar-paineis' ), 'check' ],
 	{ section: 'Reversão' },
 	[ 'revert.patrol', ronda.msg( 'core-marcar-como-patrulhada-ao-reverter' ), 'check' ],
 	[ 'revert.confirm', ronda.msg( 'core-pedir-confirmacao-antes-de-reverter-pelos' ), 'check' ],
@@ -2282,6 +2374,62 @@ function addWelcome( $bar ) {
 
 ronda.welcome = { show: addWelcome };
 
+/*
+ * Cache de promessas por chave: a primeira chamada busca, as seguintes reaproveitam.
+ * Uma busca que falha sai do cache, para ser tentada de novo.
+ */
+var memoCache = {};
+
+ronda.memo = function ( key, fn ) {
+	if ( !memoCache[ key ] ) {
+		memoCache[ key ] = fn();
+		memoCache[ key ].then( null, function () {
+			delete memoCache[ key ];
+		} );
+	}
+	return memoCache[ key ];
+};
+
+ronda.forget = function ( key ) {
+	delete memoCache[ key ];
+};
+
+/*
+ * Pré-carregamento: módulos com prefetch( ctx ) (os painéis Usuário e Informações)
+ * buscam os dados em segundo plano, quando o navegador fica ocioso, para o painel
+ * abrir pronto. Também ao passar o mouse (ou o foco) sobre o botão.
+ * Desligável com window.rondaConfig = { prefetch: false } ou nas preferências.
+ */
+function prefetchModule( mod, ctx ) {
+	try {
+		if ( mod.prefetch && mod.isAvailable( ctx ) ) {
+			mod.prefetch( ctx );
+		}
+	} catch ( e ) {
+		// eslint-disable-next-line no-console
+		console.warn( '[Ronda] pré-carregamento de ' + mod.id, e );
+	}
+}
+
+function schedulePrefetch( ctx ) {
+	if ( ronda.config.prefetch === false ) {
+		return;
+	}
+	setTimeout( function () {
+		var idle = window.requestIdleCallback || function ( fn ) {
+			return setTimeout( fn, 0 );
+		};
+
+		idle( function () {
+			ronda.modules.forEach( function ( mod ) {
+				prefetchModule( mod, ctx );
+			} );
+		}, { timeout: 4000 } );
+	}, 1500 );
+}
+
+ronda.prefetchModule = prefetchModule;
+
 /** Monta a barra; chamado quando o documento está pronto (depois de todos os módulos) */
 ronda.start = function () {
 	if ( ronda.started ) {
@@ -2315,6 +2463,9 @@ ronda.start = function () {
 
 		addControls( $bar );
 		addWelcome( $bar );
+		if ( $bar ) {
+			schedulePrefetch( ctx );
+		}
 
 		mw.hook( 'ronda.ready' ).fire( ronda );
 	} );
@@ -4776,54 +4927,8 @@ function ipInfo( revid, $out ) {
 	} );
 }
 
-/*
- * Disposição do painel: à esquerda, uma tabela com um tema por linha (Situação,
- * Conta, Bloqueios, Contribuições, Atividade, Avisos, Filtro e, para IPs, Faixa);
- * à direita, uma coluna com tudo o que se faz ou abre (Ações, Ver, CheckUser, IP).
- * Linhas e grupos vazios não aparecem.
- */
-function panelLayout() {
-	var rows = [],
-		groups = [];
-
-	return {
-		/** Linha da tabela; retorna a célula de conteúdo */
-		row: function ( label ) {
-			var $td = $( '<td></td>' );
-
-			rows.push( $( '<tr></tr>' ).append( $( '<th scope="row"></th>' ).text( label ), $td ) );
-			return $td;
-		},
-		/** Grupo da coluna lateral; retorna o contêiner dos itens */
-		group: function ( label ) {
-			var $items = $( '<div class="ronda-up-items"></div>' );
-
-			groups.push( $( '<div class="ronda-up-group"></div>' ).append( $( '<div class="ronda-up-heading"></div>' ).text( label ), $items ) );
-			return $items;
-		},
-		build: function () {
-			var $rows = rows.filter( function ( $tr ) {
-					return $tr.children( 'td' ).contents().length;
-				} ),
-				$groups = groups.filter( function ( $g ) {
-					return $g.find( '.ronda-up-items' ).contents().length;
-				} );
-
-			return $( '<div class="ronda-up-grid"></div>' ).append(
-				$( '<table class="ronda-up-table"></table>' ).append( $( '<tbody></tbody>' ).append( $rows ) ),
-				$groups.length ? $( '<div class="ronda-up-side"></div>' ).append( $groups ) : null
-			);
-		}
-	};
-}
-
-/** Acrescenta itens separados por " · " */
-function addTo( $el, nodes ) {
-	if ( $el.contents().length ) {
-		$el.append( sep() );
-	}
-	$el.append( nodes );
-}
+var panelLayout = ronda.ui.panelLayout,
+	addTo = ronda.ui.addTo;
 
 function render( $panel, ctx, user, isIP, info, talk, extra ) {
 	var days = ( ronda.config.warnings && ronda.config.warnings.window ) || 30,
@@ -5170,14 +5275,25 @@ function isAvailable( ctx ) {
 }
 
 /** Mostra ou esconde a faixa; os dados são buscados só na primeira vez */
+/** Todos os dados do painel, buscados uma vez por usuário (também em segundo plano, por prefetch) */
+function loadAll( user ) {
+	var isIP = mw.util.isIPAddress( user, true );
+
+	return ronda.memo( 'usuario:' + user, function () {
+		return $.when( loadUser( user, isIP ), loadTalk( user ), loadExtra( user, isIP ) ).then( function ( info, talk, extra ) {
+			return { info: info, talk: talk, extra: extra };
+		} );
+	} );
+}
+
 function toggle( ctx ) {
 	var user = ctx.targetUser,
 		isIP = mw.util.isIPAddress( user, true );
 
 	ronda.ui.togglePanel( 'usuario', function ( $panel ) {
 		$panel.text( ronda.msg( 'patrulha-carregando-informacoes-de', user ) );
-		$.when( loadUser( user, isIP ), loadTalk( user ), loadExtra( user, isIP ) ).then( function ( info, talk, extra ) {
-			render( $panel, ctx, user, isIP, info, talk, extra );
+		loadAll( user ).then( function ( d ) {
+			render( $panel, ctx, user, isIP, d.info, d.talk, d.extra );
 		}, function () {
 			$panel.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-as-informacoes', user ) );
 		} );
@@ -5190,7 +5306,10 @@ ronda.registerModule( {
 	title: ronda.msg( 'patrulha-mostrar-ou-esconder-as-informacoes-do' ),
 	order: 2,
 	isAvailable: isAvailable,
-	open: toggle
+	open: toggle,
+	prefetch: function ( ctx ) {
+		loadAll( ctx.targetUser );
+	}
 } );
 
 }( window.ronda ) );
@@ -8764,126 +8883,328 @@ function formatDateTime( ts ) {
 	return new Date( ts ).toLocaleString( 'pt-BR', { dateStyle: 'short', timeStyle: 'short' } );
 }
 
-function openInfo( ctx ) {
-	ronda.ui.togglePanel( 'info', function ( $panel ) {
+/* ---------------- Informações ---------------- */
+
+var PROTECT_LEVELS = {
+		autoconfirmed: 'autoconfirmados',
+		extendedconfirmed: 'autoconfirmados estendidos',
+		editautoreviewprotected: 'autorrevisores',
+		sysop: 'administradores'
+	},
+	PROTECT_TYPES = { edit: 'edição', move: 'moção', create: 'criação', upload: 'carregamento' };
+
+/** Proteções em texto: "edição: administradores (até 01/02/2027)" */
+function protectionText( list ) {
+	return ( list || [] ).map( function ( p ) {
+		return ( PROTECT_TYPES[ p.type ] || p.type ) + ': ' + ( PROTECT_LEVELS[ p.level ] || p.level ) +
+			( /^infinit/.test( p.expiry || '' ) ? ' (sem prazo)' : ' (até ' + new Date( p.expiry ).toLocaleDateString( 'pt-BR' ) + ')' ) +
+			( p.source ? ' (cascata de ' + p.source + ')' : '' );
+	} );
+}
+
+/** Visualizações dos últimos 30 dias (API REST de métricas); null se não der */
+function pageviews( title ) {
+	var end = new Date( Date.now() - 864e5 ),
+		start = new Date( end.getTime() - 29 * 864e5 ),
+		day = function ( d ) {
+			return d.toISOString().slice( 0, 10 ).replace( /-/g, '' );
+		};
+
+	return $.ajax( {
+		url: 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/pt.wikipedia.org/all-access/user/' +
+			encodeURIComponent( title.replace( / /g, '_' ) ) + '/daily/' + day( start ) + '/' + day( end ),
+		dataType: 'json'
+	} ).then( function ( d ) {
+		return ( d.items || [] ).reduce( function ( n, i ) {
+			return n + ( i.views || 0 );
+		}, 0 );
+	}, function ( xhr ) {
+		// 404 = nenhuma visualização registrada no período
+		return $.Deferred().resolve( xhr && xhr.status === 404 ? 0 : null ).promise();
+	} );
+}
+
+/** Qualidade estimada pelo modelo independente de língua do LiftWing (0 a 1); null se não der */
+function liftwingQuality( revid ) {
+	return $.ajax( {
+		url: 'https://api.wikimedia.org/service/lw/inference/v1/models/articlequality:predict',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify( { rev_id: revid, lang: 'pt' } ),
+		dataType: 'json'
+	} ).then( function ( r ) {
+		var score = r && ( r.score !== undefined ? r.score : r.prediction !== undefined ? r.prediction : null );
+
+		return typeof score === 'number' ? score : null;
+	}, function () {
+		return $.Deferred().resolve( null ).promise();
+	} );
+}
+
+function soft( promise ) {
+	return promise.then( function ( d ) {
+		return d;
+	}, function () {
+		return $.Deferred().resolve( null ).promise();
+	} );
+}
+
+/**
+ * Dados do painel Informações, buscados uma vez por página (também em segundo plano).
+ * @return {jQuery.Promise} { main, first, revisions, deleted, patrol, views, lwQuality }
+ */
+function loadInfo( ctx ) {
+	return ronda.memo( 'info:' + ctx.page, function () {
 		var names = mw.config.get( 'wgFormattedNamespaces' ),
 			talk = ctx.ns % 2 === 0 && names[ ctx.ns + 1 ] !== undefined ? names[ ctx.ns + 1 ] + ':' + ctx.title : null,
 			pe = 'Wikipédia:Páginas para eliminar/' + ctx.page,
-			reqs = [];
-
-		$panel.text( ronda.msg( 'patrulha-carregando' ) );
-
-		reqs.push( ronda.api.get( $.extend( {
-			action: 'query',
-			titles: [ ctx.page, pe ].concat( talk ? [ talk ] : [] ).join( '|' ),
-			prop: 'info|revisions|categories',
-			inprop: 'watchers',
-			rvprop: 'timestamp|user',
-			cllimit: 'max',
-			list: 'logevents',
-			letype: 'delete',
-			letitle: ctx.page,
-			lelimit: 1
-		}, ctx.ns % 2 === 0 ? { list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blfilterredir: 'nonredirects' } : {} ) )
-			.then( function ( d ) {
-				return d;
-			} ) );
-
-		if ( ronda.can( 'deletedhistory' ) ) {
-			reqs.push( ronda.api.get( {
+			templates = ( ronda.catalog.maintenance || [] ).map( function ( m ) {
+				return names[ 10 ] + ':' + m.template;
+			} ).slice( 0, 50 ),
+			main = ronda.api.get( $.extend( {
 				action: 'query',
-				titles: ctx.page,
-				prop: 'deletedrevisions',
-				drvprop: 'ids',
-				drvlimit: 'max'
-			} ).then( function ( d ) {
+				titles: [ ctx.page, pe ].concat( talk ? [ talk ] : [] ).join( '|' ),
+				prop: 'info|revisions|categories|pageprops|langlinks|templates',
+				inprop: 'watchers|protection',
+				rvprop: 'timestamp|user|ids',
+				cllimit: 'max',
+				ppprop: 'wikibase_item',
+				lllimit: 'max',
+				tltemplates: templates.join( '|' ),
+				tllimit: 'max',
+				list: 'logevents',
+				letype: 'delete',
+				letitle: ctx.page,
+				lelimit: 1
+			}, ctx.ns % 2 === 0 ? {
+				// Afluentes vindos do domínio principal (sem nenhum, a página é órfã)
+				list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blnamespace: 0, blfilterredir: 'nonredirects'
+			} : {} ) ).then( function ( d ) {
 				return d;
-			}, function () {
-				return $.Deferred().resolve( null ).promise();
-			} ) );
+			} );
+
+		return $.when(
+			main,
+			// Criação e editores
+			soft( ronda.api.get( { action: 'query', titles: ctx.page, prop: 'revisions|contributors',
+				rvdir: 'newer', rvlimit: 1, rvprop: 'user|timestamp', pclimit: 'max' } ) ),
+			// Total de edições (até 500)
+			soft( ronda.api.get( { action: 'query', titles: ctx.page, prop: 'revisions', rvprop: 'ids', rvlimit: 'max' } ) ),
+			ronda.can( 'deletedhistory' ) ? soft( ronda.api.get( { action: 'query', titles: ctx.page,
+				prop: 'deletedrevisions', drvprop: 'ids', drvlimit: 'max' } ) ) : null,
+			// Patrulha: só quem pode patrulhar vê o que falta patrulhar
+			ronda.can( 'patrol' ) ? soft( ronda.api.get( { action: 'query', list: 'recentchanges', rctitle: ctx.page,
+				rcshow: '!patrolled', rcprop: 'ids|timestamp|user', rctype: 'new|edit', rclimit: 50 } ) ) : null,
+			ctx.exists ? pageviews( ctx.page ) : null,
+			main.then( function ( d ) {
+				var p = ( d.query.pages || [] ).filter( function ( x ) {
+					return x.title === ctx.page;
+				} )[ 0 ];
+
+				return ctx.ns === 0 && p && p.lastrevid ? liftwingQuality( p.lastrevid ) : null;
+			} )
+		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, lwQuality: lw, pe: pe, talk: talk };
+		} );
+	} );
+}
+
+function renderInfo( $panel, ctx, data ) {
+	var q = data.main.query,
+		byTitle = {},
+		L = ronda.ui.panelLayout(),
+		addTo = ronda.ui.addTo,
+		page, peExists, talkPage, quality, firstRev, contributors, anon, total, unpatrolled, newRc,
+		maintenance, wikidata, langs, refs, $catLinks = $( '#mw-normal-catlinks a' ).not( ':first' ),
+		$status, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view;
+
+	function flag( ok, what, href ) {
+		var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
+
+		return $c.addClass( ok ? 'ronda-ok' : 'ronda-bad' ).text( ( ok ? 'com ' : 'sem ' ) + what );
+	}
+
+	function a( href, text, ext ) {
+		return $( ext ? '<a target="_blank" rel="noopener"></a>' : '<a></a>' ).attr( 'href', href ).text( text );
+	}
+
+	( q.pages || [] ).forEach( function ( p ) {
+		byTitle[ p.title ] = p;
+	} );
+	page = byTitle[ ctx.page ] || ( q.pages || [] )[ 0 ] || {};
+	peExists = byTitle[ data.pe ] && !byTitle[ data.pe ].missing;
+	talkPage = data.talk && byTitle[ data.talk ];
+
+	$status = L.row( ronda.msg( 'paginas-info-situacao' ) );
+	$protect = L.row( ronda.msg( 'paginas-info-protecao' ) );
+	$creation = L.row( ronda.msg( 'paginas-info-criacao' ) );
+	$edits = L.row( ronda.msg( 'paginas-info-edicoes' ) );
+	$content = L.row( ronda.msg( 'paginas-info-conteudo' ) );
+	$maint = L.row( ronda.msg( 'paginas-info-manutencao' ) );
+	$links = L.row( ronda.msg( 'paginas-info-ligacoes' ) );
+	$patrol = L.row( ronda.msg( 'paginas-info-patrulha' ) );
+	$audience = L.row( ronda.msg( 'paginas-info-publico' ) );
+	$actions = L.group( ronda.msg( 'patrulha-up-acoes' ) );
+	$view = L.group( ronda.msg( 'patrulha-up-ver' ) );
+
+	$panel.empty();
+
+	// Situação
+	if ( page.missing ) {
+		$status.append( ( q.logevents || [] ).length
+			? $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( q.logevents[ 0 ].timestamp ) ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
+	} else {
+		addTo( $status, peExists
+			? a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-ja-proposta-para-eliminacao' ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-nunca-proposta-para-eliminacao' ) ) );
+		if ( ( q.logevents || [] ).length ) {
+			addTo( $status, $( '<span></span>' ).append( ronda.msg( 'paginas-ja-eliminada-em' ),
+				a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), formatDateTime( q.logevents[ 0 ].timestamp ) ) ) );
+		}
+	}
+
+	// Proteção
+	if ( !page.missing || ( page.protection || [] ).length ) {
+		$protect.append( ( page.protection || [] ).length
+			? $( '<span class="ronda-up-hot"></span>' ).text( protectionText( page.protection ).join( '; ' ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-sem-protecao' ) ) );
+		addTo( $protect, a( mw.util.getUrl( 'Special:Log/protect', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
+	}
+
+	if ( !page.missing ) {
+		// Criação
+		firstRev = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ];
+		if ( firstRev ) {
+			$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+				a( mw.util.getUrl( 'Special:Contributions/' + firstRev.user ), firstRev.user ),
+				document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( firstRev.timestamp ) ) ) );
 		}
 
-		$.when.apply( $, reqs ).then( function ( data, deleted ) {
-			var q = data.query,
-				byTitle = {},
-				page, peExists, talkPage, quality, dcount,
-				$status = $( '<div class="ronda-up-line"></div>' ),
-				$facts = $( '<div class="ronda-up-line"></div>' ),
-				$links = $( '<div class="ronda-up-line"></div>' ),
-				$catLinks = $( '#mw-normal-catlinks a' ).not( ':first' );
+		// Edições e editores
+		if ( data.revisions ) {
+			total = ( ( ( data.revisions.query.pages || [] )[ 0 ] || {} ).revisions || [] ).length;
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-info-total' ) ),
+				a( mw.util.getUrl( ctx.page, { action: 'history' } ), total + ( data.revisions[ 'continue' ] ? '+' : '' ) ) ] );
+		}
+		if ( data.first ) {
+			contributors = ( ( data.first.query.pages || [] )[ 0 ] || {} ).contributors || [];
+			anon = ( ( data.first.query.pages || [] )[ 0 ] || {} ).anoncontributors || 0;
+			addTo( $edits, document.createTextNode( ronda.msg( 'paginas-info-editores', contributors.length + anon +
+				( data.first[ 'continue' ] ? '+' : '' ), anon ? ronda.msg( 'paginas-info-ips', anon ) : '' ) ) );
+		}
+		if ( page.revisions ) {
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
+				a( mw.util.getUrl( ctx.page, { diff: 'cur', oldid: 'prev' } ), formatDateTime( page.revisions[ 0 ].timestamp ) + ' (' + page.revisions[ 0 ].user + ')' ) ] );
+		}
+		if ( data.deleted ) {
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-edicoes-eliminadas' ) + ': ' ),
+				a( mw.util.getUrl( 'Special:Undelete/' + ctx.page ), String( ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] ).length || 'nenhuma' ) ) ] );
+		}
 
-			function add( $line, nodes ) {
-				if ( $line.contents().length ) {
-					$line.append( sep() );
-				}
-				$line.append( nodes );
+		// Conteúdo e qualidade
+		addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-tamanho' ) + ': ' ),
+			$( '<b></b>' ).text( ( page.length || 0 ).toLocaleString( 'pt-BR' ) + ' bytes' ) ] );
+		if ( ctx.ns === 0 || ctx.ns === 100 ) {
+			quality = $( '#mw-indicator-featured-star' ).length ? 'destacado'
+				: $( '#mw-indicator-good-star' ).length ? 'bom'
+					: qualityFromCategories( talkPage && talkPage.categories );
+			addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-qualidade' ) + ': ' ), $( '<b></b>' ).text( quality || 'desconhecida' ) ] );
+		}
+		if ( typeof data.lwQuality === 'number' ) {
+			addTo( $content, $( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-liftwing-dica' ) )
+				.text( ronda.msg( 'paginas-info-liftwing', Math.round( data.lwQuality * 100 ) ) ) );
+		}
+		// Referências: contadas no texto exibido (só quando o painel é aberto na própria página)
+		if ( ctx.ns === 0 && ( ctx.type === 'view' || ctx.type === 'diff' ) ) {
+			refs = $( '#mw-content-text .references li' ).length;
+			addTo( $content, refs ? $( '<span></span>' ).text( ronda.msg( 'paginas-info-referencias', refs ) ) : flag( false, ronda.msg( 'paginas-referencias' ) ) );
+		}
+
+		// Manutenção: marcações do catálogo presentes (redirecionamentos já resolvidos pela API)
+		maintenance = ( page.templates || [] ).map( function ( t ) {
+			var name = t.title.replace( /^[^:]+:/, '' );
+
+			return ( ronda.catalog.maintenance || [] ).filter( function ( m ) {
+				return m.template === name;
+			} ).map( function ( m ) {
+				return m.label;
+			} )[ 0 ] || name;
+		} );
+		$maint.append( maintenance.length
+			? $( '<span></span>' ).text( ronda.msg( 'paginas-info-marcacoes', maintenance.length, maintenance.join( ', ' ) ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nenhuma-marcacao' ) ) );
+
+		// Ligações: categorias, afluentes do principal, interwikis, Wikidata
+		if ( ctx.ns % 2 === 0 && !ctx.isMainPage ) {
+			addTo( $links, flag( $catLinks.length > 0 || ( page.categories || [] ).some( function ( c ) {
+				return !/^Categoria:!/.test( c.title );
+			} ), 'categorias' ) );
+			addTo( $links, ( q.backlinks || [] ).length
+				? flag( true, ronda.msg( 'paginas-info-afluentes-principal' ), mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ) )
+				: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-orfa' ) ) );
+		}
+		langs = ( page.langlinks || [] ).length;
+		wikidata = ( page.pageprops || {} ).wikibase_item;
+		if ( ctx.ns === 0 || ctx.ns === 14 || ctx.ns === 10 ) {
+			addTo( $links, langs ? $( '<span></span>' ).text( ronda.msg( 'paginas-info-linguas', langs ) ) : flag( false, ronda.msg( 'paginas-info-interwikis' ) ) );
+			addTo( $links, wikidata
+				? a( 'https://www.wikidata.org/wiki/' + wikidata, wikidata, true )
+				: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-sem-wikidata' ) ) );
+		}
+
+		// Patrulha
+		if ( data.patrol ) {
+			unpatrolled = data.patrol.query.recentchanges || [];
+			newRc = unpatrolled.filter( function ( r ) {
+				return r.type === 'new';
+			} )[ 0 ];
+			if ( newRc ) {
+				addTo( $patrol, $( '<span class="ronda-up-hot"></span>' ).text( ronda.msg( 'paginas-info-nova-nao-patrulhada' ) ) );
+				$actions.append( $( '<div></div>' ).append( $( '<a href="#" role="button" class="ronda-up-action"></a>' )
+					.text( ronda.msg( 'paginas-info-marcar-patrulhada' ) )
+					.on( 'click', function ( e ) {
+						var $link = $( this );
+
+						e.preventDefault();
+						ronda.api.postWithToken( 'patrol', { action: 'patrol', rcid: newRc.rcid } ).then( function () {
+							ronda.forget( 'info:' + ctx.page );
+							$link.replaceWith( $( '<span></span>' ).text( ronda.msg( 'paginas-info-patrulhada' ) ) );
+						}, ronda.fail );
+					} ) ) );
 			}
-
-			function fact( label, $value ) {
-				add( $facts, [ document.createTextNode( label + ': ' ), $value ] );
+			if ( unpatrolled.length - ( newRc ? 1 : 0 ) > 0 ) {
+				addTo( $patrol, a( mw.util.getUrl( 'Special:RecentChanges', { hidepatrolled: 1, days: 30, limit: 50, target: ctx.page, enhanced: 0 } ),
+					ronda.msg( 'paginas-info-edicoes-nao-patrulhadas', unpatrolled.length - ( newRc ? 1 : 0 ) ) ) );
 			}
-
-			/** Verificação por extenso: "com referências" (verde) ou "sem referências" (vermelho) */
-			function check( ok, what, href ) {
-				var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
-
-				add( $status, $c.addClass( ok ? 'ronda-ok' : 'ronda-bad' ).text( ( ok ? 'com ' : 'sem ' ) + what ) );
+			if ( !unpatrolled.length ) {
+				$patrol.append( $( '<span class="ronda-ok"></span>' ).text( ronda.msg( 'paginas-info-tudo-patrulhado' ) ) );
 			}
+		}
 
-			( q.pages || [] ).forEach( function ( p ) {
-				byTitle[ p.title ] = p;
-			} );
-			page = byTitle[ ctx.page ] || ( q.pages || [] )[ 0 ] || {};
-			peExists = byTitle[ pe ] && !byTitle[ pe ].missing;
-			talkPage = talk && byTitle[ talk ];
+		// Público
+		if ( typeof data.views === 'number' ) {
+			addTo( $audience, document.createTextNode( ronda.msg( 'paginas-info-visualizacoes', data.views.toLocaleString( 'pt-BR' ) ) ) );
+		}
+		addTo( $audience, document.createTextNode( ronda.msg( 'paginas-vigilantes' ) + ': ' +
+			( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) ) );
+	}
 
-			$panel.empty();
+	// Ver
+	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'history' } ), ronda.msg( 'paginas-info-historico' ) ) );
+	addTo( $view, a( mw.util.getUrl( 'Special:Log', { page: ctx.page } ), ronda.msg( 'paginas-registros' ).toLowerCase() ) );
+	addTo( $view, a( 'https://pageviews.wmcloud.org/?' + $.param( { project: 'pt.wikipedia.org', platform: 'all-access', agent: 'user',
+		range: 'latest-30', pages: ctx.page.replace( / /g, '_' ) } ), ronda.msg( 'paginas-visualizacoes' ).toLowerCase(), true ) );
+	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'info' } ), ronda.msg( 'paginas-mais-informacoes' ).toLowerCase() ) );
 
-			if ( page.missing ) {
-				add( $status, ( q.logevents || [] ).length
-					? $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( q.logevents[ 0 ].timestamp ) ) )
-					: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
-			} else {
-				if ( ctx.ns % 2 === 0 && !ctx.isMainPage ) {
-					if ( ctx.ns === 0 ) {
-						check( $( '.references' ).length > 0, ronda.msg( 'paginas-referencias' ) );
-					}
-					check( $catLinks.length > 0, 'categorias' );
-					check( ( q.backlinks || [] ).length > 0, 'afluentes', mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page ) );
-				}
+	$panel.append( L.build() );
+}
 
-				add( $status, peExists
-					? $( '<a></a>' ).attr( 'href', mw.util.getUrl( pe ) ).text( ronda.msg( 'paginas-ja-proposta-para-eliminacao' ) )
-					: $( '<span></span>' ).text( ronda.msg( 'paginas-nunca-proposta-para-eliminacao' ) ) );
-
-				fact( ronda.msg( 'paginas-tamanho' ), $( '<b></b>' ).text( ( page.length || 0 ).toLocaleString( 'pt-BR' ) + ' bytes' ) );
-				if ( ctx.ns === 0 || ctx.ns === 100 ) {
-					quality = $( '#mw-indicator-featured-star' ).length ? 'destacado'
-						: $( '#mw-indicator-good-star' ).length ? 'bom'
-							: qualityFromCategories( talkPage && talkPage.categories );
-					fact( ronda.msg( 'paginas-qualidade' ), $( '<b></b>' ).text( quality || 'desconhecida' ) );
-				}
-				if ( page.revisions ) {
-					fact( ronda.msg( 'paginas-ultima-edicao' ), $( '<a></a>' ).attr( 'href', mw.util.getUrl( ctx.page, { diff: 'cur', oldid: 'prev' } ) )
-						.text( formatDateTime( page.revisions[ 0 ].timestamp ) + ' (' + page.revisions[ 0 ].user + ')' ) );
-				}
-			}
-
-			fact( ronda.msg( 'paginas-vigilantes' ), $( '<b></b>' ).text( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) );
-
-			if ( deleted ) {
-				dcount = ( ( ( deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] ).length;
-				fact( ronda.msg( 'paginas-edicoes-eliminadas' ), $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Undelete/' + ctx.page ) )
-					.text( dcount ? String( dcount ) : 'nenhuma' ) );
-			}
-
-			add( $links, $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Log', { page: ctx.page } ) ).text( ronda.msg( 'paginas-registros' ) ) );
-			add( $links, $( '<a target="_blank" rel="noopener"></a>' ).attr( 'href',
-				'https://pageviews.wmcloud.org/?' + $.param( { project: 'pt.wikipedia.org', platform: 'all-access', agent: 'user', range: 'latest-20', pages: ctx.page.replace( / /g, '_' ) } )
-			).text( ronda.msg( 'paginas-visualizacoes' ) ) );
-			add( $links, $( '<a></a>' ).attr( 'href', mw.util.getUrl( ctx.page, { action: 'info' } ) ).text( ronda.msg( 'paginas-mais-informacoes' ) ) );
-
-			$panel.append( $status, $facts.contents().length ? $facts : $(), $links );
+function openInfo( ctx ) {
+	ronda.ui.togglePanel( 'info', function ( $panel ) {
+		$panel.text( ronda.msg( 'patrulha-carregando' ) );
+		loadInfo( ctx ).then( function ( data ) {
+			renderInfo( $panel, ctx, data );
 		}, function () {
 			$panel.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
 		} );
@@ -9113,7 +9434,8 @@ ronda.registerModule( {
 	isAvailable: function ( ctx ) {
 		return ronda.isPageContext( ctx );
 	},
-	open: openInfo
+	open: openInfo,
+	prefetch: loadInfo
 } );
 
 ronda.registerModule( {

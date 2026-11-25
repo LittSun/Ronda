@@ -2642,125 +2642,303 @@ function formatDateTime( ts ) {
 	return new Date( ts ).toLocaleString( 'pt-BR', { dateStyle: 'short', timeStyle: 'short' } );
 }
 
-function openInfo( ctx ) {
-	ronda.ui.togglePanel( 'info', function ( $panel ) {
+var PROTECT_LEVELS = {
+		autoconfirmed: 'autoconfirmados',
+		extendedconfirmed: 'autoconfirmados estendidos',
+		editautoreviewprotected: 'autorrevisores',
+		sysop: 'administradores'
+	},
+	PROTECT_TYPES = { edit: 'edição', move: 'moção', create: 'criação', upload: 'carregamento' };
+
+function protectionText( list ) {
+	return ( list || [] ).map( function ( p ) {
+		return ( PROTECT_TYPES[ p.type ] || p.type ) + ': ' + ( PROTECT_LEVELS[ p.level ] || p.level ) +
+			( /^infinit/.test( p.expiry || '' ) ? ' (sem prazo)' : ' (até ' + new Date( p.expiry ).toLocaleDateString( 'pt-BR' ) + ')' ) +
+			( p.source ? ' (cascata de ' + p.source + ')' : '' );
+	} );
+}
+
+function pageviews( title ) {
+	var end = new Date( Date.now() - 864e5 ),
+		start = new Date( end.getTime() - 29 * 864e5 ),
+		day = function ( d ) {
+			return d.toISOString().slice( 0, 10 ).replace( /-/g, '' );
+		};
+
+	return $.ajax( {
+		url: 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/pt.wikipedia.org/all-access/user/' +
+			encodeURIComponent( title.replace( / /g, '_' ) ) + '/daily/' + day( start ) + '/' + day( end ),
+		dataType: 'json'
+	} ).then( function ( d ) {
+		return ( d.items || [] ).reduce( function ( n, i ) {
+			return n + ( i.views || 0 );
+		}, 0 );
+	}, function ( xhr ) {
+		return $.Deferred().resolve( xhr && xhr.status === 404 ? 0 : null ).promise();
+	} );
+}
+
+function liftwingQuality( revid ) {
+	return $.ajax( {
+		url: 'https://api.wikimedia.org/service/lw/inference/v1/models/articlequality:predict',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify( { rev_id: revid, lang: 'pt' } ),
+		dataType: 'json'
+	} ).then( function ( r ) {
+		var score = r && ( r.score !== undefined ? r.score : r.prediction !== undefined ? r.prediction : null );
+
+		return typeof score === 'number' ? score : null;
+	}, function () {
+		return $.Deferred().resolve( null ).promise();
+	} );
+}
+
+function soft( promise ) {
+	return promise.then( function ( d ) {
+		return d;
+	}, function () {
+		return $.Deferred().resolve( null ).promise();
+	} );
+}
+
+function loadInfo( ctx ) {
+	return ronda.memo( 'info:' + ctx.page, function () {
 		var names = mw.config.get( 'wgFormattedNamespaces' ),
 			talk = ctx.ns % 2 === 0 && names[ ctx.ns + 1 ] !== undefined ? names[ ctx.ns + 1 ] + ':' + ctx.title : null,
 			pe = 'Wikipédia:Páginas para eliminar/' + ctx.page,
-			reqs = [];
-
-		$panel.text( ronda.msg( 'patrulha-carregando' ) );
-
-		reqs.push( ronda.api.get( $.extend( {
-			action: 'query',
-			titles: [ ctx.page, pe ].concat( talk ? [ talk ] : [] ).join( '|' ),
-			prop: 'info|revisions|categories',
-			inprop: 'watchers',
-			rvprop: 'timestamp|user',
-			cllimit: 'max',
-			list: 'logevents',
-			letype: 'delete',
-			letitle: ctx.page,
-			lelimit: 1
-		}, ctx.ns % 2 === 0 ? { list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blfilterredir: 'nonredirects' } : {} ) )
-			.then( function ( d ) {
-				return d;
-			} ) );
-
-		if ( ronda.can( 'deletedhistory' ) ) {
-			reqs.push( ronda.api.get( {
+			templates = ( ronda.catalog.maintenance || [] ).map( function ( m ) {
+				return names[ 10 ] + ':' + m.template;
+			} ).slice( 0, 50 ),
+			main = ronda.api.get( $.extend( {
 				action: 'query',
-				titles: ctx.page,
-				prop: 'deletedrevisions',
-				drvprop: 'ids',
-				drvlimit: 'max'
-			} ).then( function ( d ) {
+				titles: [ ctx.page, pe ].concat( talk ? [ talk ] : [] ).join( '|' ),
+				prop: 'info|revisions|categories|pageprops|langlinks|templates',
+				inprop: 'watchers|protection',
+				rvprop: 'timestamp|user|ids',
+				cllimit: 'max',
+				ppprop: 'wikibase_item',
+				lllimit: 'max',
+				tltemplates: templates.join( '|' ),
+				tllimit: 'max',
+				list: 'logevents',
+				letype: 'delete',
+				letitle: ctx.page,
+				lelimit: 1
+			}, ctx.ns % 2 === 0 ? {
+				list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blnamespace: 0, blfilterredir: 'nonredirects'
+			} : {} ) ).then( function ( d ) {
 				return d;
-			}, function () {
-				return $.Deferred().resolve( null ).promise();
-			} ) );
+			} );
+
+		return $.when(
+			main,
+			soft( ronda.api.get( { action: 'query', titles: ctx.page, prop: 'revisions|contributors',
+				rvdir: 'newer', rvlimit: 1, rvprop: 'user|timestamp', pclimit: 'max' } ) ),
+			soft( ronda.api.get( { action: 'query', titles: ctx.page, prop: 'revisions', rvprop: 'ids', rvlimit: 'max' } ) ),
+			ronda.can( 'deletedhistory' ) ? soft( ronda.api.get( { action: 'query', titles: ctx.page,
+				prop: 'deletedrevisions', drvprop: 'ids', drvlimit: 'max' } ) ) : null,
+			ronda.can( 'patrol' ) ? soft( ronda.api.get( { action: 'query', list: 'recentchanges', rctitle: ctx.page,
+				rcshow: '!patrolled', rcprop: 'ids|timestamp|user', rctype: 'new|edit', rclimit: 50 } ) ) : null,
+			ctx.exists ? pageviews( ctx.page ) : null,
+			main.then( function ( d ) {
+				var p = ( d.query.pages || [] ).filter( function ( x ) {
+					return x.title === ctx.page;
+				} )[ 0 ];
+
+				return ctx.ns === 0 && p && p.lastrevid ? liftwingQuality( p.lastrevid ) : null;
+			} )
+		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, lwQuality: lw, pe: pe, talk: talk };
+		} );
+	} );
+}
+
+function renderInfo( $panel, ctx, data ) {
+	var q = data.main.query,
+		byTitle = {},
+		L = ronda.ui.panelLayout(),
+		addTo = ronda.ui.addTo,
+		page, peExists, talkPage, quality, firstRev, contributors, anon, total, unpatrolled, newRc,
+		maintenance, wikidata, langs, refs, $catLinks = $( '#mw-normal-catlinks a' ).not( ':first' ),
+		$status, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view;
+
+	function flag( ok, what, href ) {
+		var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
+
+		return $c.addClass( ok ? 'ronda-ok' : 'ronda-bad' ).text( ( ok ? 'com ' : 'sem ' ) + what );
+	}
+
+	function a( href, text, ext ) {
+		return $( ext ? '<a target="_blank" rel="noopener"></a>' : '<a></a>' ).attr( 'href', href ).text( text );
+	}
+
+	( q.pages || [] ).forEach( function ( p ) {
+		byTitle[ p.title ] = p;
+	} );
+	page = byTitle[ ctx.page ] || ( q.pages || [] )[ 0 ] || {};
+	peExists = byTitle[ data.pe ] && !byTitle[ data.pe ].missing;
+	talkPage = data.talk && byTitle[ data.talk ];
+
+	$status = L.row( ronda.msg( 'paginas-info-situacao' ) );
+	$protect = L.row( ronda.msg( 'paginas-info-protecao' ) );
+	$creation = L.row( ronda.msg( 'paginas-info-criacao' ) );
+	$edits = L.row( ronda.msg( 'paginas-info-edicoes' ) );
+	$content = L.row( ronda.msg( 'paginas-info-conteudo' ) );
+	$maint = L.row( ronda.msg( 'paginas-info-manutencao' ) );
+	$links = L.row( ronda.msg( 'paginas-info-ligacoes' ) );
+	$patrol = L.row( ronda.msg( 'paginas-info-patrulha' ) );
+	$audience = L.row( ronda.msg( 'paginas-info-publico' ) );
+	$actions = L.group( ronda.msg( 'patrulha-up-acoes' ) );
+	$view = L.group( ronda.msg( 'patrulha-up-ver' ) );
+
+	$panel.empty();
+
+	if ( page.missing ) {
+		$status.append( ( q.logevents || [] ).length
+			? $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( q.logevents[ 0 ].timestamp ) ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
+	} else {
+		addTo( $status, peExists
+			? a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-ja-proposta-para-eliminacao' ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-nunca-proposta-para-eliminacao' ) ) );
+		if ( ( q.logevents || [] ).length ) {
+			addTo( $status, $( '<span></span>' ).append( ronda.msg( 'paginas-ja-eliminada-em' ),
+				a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), formatDateTime( q.logevents[ 0 ].timestamp ) ) ) );
+		}
+	}
+
+	if ( !page.missing || ( page.protection || [] ).length ) {
+		$protect.append( ( page.protection || [] ).length
+			? $( '<span class="ronda-up-hot"></span>' ).text( protectionText( page.protection ).join( '; ' ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-sem-protecao' ) ) );
+		addTo( $protect, a( mw.util.getUrl( 'Special:Log/protect', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
+	}
+
+	if ( !page.missing ) {
+		firstRev = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ];
+		if ( firstRev ) {
+			$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+				a( mw.util.getUrl( 'Special:Contributions/' + firstRev.user ), firstRev.user ),
+				document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( firstRev.timestamp ) ) ) );
 		}
 
-		$.when.apply( $, reqs ).then( function ( data, deleted ) {
-			var q = data.query,
-				byTitle = {},
-				page, peExists, talkPage, quality, dcount,
-				$status = $( '<div class="ronda-up-line"></div>' ),
-				$facts = $( '<div class="ronda-up-line"></div>' ),
-				$links = $( '<div class="ronda-up-line"></div>' ),
-				$catLinks = $( '#mw-normal-catlinks a' ).not( ':first' );
+		if ( data.revisions ) {
+			total = ( ( ( data.revisions.query.pages || [] )[ 0 ] || {} ).revisions || [] ).length;
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-info-total' ) ),
+				a( mw.util.getUrl( ctx.page, { action: 'history' } ), total + ( data.revisions[ 'continue' ] ? '+' : '' ) ) ] );
+		}
+		if ( data.first ) {
+			contributors = ( ( data.first.query.pages || [] )[ 0 ] || {} ).contributors || [];
+			anon = ( ( data.first.query.pages || [] )[ 0 ] || {} ).anoncontributors || 0;
+			addTo( $edits, document.createTextNode( ronda.msg( 'paginas-info-editores', contributors.length + anon +
+				( data.first[ 'continue' ] ? '+' : '' ), anon ? ronda.msg( 'paginas-info-ips', anon ) : '' ) ) );
+		}
+		if ( page.revisions ) {
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
+				a( mw.util.getUrl( ctx.page, { diff: 'cur', oldid: 'prev' } ), formatDateTime( page.revisions[ 0 ].timestamp ) + ' (' + page.revisions[ 0 ].user + ')' ) ] );
+		}
+		if ( data.deleted ) {
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-edicoes-eliminadas' ) + ': ' ),
+				a( mw.util.getUrl( 'Special:Undelete/' + ctx.page ), String( ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] ).length || 'nenhuma' ) ) ] );
+		}
 
-			function add( $line, nodes ) {
-				if ( $line.contents().length ) {
-					$line.append( sep() );
-				}
-				$line.append( nodes );
+		addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-tamanho' ) + ': ' ),
+			$( '<b></b>' ).text( ( page.length || 0 ).toLocaleString( 'pt-BR' ) + ' bytes' ) ] );
+		if ( ctx.ns === 0 || ctx.ns === 100 ) {
+			quality = $( '#mw-indicator-featured-star' ).length ? 'destacado'
+				: $( '#mw-indicator-good-star' ).length ? 'bom'
+					: qualityFromCategories( talkPage && talkPage.categories );
+			addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-qualidade' ) + ': ' ), $( '<b></b>' ).text( quality || 'desconhecida' ) ] );
+		}
+		if ( typeof data.lwQuality === 'number' ) {
+			addTo( $content, $( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-liftwing-dica' ) )
+				.text( ronda.msg( 'paginas-info-liftwing', Math.round( data.lwQuality * 100 ) ) ) );
+		}
+		if ( ctx.ns === 0 && ( ctx.type === 'view' || ctx.type === 'diff' ) ) {
+			refs = $( '#mw-content-text .references li' ).length;
+			addTo( $content, refs ? $( '<span></span>' ).text( ronda.msg( 'paginas-info-referencias', refs ) ) : flag( false, ronda.msg( 'paginas-referencias' ) ) );
+		}
+
+		maintenance = ( page.templates || [] ).map( function ( t ) {
+			var name = t.title.replace( /^[^:]+:/, '' );
+
+			return ( ronda.catalog.maintenance || [] ).filter( function ( m ) {
+				return m.template === name;
+			} ).map( function ( m ) {
+				return m.label;
+			} )[ 0 ] || name;
+		} );
+		$maint.append( maintenance.length
+			? $( '<span></span>' ).text( ronda.msg( 'paginas-info-marcacoes', maintenance.length, maintenance.join( ', ' ) ) )
+			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nenhuma-marcacao' ) ) );
+
+		if ( ctx.ns % 2 === 0 && !ctx.isMainPage ) {
+			addTo( $links, flag( $catLinks.length > 0 || ( page.categories || [] ).some( function ( c ) {
+				return !/^Categoria:!/.test( c.title );
+			} ), 'categorias' ) );
+			addTo( $links, ( q.backlinks || [] ).length
+				? flag( true, ronda.msg( 'paginas-info-afluentes-principal' ), mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ) )
+				: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-orfa' ) ) );
+		}
+		langs = ( page.langlinks || [] ).length;
+		wikidata = ( page.pageprops || {} ).wikibase_item;
+		if ( ctx.ns === 0 || ctx.ns === 14 || ctx.ns === 10 ) {
+			addTo( $links, langs ? $( '<span></span>' ).text( ronda.msg( 'paginas-info-linguas', langs ) ) : flag( false, ronda.msg( 'paginas-info-interwikis' ) ) );
+			addTo( $links, wikidata
+				? a( 'https://www.wikidata.org/wiki/' + wikidata, wikidata, true )
+				: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-sem-wikidata' ) ) );
+		}
+
+		if ( data.patrol ) {
+			unpatrolled = data.patrol.query.recentchanges || [];
+			newRc = unpatrolled.filter( function ( r ) {
+				return r.type === 'new';
+			} )[ 0 ];
+			if ( newRc ) {
+				addTo( $patrol, $( '<span class="ronda-up-hot"></span>' ).text( ronda.msg( 'paginas-info-nova-nao-patrulhada' ) ) );
+				$actions.append( $( '<div></div>' ).append( $( '<a href="#" role="button" class="ronda-up-action"></a>' )
+					.text( ronda.msg( 'paginas-info-marcar-patrulhada' ) )
+					.on( 'click', function ( e ) {
+						var $link = $( this );
+
+						e.preventDefault();
+						ronda.api.postWithToken( 'patrol', { action: 'patrol', rcid: newRc.rcid } ).then( function () {
+							ronda.forget( 'info:' + ctx.page );
+							$link.replaceWith( $( '<span></span>' ).text( ronda.msg( 'paginas-info-patrulhada' ) ) );
+						}, ronda.fail );
+					} ) ) );
 			}
-
-			function fact( label, $value ) {
-				add( $facts, [ document.createTextNode( label + ': ' ), $value ] );
+			if ( unpatrolled.length - ( newRc ? 1 : 0 ) > 0 ) {
+				addTo( $patrol, a( mw.util.getUrl( 'Special:RecentChanges', { hidepatrolled: 1, days: 30, limit: 50, target: ctx.page, enhanced: 0 } ),
+					ronda.msg( 'paginas-info-edicoes-nao-patrulhadas', unpatrolled.length - ( newRc ? 1 : 0 ) ) ) );
 			}
-
-			function check( ok, what, href ) {
-				var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
-
-				add( $status, $c.addClass( ok ? 'ronda-ok' : 'ronda-bad' ).text( ( ok ? 'com ' : 'sem ' ) + what ) );
+			if ( !unpatrolled.length ) {
+				$patrol.append( $( '<span class="ronda-ok"></span>' ).text( ronda.msg( 'paginas-info-tudo-patrulhado' ) ) );
 			}
+		}
 
-			( q.pages || [] ).forEach( function ( p ) {
-				byTitle[ p.title ] = p;
-			} );
-			page = byTitle[ ctx.page ] || ( q.pages || [] )[ 0 ] || {};
-			peExists = byTitle[ pe ] && !byTitle[ pe ].missing;
-			talkPage = talk && byTitle[ talk ];
+		if ( typeof data.views === 'number' ) {
+			addTo( $audience, document.createTextNode( ronda.msg( 'paginas-info-visualizacoes', data.views.toLocaleString( 'pt-BR' ) ) ) );
+		}
+		addTo( $audience, document.createTextNode( ronda.msg( 'paginas-vigilantes' ) + ': ' +
+			( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) ) );
+	}
 
-			$panel.empty();
+	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'history' } ), ronda.msg( 'paginas-info-historico' ) ) );
+	addTo( $view, a( mw.util.getUrl( 'Special:Log', { page: ctx.page } ), ronda.msg( 'paginas-registros' ).toLowerCase() ) );
+	addTo( $view, a( 'https://pageviews.wmcloud.org/?' + $.param( { project: 'pt.wikipedia.org', platform: 'all-access', agent: 'user',
+		range: 'latest-30', pages: ctx.page.replace( / /g, '_' ) } ), ronda.msg( 'paginas-visualizacoes' ).toLowerCase(), true ) );
+	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'info' } ), ronda.msg( 'paginas-mais-informacoes' ).toLowerCase() ) );
 
-			if ( page.missing ) {
-				add( $status, ( q.logevents || [] ).length
-					? $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( q.logevents[ 0 ].timestamp ) ) )
-					: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
-			} else {
-				if ( ctx.ns % 2 === 0 && !ctx.isMainPage ) {
-					if ( ctx.ns === 0 ) {
-						check( $( '.references' ).length > 0, ronda.msg( 'paginas-referencias' ) );
-					}
-					check( $catLinks.length > 0, 'categorias' );
-					check( ( q.backlinks || [] ).length > 0, 'afluentes', mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page ) );
-				}
+	$panel.append( L.build() );
+}
 
-				add( $status, peExists
-					? $( '<a></a>' ).attr( 'href', mw.util.getUrl( pe ) ).text( ronda.msg( 'paginas-ja-proposta-para-eliminacao' ) )
-					: $( '<span></span>' ).text( ronda.msg( 'paginas-nunca-proposta-para-eliminacao' ) ) );
-
-				fact( ronda.msg( 'paginas-tamanho' ), $( '<b></b>' ).text( ( page.length || 0 ).toLocaleString( 'pt-BR' ) + ' bytes' ) );
-				if ( ctx.ns === 0 || ctx.ns === 100 ) {
-					quality = $( '#mw-indicator-featured-star' ).length ? 'destacado'
-						: $( '#mw-indicator-good-star' ).length ? 'bom'
-							: qualityFromCategories( talkPage && talkPage.categories );
-					fact( ronda.msg( 'paginas-qualidade' ), $( '<b></b>' ).text( quality || 'desconhecida' ) );
-				}
-				if ( page.revisions ) {
-					fact( ronda.msg( 'paginas-ultima-edicao' ), $( '<a></a>' ).attr( 'href', mw.util.getUrl( ctx.page, { diff: 'cur', oldid: 'prev' } ) )
-						.text( formatDateTime( page.revisions[ 0 ].timestamp ) + ' (' + page.revisions[ 0 ].user + ')' ) );
-				}
-			}
-
-			fact( ronda.msg( 'paginas-vigilantes' ), $( '<b></b>' ).text( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) );
-
-			if ( deleted ) {
-				dcount = ( ( ( deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] ).length;
-				fact( ronda.msg( 'paginas-edicoes-eliminadas' ), $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Undelete/' + ctx.page ) )
-					.text( dcount ? String( dcount ) : 'nenhuma' ) );
-			}
-
-			add( $links, $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Log', { page: ctx.page } ) ).text( ronda.msg( 'paginas-registros' ) ) );
-			add( $links, $( '<a target="_blank" rel="noopener"></a>' ).attr( 'href',
-				'https://pageviews.wmcloud.org/?' + $.param( { project: 'pt.wikipedia.org', platform: 'all-access', agent: 'user', range: 'latest-20', pages: ctx.page.replace( / /g, '_' ) } )
-			).text( ronda.msg( 'paginas-visualizacoes' ) ) );
-			add( $links, $( '<a></a>' ).attr( 'href', mw.util.getUrl( ctx.page, { action: 'info' } ) ).text( ronda.msg( 'paginas-mais-informacoes' ) ) );
-
-			$panel.append( $status, $facts.contents().length ? $facts : $(), $links );
+function openInfo( ctx ) {
+	ronda.ui.togglePanel( 'info', function ( $panel ) {
+		$panel.text( ronda.msg( 'patrulha-carregando' ) );
+		loadInfo( ctx ).then( function ( data ) {
+			renderInfo( $panel, ctx, data );
 		}, function () {
 			$panel.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
 		} );
@@ -2980,7 +3158,8 @@ ronda.registerModule( {
 	isAvailable: function ( ctx ) {
 		return ronda.isPageContext( ctx );
 	},
-	open: openInfo
+	open: openInfo,
+	prefetch: loadInfo
 } );
 
 ronda.registerModule( {
