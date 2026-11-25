@@ -21,6 +21,7 @@ Não publique em issues informações privadas de usuários (dados de CheckUser,
 ## Convenções
 
 - **Interface:** só o jQuery UI 1.9.2 que vem com o MediaWiki (`dialog`, `button`, `autocomplete`, `progressbar`, `tooltip`), controles nativos do HTML e classes nativas. Nada de APIs do jQuery UI 1.10+.
+- **Sem migração de biblioteca:** o Ronda não será migrado do jQuery UI para Codex, OOUI ou qualquer outra biblioteca, mesmo com o aviso de depreciação do módulo, salvo decisão explícita do mantenedor. Não proponha nem faça essa troca em pull requests.
 - **Textos:** todo texto da interface vai em `src/Ronda-mensagens.js` e é usado com `ronda.msg( 'chave' )`, com o prefixo do arquivo (`core-`, `patrulha-`, `paginas-`, `admin-`). Conteúdo gravado na wiki (resumos, predefinições) e catálogos ficam fora.
 - **Catálogos:** avisos, marcações, regras e motivos ficam em `src/Ronda-catalogo.js`, não espalhados pelo código.
 - **Idioma:** português do Brasil, em textos, comentários e mensagens de commit; frases completas e sem jargão desnecessário.
