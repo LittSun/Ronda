@@ -3,6 +3,12 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.14 — 25/11/2026
+- **Usuário**: linha do **registro do filtro de abusos** nos últimos 30 dias, com o total (link para o registro), quantas foram impedidas (em destaque) ou só avisadas, e **ver ocorrências**, que abre as dez mais recentes com hora, filtro, página e ação.
+- **Usuário**: aviso de **bloqueio em outras wikis** na situação da conta, com o link para o registro de bloqueios de cada wiki e a duração e o motivo na dica.
+- **Usuário**: contagem de **edições ocultadas** (conteúdo ou resumo) entre as 500 mais recentes, com as suprimidas à parte.
+- **Usuário**: o último bloqueio em "Bloqueios anteriores" mostra a duração em português ("3 semanas" em vez de "3 weeks") e o motivo no próprio texto, não só na dica.
+
 ## 0.7.13 — 24/11/2026
 - **Boas-vindas**: na primeira vez que a barra aparece, uma faixa explica que o Ronda pode ser ajustado nas preferências e onde elas ficam (menu de ações ou, no celular, a própria barra), com os botões **Abrir preferências**, **Documentação** e **Entendi**. Aparece uma vez por conta (opção `userjs-ronda-boasvindas`, gravada mesmo na simulação) e não aparece para quem já salvou preferências.
 

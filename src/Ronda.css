@@ -104,6 +104,12 @@
 	margin: 0.1em 0;
 }
 
+/* Ocorrências do filtro de abusos, abertas ao clicar */
+#ronda-toolbar .ronda-up-list {
+	margin: 0.2em 0 0.2em 1.6em;
+	padding: 0;
+}
+
 #ronda-toolbar .ronda-badge {
 	padding: 0.1em 0.5em;
 }

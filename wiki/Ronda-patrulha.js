@@ -1256,6 +1256,7 @@ function blockHistory( events ) {
 			timestamp: last.timestamp,
 			by: last.user,
 			duration: ( last.params || {} ).duration || '',
+			expiry: ( last.params || {} ).expiry || '',
 			reason: last.comment || '',
 			action: last.action
 		} : null
@@ -1285,7 +1286,98 @@ function groupDates( events, groups ) {
 	return out;
 }
 
+function durationText( duration, expiry ) {
+	var units = {
+			second: 'patrulha-duracao-second', sec: 'patrulha-duracao-second',
+			minute: 'patrulha-duracao-minute', min: 'patrulha-duracao-minute',
+			hour: 'patrulha-duracao-hour', day: 'patrulha-duracao-day',
+			week: 'patrulha-duracao-week', fortnight: 'patrulha-duracao-fortnight',
+			month: 'patrulha-duracao-month', year: 'patrulha-duracao-year'
+		},
+		parts = [],
+		ok = true,
+		rest;
+
+	duration = String( duration || '' ).trim();
+	if ( !duration ) {
+		return '';
+	}
+	if ( /^(infinit|indefinit|never)/i.test( duration ) ) {
+		return ronda.msg( 'patrulha-duracao-indefinido' );
+	}
+	rest = duration.replace( /(\d+(?:[.,]\d+)?)\s*([a-z]+?)s?\b/gi, function ( m, n, u ) {
+		u = u.toLowerCase();
+		if ( !units[ u ] ) {
+			ok = false;
+			return m;
+		}
+		parts.push( ronda.msg( units[ u ], n.replace( '.', ',' ) ) );
+		return '';
+	} ).replace( /\s+|,|\band\b/gi, '' );
+
+	if ( ok && parts.length && !rest ) {
+		return parts.length > 1 ? parts.slice( 0, -1 ).join( ', ' ) + ' e ' + parts[ parts.length - 1 ] : parts[ 0 ];
+	}
+	if ( expiry && !/^infinit/.test( expiry ) && !isNaN( Date.parse( expiry ) ) ) {
+		return ronda.msg( 'patrulha-ate', new Date( expiry ).toLocaleString( 'pt-BR' ) );
+	}
+	return duration;
+}
+
+function abuseSummary( entries, now, days ) {
+	var since = now - days * 864e5,
+		list = ( entries || [] ).filter( function ( e ) {
+			return Date.parse( e.timestamp ) >= since;
+		} );
+
+	function has( e, re ) {
+		return re.test( e.result || '' );
+	}
+
+	return {
+		count: list.length,
+		disallowed: list.filter( function ( e ) {
+			return has( e, /\b(disallow|block|blockautopromote|degroup)\b/ );
+		} ).length,
+		warned: list.filter( function ( e ) {
+			return has( e, /\bwarn\b/ ) && !has( e, /\b(disallow|block|degroup)\b/ );
+		} ).length,
+		entries: list
+	};
+}
+
+function otherWikiBlocks( merged, currentWiki ) {
+	return ( merged || [] ).filter( function ( w ) {
+		return w.blocked && w.wiki !== currentWiki;
+	} ).map( function ( w ) {
+		return {
+			wiki: w.wiki,
+			url: w.url,
+			host: String( w.url || w.wiki ).replace( /^https?:\/\//, '' ).replace( /\.org$/, '' ),
+			expiry: w.blocked.expiry,
+			reason: w.blocked.reason || ''
+		};
+	} );
+}
+
+function hiddenEdits( contribs ) {
+	var list = ( contribs || [] ).filter( function ( c ) {
+		return c.texthidden || c.commenthidden;
+	} );
+
+	return {
+		count: list.length,
+		suppressed: list.filter( function ( c ) {
+			return c.suppressed;
+		} ).length
+	};
+}
+
 ronda.userInfo = {
+	durationText: durationText,
+	abuseSummary: abuseSummary,
+	otherWikiBlocks: otherWikiBlocks,
+	hiddenEdits: hiddenEdits,
 	groupList: groupList,
 	recentWarnings: recentWarnings,
 	summarize: summarize,
@@ -1352,8 +1444,9 @@ function loadExtra( user, isIP ) {
 			action: 'query',
 			list: 'usercontribs',
 			uclimit: 500,
-			ucprop: 'ids|title|timestamp|tags|flags'
+			ucprop: 'ids|title|timestamp|tags|flags|comment'
 		},
+		abuseDays = 30,
 		global = { action: 'query', list: 'globalblocks', bgprop: 'target|address|by|expiry|reason|range', bglimit: 1 };
 
 	contribs[ isRange ? 'uciprange' : 'ucuser' ] = user;
@@ -1369,8 +1462,12 @@ function loadExtra( user, isIP ) {
 			adruser: user, adrlimit: 500, adrprop: 'ids' } ) ),
 		isIP ? null : soft( ronda.api.get( { action: 'query', list: 'logevents', letype: 'rights', letitle: userPage,
 			lelimit: 50, leprop: 'timestamp|details' } ) ),
-		soft( ronda.api.get( global ) )
-	).then( function ( uc, blk, created, deleted, rights, gb ) {
+		soft( ronda.api.get( global ) ),
+		isRange ? null : soft( ronda.api.get( { action: 'query', list: 'abuselog', afluser: user, afllimit: 50,
+			aflend: new Date( Date.now() - abuseDays * 864e5 ).toISOString(),
+			aflprop: 'ids|filter|title|action|result|timestamp|hidden' } ) ),
+		isIP ? null : soft( ronda.api.get( { action: 'query', meta: 'globaluserinfo', guiuser: user, guiprop: 'merged' } ) )
+	).then( function ( uc, blk, created, deleted, rights, gb, afl, gui ) {
 		var titles = ( created && created.query.logevents || [] ).map( function ( e ) {
 				return e.title;
 			} ).filter( function ( t, i, a ) {
@@ -1386,7 +1483,14 @@ function loadExtra( user, isIP ) {
 				}, 0 ) : null,
 				deletedMore: !!( deleted && deleted[ 'continue' ] ),
 				rights: rights ? rights.query.logevents || [] : null,
-				globalBlock: gb && gb.query && ( gb.query.globalblocks || [] )[ 0 ] || null
+				globalBlock: gb && gb.query && ( gb.query.globalblocks || [] )[ 0 ] || null,
+				abuse: afl && afl.query ? $.extend( abuseSummary( afl.query.abuselog, Date.now(), abuseDays ), {
+					days: abuseDays,
+					more: !!afl[ 'continue' ]
+				} ) : null,
+				otherBlocks: gui && gui.query && gui.query.globaluserinfo ?
+					otherWikiBlocks( gui.query.globaluserinfo.merged, mw.config.get( 'wgDBname' ) ) : null,
+				hidden: uc ? hiddenEdits( uc.query.usercontribs ) : null
 			};
 
 		if ( !titles.length ) {
@@ -1584,6 +1688,7 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 		when, editcount, canWarn, canBlock, dates,
 		$hist = $( '<div class="ronda-up-line"></div>' ),
 		$act = $( '<div class="ronda-up-line"></div>' ),
+		$abuse = $( '<div class="ronda-up-line"></div>' ),
 		$extraLinks = $( '<div></div>' );
 
 	$panel.empty();
@@ -1666,9 +1771,10 @@ function render( $panel, ctx, user, isIP, info, talk, extra ) {
 		$links.append( sep(), action( bloquear, ctx, info.block ? ronda.msg( 'patrulha-alterar-bloqueio' ) : 'bloquear' ) );
 	}
 
-	renderExtra( ctx, user, isIP, extra || {}, $status, $hist, $act, $links, $extraLinks );
+	renderExtra( ctx, user, isIP, extra || {}, $status, $hist, $act, $links, $extraLinks, $abuse );
 
 	$panel.append( [ $status.children().length ? $status : null, $facts, $hist.contents().length ? $hist : null,
+		$abuse.contents().length ? $abuse : null,
 		$act.contents().length ? $act : null, $warn, $links, $extraLinks.children().length ? $extraLinks : null ].filter( Boolean ) );
 }
 
@@ -1680,7 +1786,7 @@ function external( url, text, title ) {
 	return $( '<a target="_blank" rel="noopener"></a>' ).attr( { href: url, title: title || '' } ).text( text );
 }
 
-function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $extraLinks ) {
+function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $extraLinks, $abuse ) {
 	var userPage = mw.config.get( 'wgFormattedNamespaces' )[ 2 ] + ':' + user,
 		act = extra.contribs ? activity( extra.contribs, Date.now() ) : null,
 		range = isIP ? ipRange( user ) : null,
@@ -1707,6 +1813,20 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 		) );
 	}
 
+	if ( extra.otherBlocks && extra.otherBlocks.length ) {
+		$status.append( $status.children().length ? ' ' : '', $( '<span class="ui-state-error ui-corner-all ronda-badge"></span>' ).append(
+			$( '<b></b>' ).text( ronda.msg( 'patrulha-bloqueado-em-outras-wikis', extra.otherBlocks.length ) ),
+			' ',
+			extra.otherBlocks.map( function ( b, i ) {
+				return $( '<span></span>' ).append( i ? ', ' : '', external(
+					b.url ? b.url + '/wiki/Special:Log/block?' + $.param( { page: 'User:' + user } ) : '#',
+					b.host,
+					expiryText( b.expiry ) + ( b.reason ? ' — ' + plain( b.reason ) : '' )
+				) );
+			} )
+		) );
+	}
+
 	if ( extra.blocks ) {
 		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-bloqueios-anteriores' ) ),
 			link( 'Special:Log/block', String( extra.blocks.count ), { page: userPage } ) ] );
@@ -1714,7 +1834,9 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 			$hist.append( $( '<span></span>' )
 				.addClass( extra.blocks.count >= 2 ? 'ronda-up-hot' : '' )
 				.attr( 'title', plain( extra.blocks.last.reason ) )
-				.text( ronda.msg( 'patrulha-ultimo-por', formatDate( extra.blocks.last.timestamp ), extra.blocks.last.by, extra.blocks.last.duration ? ', ' + extra.blocks.last.duration : '' ) ) );
+				.text( ronda.msg( 'patrulha-ultimo-por', formatDate( extra.blocks.last.timestamp ), extra.blocks.last.by,
+					extra.blocks.last.duration ? ', ' + durationText( extra.blocks.last.duration, extra.blocks.last.expiry ) : '',
+					extra.blocks.last.reason ? ' — ' + plain( extra.blocks.last.reason ) : '' ) ) );
 		}
 	}
 
@@ -1744,6 +1866,16 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 	if ( extra.deleted !== null && extra.deleted !== undefined ) {
 		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-eliminadas' ) ),
 			link( 'Special:DeletedContributions/' + user, extra.deleted + ( extra.deletedMore ? '+' : '' ) ) ] );
+	}
+
+	if ( extra.hidden && extra.hidden.count ) {
+		add( $hist, [ document.createTextNode( ronda.msg( 'patrulha-ocultadas' ) ), $( '<b class="ronda-up-hot"></b>' )
+			.text( extra.hidden.count + ( extra.hidden.suppressed ? ronda.msg( 'patrulha-ocultadas-suprimidas', extra.hidden.suppressed ) : '' ) )
+			.attr( 'title', ronda.msg( 'patrulha-ocultadas-dica' ) ) ] );
+	}
+
+	if ( extra.abuse ) {
+		renderAbuse( $abuse, user, extra.abuse );
 	}
 
 	if ( act && act.last ) {
@@ -1804,6 +1936,56 @@ function renderExtra( ctx, user, isIP, extra, $status, $hist, $act, $links, $ext
 				ipInfo( extra.contribs[ 0 ].revid, $ipOut );
 			} ) );
 	}
+}
+
+function renderAbuse( $line, user, abuse ) {
+	var $list;
+
+	$line.append( document.createTextNode( ronda.msg( 'patrulha-filtro', abuse.days ) ),
+		link( 'Special:AbuseLog', String( abuse.count ) + ( abuse.more ? '+' : '' ), { wpSearchUser: user } ) );
+	if ( !abuse.count ) {
+		return;
+	}
+	$line.append( document.createTextNode( ' (' ), $( '<span></span>' )
+		.addClass( abuse.disallowed ? 'ronda-up-hot' : '' )
+		.text( [ abuse.disallowed ? ronda.msg( 'patrulha-filtro-impedidas', abuse.disallowed ) : '',
+			abuse.warned ? ronda.msg( 'patrulha-filtro-avisos', abuse.warned ) : '' ].filter( Boolean ).join( ', ' ) ||
+			ronda.msg( 'patrulha-filtro-so-registro' ) ), document.createTextNode( ')' ) );
+
+	$list = $( '<ul class="ronda-up-list"></ul>' ).hide();
+	abuse.entries.slice( 0, 10 ).forEach( function ( e ) {
+		$list.append( $( '<li></li>' ).append(
+			link( 'Special:AbuseLog/' + e.id, new Date( e.timestamp ).toLocaleString( 'pt-BR' ) ),
+			document.createTextNode( ' — ' ),
+			e.filter_id ? link( 'Special:AbuseFilter/' + e.filter_id, e.filter || ( '#' + e.filter_id ) ) :
+				document.createTextNode( e.filter || '?' ),
+			document.createTextNode( ronda.msg( 'patrulha-filtro-em', e.title || '?',
+				resultText( e.result ) ) )
+		) );
+	} );
+	$line.append( sep(), $( '<a href="#" role="button" class="ronda-up-action"></a>' )
+		.text( ronda.msg( 'patrulha-filtro-ver' ) )
+		.on( 'click', function ( ev ) {
+			ev.preventDefault();
+			$list.toggle();
+		} ), $list );
+}
+
+function resultText( result ) {
+	var names = {
+		disallow: 'impedida',
+		warn: 'aviso',
+		tag: 'etiqueta',
+		throttle: 'limite',
+		block: 'bloqueio',
+		blockautopromote: 'sem autopromoção',
+		degroup: 'remoção de grupos'
+	};
+
+	return String( result || '' ).split( ',' ).map( function ( r ) {
+		r = r.trim();
+		return names[ r ] || r;
+	} ).filter( Boolean ).join( ', ' ) || ronda.msg( 'patrulha-filtro-so-registro' );
 }
 
 function isAvailable( ctx ) {
