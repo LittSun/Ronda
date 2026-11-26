@@ -188,6 +188,29 @@ Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas
 
 Com o '''modo de simulação''' ativo, o Ronda continua consultando páginas, mas não publica edições nem executa eliminações, bloqueios ou proteções. Em vez disso, registra os detalhes no console e exibe uma notificação. '''Exceção:''' preferências e avisos favoritos continuam sendo salvos. O modo também pode ser ativado por <code>window.rondaConfig = { dryRun: true };</code>.
 
+<gallery mode="packed-hover" heights="160">
+File:Userscript Ronda Theme Default screenshot.png|'''Padrão''': barra em cartão com o nome numa aba escura e botões planos.
+File:Userscript Ronda Theme Original screenshot.png|'''Ronda original''': a aparência das primeiras versões, com barra clara e botões e janelas do jQuery UI.
+File:Userscript Ronda Theme Previsao do tempo screenshot.png|'''Previsão do tempo''': barra azul de céu em degradê, selo amarelo de sol e alertas em laranja.
+File:Userscript Ronda Theme Prova screenshot.png|'''Prova (preto e branco)''': caderno de prova com caixas grossas e grupos numerados como questões.
+File:Userscript Ronda Theme Passaporte screenshot.png|'''Passaporte''': capa verde-escura com dourado, trama de segurança e linha legível por máquina no rodapé.
+File:Userscript Ronda Theme Volante de aposta screenshot.png|'''Volante de aposta''': volante verde com as opções em quadradinhos e o botão principal em laranja.
+File:Userscript Ronda Theme Bula screenshot.png|'''Bula''': tarja vermelha, Ronda® em vermelho, posologia e aviso de venda sob prescrição.
+File:Userscript Ronda Theme Bauhaus screenshot.png|'''Bauhaus''': blocos em vermelho, azul, amarelo e preto, com tipografia geométrica.
+File:Userscript Ronda Theme Planta baixa screenshot.png|'''Planta baixa''': papel azul quadriculado de projeto, com traços brancos e cotas tracejadas.
+File:Userscript Ronda Theme Synthwave screenshot.png|'''s y n t h w a v e''': noite roxa com neon rosa e ciano e chão quadriculado.
+File:Userscript Ronda Theme Brutalismo screenshot.png|'''Brutalismo''': bordas grossas, sombras duras, amarelo de alerta e fonte de máquina.
+File:Userscript Ronda Theme Classico em relevo screenshot.png|'''Clássico em relevo''': cinza com botões biselados e barra de título azul, à moda dos anos 90.
+File:Userscript Ronda Theme Retro listrado screenshot.png|'''Retrô listrado''': cinza-claro com barra de título listrada e sombra dura.
+File:Userscript Ronda Theme Terminal screenshot.png|'''Terminal''': fundo preto, letras verdes monoespaçadas e botões entre colchetes.
+File:Userscript Ronda Theme Metro screenshot.png|'''Metrô''': sinalização de transporte, com faixas coloridas de linhas e bolinhas de estação.
+File:Userscript Ronda Theme Boletim de ocorrencia screenshot.png|'''Boletim de ocorrência''': formulário oficial com rótulos pequenos, texto datilografado e carimbo.
+File:Userscript Ronda Theme Onibus screenshot.png|'''Ônibus''': letreiro de destino com letras âmbar de LED sobre painel preto.
+File:Userscript Ronda Theme Web 1.0 screenshot.png|'''Web 1.0''': página pessoal dos anos 90, com links azuis sublinhados e bordas em relevo.
+File:Userscript Ronda Theme Azulejo portugues screenshot.png|'''Azulejo português''': branco e azul-cobalto, com molduras duplas, bolinhas e listras diagonais.
+File:Userscript Ronda Theme Newton screenshot.png|'''Newton''': janelas arredondadas, botões em controle segmentado e chaves verdes no lugar das caixas.
+</gallery>
+
 === Configuração avançada pelo common.js ===
 ''Opcional, para usuários familiarizados com JavaScript.''
 
