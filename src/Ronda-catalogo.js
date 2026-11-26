@@ -497,7 +497,8 @@ ronda.catalog.speedy = [
 		{ label: 'Esporte/desporto', text: esr( GENERICO, [ 'Desporto', 'desporto' ] ) },
 		{ label: 'História e sociedade', text: esr( GENERICO ) },
 		{ label: 'Medicina', text: esr( GENERICO ) },
-		{ label: 'Organização', template: 'ESR-organização', text: esr( 'Artigo sobre organização ' + SEM_FONTES + ' notoriedade. ' + FONTES, ['Organizações', 'organizações']
+		{ label: 'Organização', template: 'ESR-organização', text: esr( 'Artigo sobre organização ' 
+			+ SEM_FONTES + ' notoriedade. ' + FONTES, ['Organizações', 'organizações'] },
 		{ label: 'Países', text: esr( GENERICO ) },
 		{ label: 'Pessoas', template: 'ESR-bio', text: esr( 'Biografia ' + SEM_FONTES
 			+ 'a notoriedade do biografado.', [ 'Biografias', 'biografias' ] ) },
