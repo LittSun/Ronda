@@ -131,6 +131,28 @@ html.ronda-tema-synthwave .ronda-dialog .ronda-form .ronda-sug-reason {
 	color: #b48ad6;
 }
 
+html.ronda-tema-synthwave .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #f6e8ff;
+	background: transparent;
+	border: 1px solid rgba( 5, 217, 232, 0.6 );
+	border-radius: 0;
+}
+
+html.ronda-tema-synthwave .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #f6e8ff;
+	background: color-mix( in srgb, #ff2a6d 16%, transparent );
+	border-color: #ff2a6d;
+	outline: 1px solid #ff2a6d;
+}
+
+html.ronda-tema-synthwave .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #ff2a6d;
+}
+
+html.ronda-tema-synthwave .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #b48ad6;
+}
+
 html.ronda-tema-synthwave .ronda-dialog .ronda-form a {
 	color: #05d9e8;
 }
