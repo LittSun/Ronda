@@ -5,6 +5,7 @@ Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada
 
 ## 0.7.23 — 26/11/2026
 - **Temas**: novo campo **Tema** nas preferências, que muda a aparência da barra, dos painéis e das janelas. São 20 opções: **Padrão** (cartão com título), **Ronda original** (a aparência até a 0.7.20, com a barra clara e o jQuery UI puro) e 18 temas próprios — Previsão do tempo, Prova (preto e branco), Passaporte, Volante de aposta, Bula, Bauhaus, Planta baixa, s y n t h w a v e, Brutalismo, Clássico em relevo, Retrô listrado, Terminal, Metrô, Boletim de ocorrência, Ônibus, Web 1.0, Azulejo português e Newton. Só CSS e fontes do sistema, sem imagens, logotipos ou marcas de terceiros; cada tema é um arquivo à parte (`Ronda-tema-<nome>.css`), carregado só por quem o escolhe.
+- O tema muda **na hora, sem recarregar a página**: nas preferências, escolher um tema mostra a prévia (e cancelar volta ao anterior); salvar só o tema não recarrega. O meta-painel ganhou um seletor de tema nas opções rápidas.
 - A divisória da coluna de ações dos painéis (Informações, meta-painel) fica alinhada com a divisória das ações administrativas da barra, quando as duas estão lado a lado.
 - O estilo da barra e das janelas da 0.7.22 passa a valer fora do tema Ronda original; a barra recolhida continua escondendo os botões em qualquer tema.
 

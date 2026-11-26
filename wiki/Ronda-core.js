@@ -1186,7 +1186,9 @@ ronda.openPreferences = function () {
 		fields = [],
 		$content = $( '<div></div>' ),
 		$fs = null,
-		$dlg;
+		saved = false,
+		startTheme = ronda.config.theme || '',
+		initial, $dlg;
 
 	ronda.PREFS.forEach( function ( f ) {
 		var path, label, type, cur, $input, cb;
@@ -1214,6 +1216,11 @@ ronda.openPreferences = function () {
 				$( '<option></option>' ).val( o[ 0 ] ).text( o[ 1 ] ).appendTo( $input );
 			} );
 			$input.val( cur );
+			if ( path === 'theme' ) {
+				$input.val( cur || '' ).on( 'change', function () {
+					ronda.applyTheme( $( this ).val() );
+				} );
+			}
 		} else {
 			$input = type === 'number'
 				? $( '<input type="number" min="1" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).val( cur )
@@ -1225,7 +1232,7 @@ ronda.openPreferences = function () {
 		} } );
 	} );
 
-	function save() {
+	function collect() {
 		var prefs = { _v: ronda.PREFS_VERSION };
 
 		fields.forEach( function ( f ) {
@@ -1242,6 +1249,12 @@ ronda.openPreferences = function () {
 			}
 			setPath( prefs, f.path, v );
 		} );
+		return prefs;
+	}
+
+	function save() {
+		var prefs = collect(),
+			onlyTheme = JSON.stringify( $.extend( {}, prefs, { theme: '' } ) ) === JSON.stringify( $.extend( {}, initial, { theme: '' } ) );
 
 		ronda.ui.setBusy( $dlg, true );
 		$.Deferred( function ( d ) {
@@ -1253,6 +1266,15 @@ ronda.openPreferences = function () {
 				} ).then( d.resolve, d.reject );
 			} );
 		} ).then( function () {
+			saved = true;
+			if ( onlyTheme ) {
+				ronda.savedPrefs = prefs;
+				ronda.config.theme = prefs.theme || '';
+				ronda.applyTheme( ronda.config.theme );
+				mw.notify( ronda.msg( 'core-tema-aplicado' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
+				ronda.ui.close( $dlg );
+				return;
+			}
 			mw.notify( ronda.msg( 'core-preferencias-salvas-a-pagina-sera-recarregada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 			ronda.ui.close( $dlg );
 			location.reload();
@@ -1288,6 +1310,12 @@ ronda.openPreferences = function () {
 			{ text: ronda.msg( 'core-cancelar' ), click: function () {
 				ronda.ui.close( $dlg );
 			} } ]
+	} );
+	initial = collect();
+	$dlg.on( 'dialogclose', function () {
+		if ( !saved ) {
+			ronda.applyTheme( startTheme );
+		}
 	} );
 };
 
@@ -1681,7 +1709,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Temas: escolha nas preferências a aparência da barra e das janelas, entre 20 opções (do Ronda original ao Terminal, à Bula, ao Azulejo português e ao s y n t h w a v e)'
+	'Temas: escolha nas preferências ou no meta-painel a aparência da barra e das janelas, entre 20 opções (do Ronda original ao Terminal, à Bula, ao Azulejo português e ao s y n t h w a v e); a troca vale na hora'
 ];
 
 function saveOption( name, value ) {
@@ -1736,6 +1764,13 @@ function savePrefs( changes ) {
 		setPath( prefs, path, changes[ path ] );
 	} );
 	return saveOption( ronda.PREFS_OPTION, JSON.stringify( prefs ) ).then( function () {
+		if ( Object.keys( changes ).join() === 'theme' ) {
+			ronda.savedPrefs = prefs;
+			ronda.config.theme = changes.theme;
+			ronda.applyTheme( changes.theme );
+			mw.notify( ronda.msg( 'core-tema-aplicado' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
+			return;
+		}
 		mw.notify( ronda.msg( 'core-preferencias-salvas-a-pagina-sera-recarregada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 		location.reload();
 	}, ronda.fail );
@@ -1876,6 +1911,19 @@ ronda.openMeta = function () {
 			} );
 			$quick.append( cb.$element );
 		} );
+		( function () {
+			var $sel = $( '<select class="ronda-meta-theme"></select>' );
+
+			ronda.THEMES.forEach( function ( t ) {
+				$( '<option></option>' ).val( t[ 0 ] ).text( t[ 1 ] ).appendTo( $sel );
+			} );
+			$sel.val( ronda.config.theme || '' ).on( 'change', function () {
+				ronda.applyTheme( $sel.val() );
+				savePrefs( { theme: $sel.val() } );
+			} );
+			$quick.append( $( '<label class="ronda-meta-quick"></label>' ).append(
+				document.createTextNode( ronda.msg( 'core-meta-tema' ) + ' ' ), $sel ) );
+		}() );
 
 		item( ronda.msg( 'core-meta-preferencias' ), ronda.openPreferences, true );
 		page( mw.util.getUrl( ronda.DOC_PAGE ), ronda.msg( 'core-meta-documentacao' ) );

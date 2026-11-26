@@ -11,6 +11,8 @@
 // [[Usuário:Little Sunshine/Scripts/Ronda.css]]
 //<nowiki>
 window.rondaMessages = {
+	'core-tema-aplicado': 'Tema aplicado.',
+	'core-meta-tema': 'Tema:',
 	'core-tema': 'Tema (aparência da barra e das janelas)',
 	'core-desfazer': 'Desfazer',
 	'core-desfazendo': 'desfazendo…',
