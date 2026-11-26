@@ -248,6 +248,74 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	content: '— ';
 }
 
+/* Filas: prévia ao passar o mouse */
+.ronda-hover-preview {
+	position: absolute;
+	z-index: 1000;
+	width: 660px;
+	max-width: calc( 100vw - 16px );
+	max-height: 340px;
+	overflow: hidden;
+	padding: 0.5em 0.7em;
+	font-size: 0.82em;
+	color: var( --color-base, #202122 );
+	background: var( --background-color-base, #fff );
+	border: 1px solid var( --border-color-base, #a2a9b1 );
+	border-radius: 2px;
+	box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.2 );
+	pointer-events: none;
+}
+
+.ronda-hover-preview table.diff {
+	width: 100%;
+	table-layout: fixed;
+}
+
+.ronda-hover-preview p {
+	margin: 0;
+}
+
+/* Informações: alerta de recriação no botão */
+#ronda-toolbar .ronda-btn-alert.ui-button .ui-button-text::after {
+	content: '!';
+	display: inline-block;
+	margin-left: 0.35em;
+	padding: 0 0.4em;
+	font-size: 0.8em;
+	font-weight: bold;
+	line-height: 1.3;
+	color: var( --color-inverted-fixed, #fff );
+	background: var( --background-color-error, #d73333 );
+	border-radius: 999px;
+}
+
+/* Propor eliminação: escolha do tipo */
+.ronda-elim-type {
+	display: block;
+	margin: 0 0 0.5em;
+	padding: 0.5em 0.7em;
+	border: 1px solid var( --border-color-subtle, #c8ccd1 );
+	border-radius: 2px;
+	cursor: pointer;
+}
+
+.ronda-elim-type:has( input:checked ) {
+	border-color: var( --border-color-progressive, #36c );
+	background: var( --background-color-progressive-subtle, #eaf3ff );
+}
+
+.ronda-elim-desc {
+	display: block;
+	margin: 0.2em 0 0 1.6em;
+	font-size: 0.9em;
+	color: var( --color-subtle, #54595d );
+}
+
+.ronda-elim-vda {
+	margin: 0.4em 0 0;
+	font-size: 0.9em;
+}
+
 /* Qualidade automática: janela com os critérios */
 .ronda-qf details {
 	margin: 8px 0;

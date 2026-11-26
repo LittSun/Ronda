@@ -2106,6 +2106,66 @@ function pct( p ) {
 	return Math.round( p * 100 ) + '%';
 }
 
+var hoverCache = {},
+	$hoverBox = null,
+	hoverTimer = null;
+
+function hoverContent( item, def ) {
+	var key = def.link + ':' + ( item.revid || item.title );
+
+	if ( !hoverCache[ key ] ) {
+		hoverCache[ key ] = item.revid && def.link !== 'rcid' && def.link !== 'page'
+			? $.when( mw.loader.using( 'mediawiki.diff.styles' ).then( null, function () {
+				return null;
+			} ), ronda.api.get( { action: 'compare', torev: item.revid, torelative: 'prev', prop: 'diff', formatversion: 2 } ) )
+				.then( function ( dummy, res ) {
+					var data = res && res.compare ? res : res && res[ 0 ],
+						body = data && data.compare && data.compare.body;
+
+					return body ? $( '<table class="diff"></table>' ).append(
+						'<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>', body )
+						: $( '<i></i>' ).text( ronda.msg( 'patrulha-previa-sem-diff' ) );
+				} )
+			: ronda.api.get( { action: 'query', titles: item.title, prop: 'extracts', exchars: 600, explaintext: 1, redirects: 1 } )
+				.then( function ( data ) {
+					var p = ( ( data.query || {} ).pages || [] )[ 0 ] || {};
+
+					return $( '<p></p>' ).text( p.extract || ronda.msg( 'patrulha-previa-sem-texto' ) );
+				} );
+	}
+	return hoverCache[ key ];
+}
+
+function hideHover() {
+	clearTimeout( hoverTimer );
+	if ( $hoverBox ) {
+		$hoverBox.remove();
+		$hoverBox = null;
+	}
+}
+
+function attachHover( $link, item, def ) {
+	if ( ronda.isMobile() ) {
+		return;
+	}
+	$link.on( 'mouseenter', function () {
+		var el = this;
+
+		hideHover();
+		hoverTimer = setTimeout( function () {
+			hoverContent( item, def ).then( function ( $c ) {
+				var r = el.getBoundingClientRect();
+
+				hideHover();
+				$hoverBox = $( '<div class="ronda-hover-preview"></div>' ).append( $c.clone() ).appendTo( document.body ).css( {
+					top: r.bottom + window.pageYOffset + 6,
+					left: Math.max( 8, Math.min( r.left + window.pageXOffset, window.pageXOffset + document.documentElement.clientWidth - 680 ) )
+				} );
+			} );
+		}, 450 );
+	} ).on( 'mouseleave click', hideHover );
+}
+
 function render( $out, def, list ) {
 	var $ul = $( '<ul class="ronda-feed"></ul>' );
 
@@ -2120,10 +2180,13 @@ function render( $out, def, list ) {
 		var params = def.link === 'diff' ? { diff: 'cur', oldid: item.old_revid || 'prev' }
 				: def.link === 'rcid' ? { redirect: 'no', rcid: item.rcid }
 					: def.link === 'revid' ? { diff: item.revid } : null,
-			$li = $( '<li></li>' ).append( $( '<a></a>' ).attr( 'href', mw.util.getUrl( item.title, params ) ).text( item.title ) ),
+			$link = $( '<a></a>' ).attr( 'href', mw.util.getUrl( item.title, params ) ).text( item.title ),
+			$li = $( '<li></li>' ).append( $link ),
 			dano = def.scores ? prob( item, 'damaging' ) : null,
 			fe = def.scores ? prob( item, 'goodfaith' ) : null,
 			d, n, comment;
+
+		attachHover( $link, item, def );
 
 		if ( def.link !== 'page' ) {
 			d = sizeDiff( item );

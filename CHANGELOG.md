@@ -3,6 +3,15 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.24 — 26/11/2026
+- **Propor eliminação**: um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.
+- **Prévia** opcional, como a dos avisos, em Manutenção, Esboço, Redirecionar e nas propostas rápida e semirrápida: mostra o diff do que vai mudar na página, sem gravar nada.
+- **Detectar VDA**: link para o detector de cópia (copyvios.toolforge.org) já com a página preenchida, no diálogo Propor eliminação e no painel Informações dos artigos.
+- **Informações › Recriação**: quando a página foi eliminada antes da criação atual, o painel avisa com a data e o motivo, e o botão Informações ganha um selo **!** (também no carregamento em segundo plano). Para administradores, lembra de considerar a proteção contra criação se ela for eliminada de novo.
+- **Informações › Parecidas**: até três artigos com título parecido, com atalhos para propor fusão ou redirecionar para eles (os diálogos já abrem preenchidos).
+- **Filas**: prévia ao deixar o mouse sobre uma entrada — o diff da edição ou, para páginas novas e marcadas, o começo do texto.
+- Tema **Pregão**: mesa de operações, com fita de cotações, setas de alta e baixa nos botões e gráfico no título das janelas (21 temas).
+
 ## 0.7.23 — 26/11/2026
 - **Temas**: novo campo **Tema** nas preferências, que muda a aparência da barra, dos painéis e das janelas. São 20 opções: **Padrão** (cartão com título), **Ronda original** (a aparência até a 0.7.20, com a barra clara e o jQuery UI puro) e 18 temas próprios — Previsão do tempo, Prova (preto e branco), Passaporte, Volante de aposta, Bula, Bauhaus, Planta baixa, s y n t h w a v e, Brutalismo, Clássico em relevo, Retrô listrado, Terminal, Metrô, Boletim de ocorrência, Ônibus, Web 1.0, Azulejo português e Newton. Só CSS e fontes do sistema, sem imagens, logotipos ou marcas de terceiros; cada tema é um arquivo à parte (`Ronda-tema-<nome>.css`), carregado só por quem o escolhe.
 - O tema muda **na hora, sem recarregar a página**: nas preferências, escolher um tema mostra a prévia (e cancelar volta ao anterior); salvar só o tema não recarrega. O meta-painel ganhou um seletor de tema nas opções rápidas.

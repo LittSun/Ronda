@@ -20,6 +20,9 @@
  */
 window.rondaMessages = {
 	// Núcleo: barra, diálogos comuns, motivos e preferências
+	'core-previa-titulo': 'Prévia da edição em $1',
+	'core-previa-sem-mudancas': 'Nenhuma mudança em relação à versão atual.',
+	'core-previa-botao': 'Prévia',
 	'core-tema-aplicado': 'Tema aplicado.',
 	'core-meta-tema': 'Tema:',
 	'core-tema': 'Tema (aparência da barra e das janelas)',
@@ -123,6 +126,8 @@ window.rondaMessages = {
 	'core-boasvindas-entendi': 'Entendi',
 
 	// Patrulha: Reverter, Avisar, Usuário, Listar e reversão rápida
+	'patrulha-previa-sem-diff': 'Sem diferença para mostrar.',
+	'patrulha-previa-sem-texto': 'Sem texto para mostrar.',
 	'patrulha-o-aviso-ja-foi-deixado-nas': 'O aviso "$1" já foi deixado nas últimas 24 horas.',
 	'patrulha-a-discussao-do-usuario-foi-editada': 'A discussão do usuário foi editada há menos de um minuto$1.',
 	'patrulha-nome-oculto': '(nome oculto)',
@@ -322,6 +327,26 @@ window.rondaMessages = {
 	'patrulha-restaurar-esta-versao': 'Restaurar esta versão',
 
 	// Páginas: Manutenção, ER, ESR, Consenso, Mover, #R, Esboço, Fusão, Busca, PetScan, Informações, Pedido e Não assinou
+	'paginas-info-recriacao': 'Recriação',
+	'paginas-info-recriada': 'recriada: já foi eliminada em $1',
+	'paginas-info-recriada-curto': 'Recriação de página eliminada',
+	'paginas-info-recriada-proteger': 'se for eliminada de novo, considere proteger contra criação',
+	'paginas-info-parecidas': 'Parecidas',
+	'paginas-info-fundir': 'fundir',
+	'paginas-info-redirecionar-para': 'redirecionar para',
+	'paginas-elim-botao': 'Propor eliminação',
+	'paginas-elim-dica': 'Propor a eliminação desta página: rápida, semirrápida ou por consenso',
+	'paginas-elim-titulo': 'Propor eliminação: $1',
+	'paginas-elim-rapida': 'Rápida',
+	'paginas-elim-semirrapida': 'Semirrápida',
+	'paginas-elim-consenso': 'Por consenso',
+	'paginas-elim-rapida-desc': 'Para casos evidentes, enquadrados numa regra. Um administrador avalia em pouco tempo.',
+	'paginas-elim-semirrapida-desc': 'Para problemas que podem ser corrigidos: a página fica marcada por alguns dias antes da decisão.',
+	'paginas-elim-consenso-desc': 'Abre uma discussão com a comunidade, em Wikipédia:Páginas para eliminar.',
+	'paginas-elim-continuar': 'Continuar',
+	'paginas-elim-escolha': 'Escolha o tipo de proposta.',
+	'paginas-detectar-vda': 'Detectar VDA',
+	'paginas-detectar-vda-dica': 'compara o texto com a web no detector de cópia (abre numa aba nova)',
 	'paginas-sugeridas': 'Sugeridas para esta página',
 	'paginas-usadas-recentemente': 'Usadas recentemente',
 	'paginas-sug-sem-fontes': 'nenhuma referência no texto',

@@ -761,9 +761,9 @@ function showForm( ctx, text, aliases, info ) {
 		} );
 	} );
 
-	function submit() {
-		var opts, preview, result,
-			checked = {},
+	/** Opções escolhidas no diálogo; null se falta um campo obrigatório */
+	function gather() {
+		var checked = {},
 			values = {},
 			ok = true;
 
@@ -788,11 +788,27 @@ function showForm( ctx, text, aliases, info ) {
 			}
 		} );
 
-		if ( !ok ) {
+		return ok ? { opts: $.extend( {}, base, { checked: checked, values: values, useMP: cbMP.isChecked() } ), values: values } : null;
+	}
+
+	/** Prévia das marcações na página (opcional, como a dos avisos) */
+	function previewTags() {
+		var g = gather();
+
+		if ( g ) {
+			ronda.ui.previewEdit( ctx.page, apply( text, g.opts ).text );
+		}
+	}
+
+	function submit() {
+		var g = gather(),
+			opts, values, preview, result;
+
+		if ( !g ) {
 			return;
 		}
-
-		opts = $.extend( {}, base, { checked: checked, values: values, useMP: cbMP.isChecked() } );
+		opts = g.opts;
+		values = g.values;
 		preview = apply( text, opts );
 
 		if ( preview.text === text ) {
@@ -858,6 +874,9 @@ function showForm( ctx, text, aliases, info ) {
 			text: ronda.msg( 'paginas-aplicar' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: previewTags
 		}, {
 			text: ronda.msg( 'paginas-atualizar-nomes-alternativos' ),
 			click: function () {
@@ -1324,6 +1343,17 @@ function showSpeedy( ctx, page ) {
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-rapida' ) );
 	}
 
+	/** Prévia da marcação na página (opcional, como a dos avisos) */
+	function preview() {
+		var r = selected();
+
+		if ( !ronda.ui.require( $rule, !!r ) ) {
+			return;
+		}
+		ronda.ui.previewEdit( page.title, place( page.content, buildER( r.rule, $obs.val() ),
+			{ noinclude: ronda.useNoinclude( page ), hatnotes: false } ) );
+	}
+
 	$warnRow.hide();
 	$dlg = ronda.ui.dialog( {
 		title: ronda.msg( 'paginas-eliminacao-rapida', page.title ),
@@ -1333,6 +1363,9 @@ function showSpeedy( ctx, page ) {
 			text: ronda.msg( 'paginas-propor' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: preview
 		}, {
 			text: ronda.msg( 'core-cancelar' ),
 			click: function () {
@@ -1426,6 +1459,19 @@ function showSemi( ctx, page ) {
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-semirrapida' ) );
 	}
 
+	/** Prévia da marcação na página (opcional, como a dos avisos) */
+	function preview() {
+		var matrad = !isFile && cbMatrad.isChecked();
+
+		ronda.ui.previewEdit( page.title, place( page.content, buildESR( {
+			ns: page.ns,
+			subject: matrad ? null : subjects[ $subject.val() ] || null,
+			text: $text.val().trim(),
+			matrad: matrad,
+			language: $lang.val().trim()
+		} ), { noinclude: ronda.useNoinclude( page ), hatnotes: true } ) );
+	}
+
 	$dlg = ronda.ui.dialog( {
 		title: ronda.msg( 'paginas-eliminacao-semirrapida', page.title ),
 		width: 640,
@@ -1434,6 +1480,9 @@ function showSemi( ctx, page ) {
 			text: ronda.msg( 'paginas-propor' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: preview
 		}, {
 			text: ronda.msg( 'core-cancelar' ),
 			click: function () {
@@ -1466,6 +1515,7 @@ if ( !ronda.catalog.speedy || !ronda.catalog.esrSubjects ) {
 
 ronda.registerModule( {
 	id: 'rapida',
+	hidden: true,
 	label: ronda.msg( 'paginas-er' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-rapida-desta-pagina' ),
 	order: 26,
@@ -1481,6 +1531,7 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'semirrapida',
+	hidden: true,
 	label: ronda.msg( 'paginas-esr' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-semirrapida-desta-pagina' ),
 	order: 27,
@@ -2108,6 +2159,7 @@ function open( ctx ) {
 
 ronda.registerModule( {
 	id: 'consenso',
+	hidden: true,
 	label: ronda.msg( 'paginas-consenso' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-por-consenso-desta' ),
 	order: 28,
@@ -2116,6 +2168,114 @@ ronda.registerModule( {
 			&& ctx.exists
 			&& FORBIDDEN_NS.indexOf( ctx.ns ) === -1
 			&& ronda.can( 'edit' );
+	},
+	open: open
+} );
+
+}( window.ronda ) );
+
+/**
+ * Ronda — Propor eliminação
+ *
+ * Um botão só para as três propostas (rápida, semirrápida e por consenso):
+ * o diálogo mostra as que valem para a página e abre o formulário de sempre
+ * da escolhida. Tem também o atalho Detectar VDA.
+ */
+( function ( ronda ) {
+'use strict';
+
+var TYPES = [ 'rapida', 'semirrapida', 'consenso' ],
+	NAMES = {
+		rapida: [ ronda.msg( 'paginas-elim-rapida' ), ronda.msg( 'paginas-elim-rapida-desc' ) ],
+		semirrapida: [ ronda.msg( 'paginas-elim-semirrapida' ), ronda.msg( 'paginas-elim-semirrapida-desc' ) ],
+		consenso: [ ronda.msg( 'paginas-elim-consenso' ), ronda.msg( 'paginas-elim-consenso-desc' ) ]
+	};
+
+/** Detector de cópia (Earwig's Copyvio Detector), numa aba nova */
+ronda.copyvioUrl = function ( title ) {
+	return 'https://copyvios.toolforge.org/?' + $.param( {
+		lang: mw.config.get( 'wgContentLanguage' ) || 'pt',
+		project: 'wikipedia',
+		title: title,
+		use_engine: 1,
+		use_links: 1,
+		turnitin: 0,
+		action: 'search'
+	} );
+};
+
+function open( ctx ) {
+	var available = TYPES.filter( function ( id ) {
+			var m = ronda.getModule( id );
+
+			return m && m.isAvailable( ctx );
+		} ),
+		name = 'ronda-elim-' + ( ++open.n ),
+		$list = $( '<div class="ronda-elim-types"></div>' ),
+		$content = $( '<div></div>' ),
+		$dlg;
+
+	available.forEach( function ( id ) {
+		$list.append( $( '<label class="ronda-elim-type"></label>' ).attr( 'for', name + '-' + id ).append(
+			$( '<input type="radio">' ).attr( { name: name, value: id, id: name + '-' + id } ),
+			$( '<b></b>' ).text( ' ' + NAMES[ id ][ 0 ] ),
+			$( '<span class="ronda-elim-desc"></span>' ).text( NAMES[ id ][ 1 ] )
+		) );
+	} );
+	// Com um tipo só, ele já vem escolhido
+	if ( available.length === 1 ) {
+		$list.find( 'input' ).prop( 'checked', true );
+	}
+	$content.append( $list );
+	if ( ctx.ns === 0 ) {
+		$content.append( $( '<p class="ronda-elim-vda"></p>' ).append(
+			$( '<a target="_blank" rel="noopener"></a>' ).attr( 'href', ronda.copyvioUrl( ctx.page ) ).text( ronda.msg( 'paginas-detectar-vda' ) ),
+			document.createTextNode( ' — ' + ronda.msg( 'paginas-detectar-vda-dica' ) )
+		) );
+	}
+
+	$dlg = ronda.ui.dialog( {
+		title: ronda.msg( 'paginas-elim-titulo', ctx.page ),
+		width: 560,
+		content: $content,
+		buttons: [ {
+			text: ronda.msg( 'paginas-elim-continuar' ),
+			'class': 'ui-priority-primary ui-button-blue',
+			click: function () {
+				var id = $list.find( 'input:checked' ).val();
+
+				if ( !id ) {
+					mw.notify( ronda.msg( 'paginas-elim-escolha' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+					return;
+				}
+				ronda.ui.close( $dlg );
+				ronda.getModule( id ).open( ctx );
+			}
+		}, {
+			text: ronda.msg( 'core-cancelar' ),
+			click: function () {
+				ronda.ui.close( $dlg );
+			}
+		} ]
+	} );
+}
+open.n = 0;
+
+ronda.registerModule( {
+	id: 'eliminacao',
+	label: ronda.msg( 'paginas-elim-botao' ),
+	title: ronda.msg( 'paginas-elim-dica' ),
+	order: 26,
+	isAvailable: function ( ctx ) {
+		return TYPES.some( function ( id ) {
+			var m = ronda.getModule( id );
+
+			try {
+				return m && m.isAvailable( ctx );
+			} catch ( e ) {
+				return false;
+			}
+		} );
 	},
 	open: open
 } );
@@ -2813,7 +2973,7 @@ function done( $dlg, message, url ) {
 
 function openRedirect( ctx ) {
 	var isCat = ctx.ns === 14,
-		$target = prefixSearch( ronda.ui.text( '', ronda.msg( 'paginas-pagina-de-destino' ) ), ctx.ns ),
+		$target = prefixSearch( ronda.ui.text( ctx.prefill || '', ronda.msg( 'paginas-pagina-de-destino' ) ), ctx.ns ),
 		$reason = ronda.ui.text( '', isCat ? ronda.msg( 'paginas-motivo-obrigatorio-em-categorias' ) : ronda.msg( 'paginas-motivo-opcional' ) ),
 		$dlg;
 
@@ -2858,6 +3018,13 @@ function openRedirect( ctx ) {
 			ronda.ui.row( ronda.msg( 'core-motivo' ), $reason )
 		),
 		buttons: [ { text: ronda.msg( 'paginas-redirecionar' ), 'class': 'ui-priority-primary ui-button-blue', click: submit },
+			{ text: ronda.msg( 'core-previa-botao' ), click: function () {
+				var target = $target.val().trim();
+
+				if ( ronda.ui.require( $target, !!target && target !== ctx.page ) ) {
+					ronda.ui.previewEdit( ctx.page, redirectText( ctx.ns, target, $reason.val().trim() ) );
+				}
+			} },
 			{ text: ronda.msg( 'core-cancelar' ), click: function () {
 				ronda.ui.close( $dlg );
 			} } ]
@@ -2934,6 +3101,11 @@ function openStub( ctx ) {
 			width: 480,
 			content: ronda.ui.row( 'Esboço-', $theme ),
 			buttons: [ { text: ronda.msg( 'paginas-marcar' ), 'class': 'ui-priority-primary ui-button-blue', click: submit },
+				{ text: ronda.msg( 'core-previa-botao' ), click: function () {
+					var theme = $theme.val().trim();
+
+					ronda.ui.previewEdit( ctx.page, addStub( text, theme ? 'Esboço-' + theme : 'Esboço' ) );
+				} },
 				{ text: ronda.msg( 'core-cancelar' ), click: function () {
 					ronda.ui.close( $dlg );
 				} } ]
@@ -2945,7 +3117,7 @@ function openStub( ctx ) {
 
 function openMerge( ctx ) {
 	var $page1 = prefixSearch( ronda.ui.text( ctx.page, ronda.msg( 'paginas-pagina-que-permanecera' ) ), ctx.ns ),
-		$page2 = prefixSearch( ronda.ui.text( '', ronda.msg( 'paginas-pagina-que-sera-fundida-com-a' ) ), ctx.ns ),
+		$page2 = prefixSearch( ronda.ui.text( ctx.prefill || '', ronda.msg( 'paginas-pagina-que-sera-fundida-com-a' ) ), ctx.ns ),
 		$progress = $( '<div class="ronda-progress"></div>' ).hide(),
 		$log = $( '<ul class="ronda-log"></ul>' ),
 		$dlg, run;
@@ -3477,6 +3649,69 @@ function soft( promise ) {
 	} );
 }
 
+/** Título sem o qualificador entre parênteses, em minúsculas e sem acentos */
+function titleKey( t ) {
+	return String( t ).replace( /\s*\([^)]*\)\s*$/, '' ).normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+		.toLowerCase().replace( /[^a-z0-9]+/g, ' ' ).trim();
+}
+
+/** Semelhança de Dice entre os pares de letras de dois títulos (0 a 1) */
+function titleSimilarity( a, b ) {
+	var pa = {}, n = 0, hits = 0, i, k;
+
+	a = titleKey( a );
+	b = titleKey( b );
+	if ( !a || !b ) {
+		return 0;
+	}
+	if ( a === b ) {
+		return 1;
+	}
+	for ( i = 0; i < a.length - 1; i++ ) {
+		k = a.substr( i, 2 );
+		pa[ k ] = ( pa[ k ] || 0 ) + 1;
+		n++;
+	}
+	for ( i = 0; i < b.length - 1; i++ ) {
+		k = b.substr( i, 2 );
+		if ( pa[ k ] ) {
+			pa[ k ]--;
+			hits++;
+		}
+	}
+	return ( 2 * hits ) / ( n + b.length - 1 );
+}
+
+/** Até 3 resultados da busca com título parecido (sem a própria página) */
+function similarTitles( title, results ) {
+	return results.map( function ( r ) {
+		return { title: r.title, score: titleSimilarity( title, r.title ) };
+	} ).filter( function ( r ) {
+		return r.title !== title && r.score >= 0.72;
+	} ).sort( function ( x, y ) {
+		return y.score - x.score;
+	} ).slice( 0, 3 ).map( function ( r ) {
+		return r.title;
+	} );
+}
+
+/** A página existe e já foi eliminada antes da criação atual? Devolve o registro ou null */
+function recreation( data, title ) {
+	var q = data.main.query,
+		log = ( q.logevents || [] )[ 0 ],
+		first = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ],
+		page = ( q.pages || [] ).filter( function ( p ) {
+			return p.title === title && !p.missing;
+		} )[ 0 ];
+
+	if ( !log || !page || !first ) {
+		return null;
+	}
+	return Date.parse( log.timestamp ) <= Date.parse( first.timestamp ) ? log : null;
+}
+
+ronda.infoTools = { titleSimilarity: titleSimilarity, similarTitles: similarTitles, recreation: recreation };
+
 /**
  * Dados do painel Informações, buscados uma vez por página (também em segundo plano).
  * @return {jQuery.Promise} { main, first, revisions, deleted, patrol, views, autoQuality }
@@ -3530,9 +3765,13 @@ function loadInfo( ctx ) {
 				} )[ 0 ];
 
 				return ctx.ns === 0 && p && p.lastrevid && !ctx.isMainPage ? autoQuality( ctx, p.lastrevid ) : null;
-			} )
-		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
-			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk };
+			} ),
+			// Títulos parecidos (artigos): uma busca pelo título
+			ctx.ns === 0 && ctx.exists && !ctx.isMainPage ? soft( ronda.api.get( { action: 'query', list: 'search',
+				srsearch: ctx.title, srnamespace: 0, srlimit: 10, srinfo: '', srprop: '' } ) ) : null
+		).then( function ( m, first, revs, deleted, patrol, views, lw, search ) {
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk,
+				similar: similarTitles( ctx.title, ( ( search && search.query ) || {} ).search || [] ) };
 		} );
 	} );
 }
@@ -3544,7 +3783,7 @@ function renderInfo( $panel, ctx, data ) {
 		addTo = ronda.ui.addTo,
 		page, peExists, talkPage, quality, firstRev, contributors, anon, total, unpatrolled, newRc,
 		maintenance, wikidata, langs, refs, $catLinks = $( '#mw-normal-catlinks a' ).not( ':first' ),
-		$status, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view;
+		$status, $recreated, $similar, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view, rec;
 
 	function flag( ok, what, href ) {
 		var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
@@ -3564,6 +3803,8 @@ function renderInfo( $panel, ctx, data ) {
 	talkPage = data.talk && byTitle[ data.talk ];
 
 	$status = L.row( ronda.msg( 'paginas-info-situacao' ) );
+	$recreated = L.row( ronda.msg( 'paginas-info-recriacao' ) );
+	$similar = L.row( ronda.msg( 'paginas-info-parecidas' ) );
 	$protect = L.row( ronda.msg( 'paginas-info-protecao' ) );
 	$creation = L.row( ronda.msg( 'paginas-info-criacao' ) );
 	$edits = L.row( ronda.msg( 'paginas-info-edicoes' ) );
@@ -3591,6 +3832,34 @@ function renderInfo( $panel, ctx, data ) {
 				a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), formatDateTime( q.logevents[ 0 ].timestamp ) ) ) );
 		}
 	}
+
+	// Recriação: já foi eliminada antes da criação atual
+	rec = !page.missing && recreation( data, ctx.page );
+	if ( rec ) {
+		$recreated.append( $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-recriada', formatDateTime( rec.timestamp ) ) ) );
+		if ( rec.comment ) {
+			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( rec.comment.replace( /<[^>]+>/g, '' ) ) );
+		}
+		addTo( $recreated, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
+		if ( ronda.can( 'protect' ) ) {
+			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'paginas-info-recriada-proteger' ) ) );
+		}
+	}
+
+	// Títulos parecidos: fusão ou redirecionamento
+	( data.similar || [] ).forEach( function ( t ) {
+		addTo( $similar, [ a( mw.util.getUrl( t ), t ), document.createTextNode( ' (' ),
+			ronda.getModule( 'fusao' ) ? $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-fundir' ) ).on( 'click', function ( e ) {
+				e.preventDefault();
+				ronda.getModule( 'fusao' ).open( $.extend( {}, ctx, { prefill: t } ) );
+			} ) : null,
+			ronda.getModule( 'fusao' ) && ronda.getModule( 'redirecionar' ) ? document.createTextNode( ' · ' ) : null,
+			ronda.getModule( 'redirecionar' ) ? $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-redirecionar-para' ) ).on( 'click', function ( e ) {
+				e.preventDefault();
+				ronda.getModule( 'redirecionar' ).open( $.extend( {}, ctx, { prefill: t } ) );
+			} ) : null,
+			document.createTextNode( ')' ) ] );
+	} );
 
 	// Proteção
 	if ( !page.missing || ( page.protection || [] ).length ) {
@@ -3731,6 +4000,11 @@ function renderInfo( $panel, ctx, data ) {
 			( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) ) );
 	}
 
+	// Detector de cópia (VDA), para artigos
+	if ( ctx.ns === 0 && !page.missing ) {
+		addTo( $actions, a( ronda.copyvioUrl( ctx.page ), ronda.msg( 'paginas-detectar-vda' ), true ).attr( 'title', ronda.msg( 'paginas-detectar-vda-dica' ) ) );
+	}
+
 	// Ver
 	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'history' } ), ronda.msg( 'paginas-info-historico' ) ) );
 	addTo( $view, a( mw.util.getUrl( 'Special:Log', { page: ctx.page } ), ronda.msg( 'paginas-registros' ).toLowerCase() ) );
@@ -3783,11 +4057,24 @@ function openInfo( ctx ) {
 	} );
 }
 
+/** Selo de alerta no botão Informações quando a página é uma recriação */
+function markRecreation( ctx ) {
+	if ( !ronda.isPageContext( ctx ) || !ctx.exists ) {
+		return;
+	}
+	loadInfo( ctx ).then( function ( data ) {
+		var rec = recreation( data, ctx.page );
+
+		$( '#ronda-toolbar .ronda-btn-info' ).toggleClass( 'ronda-btn-alert', !!rec )
+			.attr( 'data-alerta', rec ? ronda.msg( 'paginas-info-recriada-curto' ) : null );
+	} );
+}
+
 function prefetchInfo( ctx ) {
 	var parts = infoParts( ctx );
 
 	if ( parts.page ) {
-		loadInfo( ctx );
+		markRecreation( ctx );
 	}
 	if ( parts.user ) {
 		ronda.userPanel.load( ctx );
