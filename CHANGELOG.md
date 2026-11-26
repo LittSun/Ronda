@@ -4,7 +4,7 @@ O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `pack
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
 ## 0.7.24 — 26/11/2026
-- **Propor eliminação**: um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação, e sugere um deles com o motivo (rápida para páginas com menos de 500 bytes, semirrápida para artigos criados há menos de 7 dias, por consenso para as demais); ao continuar, abre o formulário de sempre do tipo escolhido.
+- **Propor eliminação**: um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.
 - **Prévia** opcional, como a dos avisos, em Manutenção, Esboço, Redirecionar e nas propostas rápida e semirrápida: mostra o diff do que vai mudar na página, sem gravar nada.
 - **Detectar VDA**: link para o detector de cópia (copyvios.toolforge.org) já com a página preenchida, no diálogo Propor eliminação e no painel Informações dos artigos.
 - **Informações › Recriação**: quando a página foi eliminada antes da criação atual, o painel avisa com a data e o motivo, e o botão Informações ganha um selo **!** (também no carregamento em segundo plano). Para administradores, lembra de considerar a proteção contra criação se ela for eliminada de novo.

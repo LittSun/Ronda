@@ -5,8 +5,6 @@ const test = require( 'node:test' );
 const assert = require( 'node:assert' );
 const { criar } = require( './ambiente' );
 
-const HOJE = Date.parse( '2026-11-26T12:00:00Z' );
-
 function ambiente( pagina ) {
 	return criar( {
 		rights: [ 'edit', 'move', 'patrol' ],
@@ -22,17 +20,6 @@ function ambiente( pagina ) {
 	} );
 }
 
-test( 'Propor eliminação: tipo sugerido pelo tamanho e pela idade', () => {
-	const a = ambiente( {} );
-	const sug = a.ronda.elimination.suggest;
-	const todos = [ 'rapida', 'semirrapida', 'consenso' ];
-
-	assert.strictEqual( sug( { length: 200, created: HOJE, now: HOJE, ns: 0 }, todos ).id, 'rapida' );
-	assert.strictEqual( sug( { length: 5000, created: HOJE - 2 * 864e5, now: HOJE, ns: 0 }, todos ).id, 'semirrapida' );
-	assert.strictEqual( sug( { length: 5000, created: HOJE - 400 * 864e5, now: HOJE, ns: 0 }, todos ).id, 'consenso' );
-	assert.strictEqual( sug( { length: 200, now: HOJE, ns: 0 }, [ 'consenso' ] ).id, 'consenso', 'só sugere o que está disponível' );
-} );
-
 test( 'Propor eliminação: um botão só na barra; o diálogo abre o formulário escolhido', async () => {
 	const a = ambiente( { length: 300, criada: '2026-11-26T10:00:00Z' } );
 
@@ -45,8 +32,8 @@ test( 'Propor eliminação: um botão só na barra; o diálogo abre o formulári
 	a.ronda.getModule( 'eliminacao' ).open( a.ronda.ctx );
 	await a.ate( () => a.$( '.ronda-elim-type' ).length > 0 );
 	const $d = a.$( '.ronda-dialog' ).last();
-	assert.strictEqual( $d.find( 'input:checked' ).val(), 'rapida' );
-	assert.match( $d.text(), /Por que sugerida: a página tem só 300 bytes/ );
+	assert.strictEqual( $d.find( 'input:checked' ).length, 0, 'nada vem escolhido' );
+	assert.doesNotMatch( $d.text(), /sugerida/i );
 	assert.match( $d.find( '.ronda-elim-vda a' ).attr( 'href' ), /copyvios\.toolforge\.org\/\?.*title=Teste/ );
 
 	$d.find( 'input[value=semirrapida]' ).prop( 'checked', true );

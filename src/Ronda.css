@@ -304,15 +304,6 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	background: var( --background-color-progressive-subtle, #eaf3ff );
 }
 
-.ronda-elim-sug {
-	margin-left: 0.5em;
-	padding: 0 0.4em;
-	font-size: 0.8em;
-	color: var( --color-inverted-fixed, #fff );
-	background: var( --background-color-progressive, #36c );
-	border-radius: 2px;
-}
-
 .ronda-elim-desc {
 	display: block;
 	margin: 0.2em 0 0 1.6em;
@@ -320,7 +311,6 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	color: var( --color-subtle, #54595d );
 }
 
-.ronda-elim-why,
 .ronda-elim-vda {
 	margin: 0.4em 0 0;
 	font-size: 0.9em;

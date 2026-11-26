@@ -58,7 +58,7 @@ A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; 
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Mover}} || Altera o título de uma página.
 |-
-| {{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} || Propõe a eliminação da página: [[WP:ER|rápida]], [[WP:ESR|semirrápida]] ou por consenso, com uma sugestão de qual usar.
+| {{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} || Propõe a eliminação da página: [[WP:ER|rápida]], [[WP:ESR|semirrápida]] ou por consenso.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Busca}} || Procura fontes sobre o assunto da página.
 |-
@@ -126,7 +126,7 @@ No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção
 === Movimentação e eliminação ===
 {{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. Essa eliminação nunca vem marcada: é preciso marcar a opção e, se o destino não for um redirecionamento simples para a página, marcar também uma segunda caixa de confirmação. Com o destino ocupado, Enter não move nada. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
 
-{{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} mostra os tipos de proposta que valem para a página, cada um com uma frase de explicação, e sugere um deles com o motivo: rápida para páginas muito curtas, semirrápida para artigos criados há poucos dias, por consenso para as demais. A escolha continua sendo de quem patrulha; ao continuar, abre o formulário do tipo escolhido. Em artigos, o diálogo traz também o link '''Detectar VDA''', que abre o [https://copyvios.toolforge.org/ detector de cópia] numa aba nova, já com a página preenchida.
+{{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} mostra os tipos de proposta que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário do tipo escolhido. Em artigos, o diálogo traz também o link '''Detectar VDA''', que abre o [https://copyvios.toolforge.org/ detector de cópia] numa aba nova, já com a página preenchida.
 
 * '''Rápida''': apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
 * '''Semirrápida''': sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.

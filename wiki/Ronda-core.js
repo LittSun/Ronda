@@ -1740,7 +1740,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com uma sugestão de qual usar e o atalho Detectar VDA',
+	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com o atalho Detectar VDA',
 	'Prévia opcional em Manutenção, Esboço, Redirecionar e nas propostas de eliminação',
 	'Informações avisa quando a página é recriação de uma já eliminada e mostra artigos de título parecido',
 	'Filas: prévia da edição ao deixar o mouse sobre ela; novo tema Pregão'

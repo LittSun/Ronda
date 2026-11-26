@@ -1964,7 +1964,6 @@ ronda.registerModule( {
 'use strict';
 
 var TYPES = [ 'rapida', 'semirrapida', 'consenso' ],
-	DAY = 24 * 60 * 60 * 1000,
 	NAMES = {
 		rapida: [ ronda.msg( 'paginas-elim-rapida' ), ronda.msg( 'paginas-elim-rapida-desc' ) ],
 		semirrapida: [ ronda.msg( 'paginas-elim-semirrapida' ), ronda.msg( 'paginas-elim-semirrapida-desc' ) ],
@@ -1983,94 +1982,58 @@ ronda.copyvioUrl = function ( title ) {
 	} );
 };
 
-function suggestType( o, available ) {
-	var days = o.created ? ( o.now - o.created ) / DAY : Infinity,
-		want;
-
-	if ( o.length !== undefined && o.length < 500 ) {
-		want = { id: 'rapida', reason: ronda.msg( 'paginas-elim-sug-curta', o.length ) };
-	} else if ( o.ns === 0 && days < 7 ) {
-		want = { id: 'semirrapida', reason: ronda.msg( 'paginas-elim-sug-nova', Math.max( 1, Math.round( days ) ) ) };
-	} else {
-		want = { id: 'consenso', reason: ronda.msg( 'paginas-elim-sug-antiga' ) };
-	}
-	if ( available.indexOf( want.id ) === -1 ) {
-		want = { id: available[ 0 ], reason: '' };
-	}
-	return want;
-}
-
-ronda.elimination = { suggest: suggestType };
-
 function open( ctx ) {
 	var available = TYPES.filter( function ( id ) {
-		var m = ronda.getModule( id );
+			var m = ronda.getModule( id );
 
-		return m && m.isAvailable( ctx );
+			return m && m.isAvailable( ctx );
+		} ),
+		name = 'ronda-elim-' + ( ++open.n ),
+		$list = $( '<div class="ronda-elim-types"></div>' ),
+		$content = $( '<div></div>' ),
+		$dlg;
+
+	available.forEach( function ( id ) {
+		$list.append( $( '<label class="ronda-elim-type"></label>' ).attr( 'for', name + '-' + id ).append(
+			$( '<input type="radio">' ).attr( { name: name, value: id, id: name + '-' + id } ),
+			$( '<b></b>' ).text( ' ' + NAMES[ id ][ 0 ] ),
+			$( '<span class="ronda-elim-desc"></span>' ).text( NAMES[ id ][ 1 ] )
+		) );
 	} );
+	if ( available.length === 1 ) {
+		$list.find( 'input' ).prop( 'checked', true );
+	}
+	$content.append( $list );
+	if ( ctx.ns === 0 ) {
+		$content.append( $( '<p class="ronda-elim-vda"></p>' ).append(
+			$( '<a target="_blank" rel="noopener"></a>' ).attr( 'href', ronda.copyvioUrl( ctx.page ) ).text( ronda.msg( 'paginas-detectar-vda' ) ),
+			document.createTextNode( ' — ' + ronda.msg( 'paginas-detectar-vda-dica' ) )
+		) );
+	}
 
-	ronda.api.get( {
-		action: 'query',
-		titles: ctx.page,
-		prop: 'info|revisions',
-		rvdir: 'newer',
-		rvlimit: 1,
-		rvprop: 'timestamp'
-	} ).then( function ( data ) {
-		var p = ( data.query.pages || [] )[ 0 ] || {};
+	$dlg = ronda.ui.dialog( {
+		title: ronda.msg( 'paginas-elim-titulo', ctx.page ),
+		width: 560,
+		content: $content,
+		buttons: [ {
+			text: ronda.msg( 'paginas-elim-continuar' ),
+			'class': 'ui-priority-primary ui-button-blue',
+			click: function () {
+				var id = $list.find( 'input:checked' ).val();
 
-		return { length: p.length, created: p.revisions ? Date.parse( p.revisions[ 0 ].timestamp ) : null };
-	}, function () {
-		return $.Deferred().resolve( {} ).promise();
-	} ).then( function ( info ) {
-		var sug = suggestType( { length: info.length, created: info.created, now: Date.now(), ns: ctx.ns }, available ),
-			name = 'ronda-elim-' + ( ++open.n ),
-			$list = $( '<div class="ronda-elim-types"></div>' ),
-			$content = $( '<div></div>' ),
-			$dlg;
-
-		available.forEach( function ( id ) {
-			var $radio = $( '<input type="radio">' ).attr( { name: name, value: id, id: name + '-' + id } ).prop( 'checked', id === sug.id ),
-				$opt = $( '<label class="ronda-elim-type"></label>' ).attr( 'for', name + '-' + id ).append(
-					$radio,
-					$( '<b></b>' ).text( ' ' + NAMES[ id ][ 0 ] ),
-					id === sug.id ? $( '<span class="ronda-elim-sug"></span>' ).text( ronda.msg( 'paginas-elim-sugerida' ) ) : null,
-					$( '<span class="ronda-elim-desc"></span>' ).text( NAMES[ id ][ 1 ] )
-				);
-
-			$list.append( $opt );
-		} );
-		$content.append( $list );
-		if ( sug.reason ) {
-			$content.append( $( '<p class="ronda-elim-why"></p>' ).text( ronda.msg( 'paginas-elim-por-que', sug.reason ) ) );
-		}
-		if ( ctx.ns === 0 ) {
-			$content.append( $( '<p class="ronda-elim-vda"></p>' ).append(
-				$( '<a target="_blank" rel="noopener"></a>' ).attr( 'href', ronda.copyvioUrl( ctx.page ) ).text( ronda.msg( 'paginas-detectar-vda' ) ),
-				document.createTextNode( ' — ' + ronda.msg( 'paginas-detectar-vda-dica' ) )
-			) );
-		}
-
-		$dlg = ronda.ui.dialog( {
-			title: ronda.msg( 'paginas-elim-titulo', ctx.page ),
-			width: 560,
-			content: $content,
-			buttons: [ {
-				text: ronda.msg( 'paginas-elim-continuar' ),
-				'class': 'ui-priority-primary ui-button-blue',
-				click: function () {
-					var id = $list.find( 'input:checked' ).val();
-
-					ronda.ui.close( $dlg );
-					ronda.getModule( id ).open( ctx );
+				if ( !id ) {
+					mw.notify( ronda.msg( 'paginas-elim-escolha' ), { type: 'warn', title: ronda.msg( 'core-nome' ) } );
+					return;
 				}
-			}, {
-				text: ronda.msg( 'core-cancelar' ),
-				click: function () {
-					ronda.ui.close( $dlg );
-				}
-			} ]
-		} );
+				ronda.ui.close( $dlg );
+				ronda.getModule( id ).open( ctx );
+			}
+		}, {
+			text: ronda.msg( 'core-cancelar' ),
+			click: function () {
+				ronda.ui.close( $dlg );
+			}
+		} ]
 	} );
 }
 open.n = 0;
