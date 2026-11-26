@@ -771,6 +771,57 @@ ronda.ui.finishButtons = function ( $dlg, ok, extra ) {
 
 var panels = {};
 
+ronda.ui.alignPanels = function () {
+	var bar = document.getElementById( 'ronda-toolbar' ),
+		admin = bar && bar.querySelector( '.ronda-toolbar-admin' ),
+		first = bar && bar.querySelector( '.ronda-toolbar-group' );
+
+	if ( !bar ) {
+		return;
+	}
+	$( bar ).find( '.ronda-up-side' ).each( function () {
+		var side = this,
+			table = side.parentNode.querySelector( '.ronda-up-table' ),
+			a, s, w;
+
+		side.style.flexBasis = '';
+		if ( !admin || !first || admin === first || !table || !side.offsetParent ) {
+			return;
+		}
+		a = admin.getBoundingClientRect();
+		s = side.getBoundingClientRect();
+		if ( Math.abs( a.top - first.getBoundingClientRect().top ) > 4 || s.top > table.getBoundingClientRect().top + 4 ) {
+			return;
+		}
+		w = s.right - a.left;
+		if ( w > 120 && w < bar.clientWidth * 0.6 ) {
+			side.style.flexBasis = w.toFixed( 2 ) + 'px';
+		}
+	} );
+};
+
+( function () {
+	var pending = false;
+
+	function schedule() {
+		if ( !pending ) {
+			pending = true;
+			( window.requestAnimationFrame || setTimeout )( function () {
+				pending = false;
+				ronda.ui.alignPanels();
+			} );
+		}
+	}
+	mw.hook( 'ronda.ready' ).add( function () {
+		var bar = document.getElementById( 'ronda-toolbar' );
+
+		if ( bar && window.MutationObserver ) {
+			new MutationObserver( schedule ).observe( bar, { childList: true, subtree: true } );
+		}
+		$( window ).on( 'resize.ronda-align', schedule );
+	} );
+}() );
+
 ronda.ui.togglePanel = function ( id, build ) {
 	var $panel = panels[ id ];
 

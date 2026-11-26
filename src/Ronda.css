@@ -182,6 +182,7 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 
 #ronda-toolbar .ronda-up-side {
 	flex: 0 0 19em;
+	box-sizing: border-box;
 	padding-left: 0.8em;
 	border-left: 1px solid var( --border-color-subtle, #c8ccd1 );
 }
