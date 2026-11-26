@@ -1,0 +1,228 @@
+/**
+ * Ronda — tema "Ronda original"
+ *
+ * A aparência do Ronda até a versão 0.7.20: barra clara com moldura fina e os
+ * botões e janelas no tema nativo do jQuery UI da wiki, sem o "cartão com título".
+ * Funciona assim: o CSS principal só aplica o estilo novo da barra e das janelas
+ * quando NÃO há a classe ronda-tema-original em <html>; este arquivo devolve as
+ * regras da 0.7.20 que o estilo novo substituiu (inclusive as do modo escuro).
+ */
+
+html.ronda-tema-original #ronda-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4em 0.6em;
+	margin: 0.5em 0 0.8em;
+	padding: 0.3em 0.5em;
+	font-size: 0.875em;
+	background: var( --background-color-neutral-subtle, #f8f9fa );
+	border: 1px solid var( --border-color-subtle, #c8ccd1 );
+	border-radius: 2px;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-brand {
+	font-weight: bold;
+	color: var( --color-subtle, #54595d );
+	cursor: default;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-toolbar-admin {
+	padding-left: 0.6em;
+	border-left: 1px solid var( --border-color-subtle, #c8ccd1 );
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-btn.ui-button {
+	margin: 0;
+	font-size: 1em;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-btn .ui-button-text {
+	padding: 0.2em 0.7em;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: var( --color-destructive, #d73333 );
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-dry {
+	padding: 0.1em 0.5em;
+	font-size: 0.85em;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-userpanel {
+	flex-basis: 100%;
+	padding-top: 0.3em;
+	border-top: 1px solid var( --border-color-subtle, #c8ccd1 );
+	line-height: 1.6;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-welcome {
+	flex-basis: 100%;
+	padding: 0.4em 0.6em;
+	line-height: 1.5;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-ok {
+	color: var( --color-success, #14866d );
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-bad {
+	color: var( --color-destructive, #d73333 );
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-brand-toggle:hover,
+html.ronda-tema-original #ronda-toolbar .ronda-brand-toggle:focus {
+	color: var( --color-progressive, #36c );
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-userpanel.ronda-news {
+	padding: 0.4em 0.6em;
+	border-top-width: 1px;
+}
+
+html.ronda-tema-original #ronda-toolbar .ronda-prefs-link {
+	margin-left: auto;
+	font-size: 0.9em;
+}
+
+html.ronda-tema-original #ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {
+	padding: 0.45em 0.8em;
+}
+
+html.ronda-tema-original #ronda-toolbar.ronda-mobile .ronda-toolbar-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3em;
+}
+
+html.ronda-tema-original #ronda-toolbar.ronda-mobile .ronda-toolbar-admin {
+	padding-left: 0;
+	border-left: 0;
+}
+
+@media ( max-width: 720px ) {
+	html.ronda-tema-original #ronda-toolbar {
+		gap: 0.3em;
+	}
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original #ronda-toolbar .ui-button.ui-state-default,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
+	background: var( --background-color-interactive-subtle, #27292d ) !important;
+	border-color: var( --border-color-base, #72777d ) !important;
+	color: var( --color-base, #eaecf0 );
+	box-shadow: none;
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original #ronda-toolbar .ui-button.ui-state-hover,
+html.skin-theme-clientpref-night.ronda-tema-original #ronda-toolbar .ui-button.ui-state-focus,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
+	background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
+	color: var( --color-emphasized, #f8f9fa );
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original #ronda-toolbar .ui-button.ui-state-active,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
+	background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: var( --color-destructive, #fd7865 );
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog.ui-dialog,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-dialog-content,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-dialog-buttonpane,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-tooltip.ui-tooltip,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-menu.ui-menu {
+	background: var( --background-color-base, #101418 );
+	border-color: var( --border-color-base, #72777d );
+	color: var( --color-base, #eaecf0 );
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-dialog-titlebar.ui-widget-header {
+	background: var( --background-color-neutral, #27292d ) !important;
+	border-color: var( --border-color-subtle, #54595d );
+	color: var( --color-emphasized, #f8f9fa );
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ui-dialog-buttonpane {
+	border-top-color: var( --border-color-subtle, #54595d );
+}
+
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog fieldset.ui-widget-content,
+html.skin-theme-clientpref-night.ronda-tema-original .ronda-dialog .ronda-list.ui-widget-content {
+	background: transparent;
+	border-color: var( --border-color-subtle, #54595d );
+	color: inherit;
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original #ronda-toolbar .ui-button.ui-state-default,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
+		background: var( --background-color-interactive-subtle, #27292d ) !important;
+		border-color: var( --border-color-base, #72777d ) !important;
+		color: var( --color-base, #eaecf0 );
+		box-shadow: none;
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original #ronda-toolbar .ui-button.ui-state-hover,
+	html.skin-theme-clientpref-os.ronda-tema-original #ronda-toolbar .ui-button.ui-state-focus,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
+		background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
+		color: var( --color-emphasized, #f8f9fa );
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original #ronda-toolbar .ui-button.ui-state-active,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
+		background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original #ronda-toolbar .ronda-btn-admin.ui-button {
+		color: var( --color-destructive, #fd7865 );
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog.ui-dialog,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-dialog-content,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-dialog-buttonpane,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-tooltip.ui-tooltip,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-menu.ui-menu {
+		background: var( --background-color-base, #101418 );
+		border-color: var( --border-color-base, #72777d );
+		color: var( --color-base, #eaecf0 );
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-dialog-titlebar.ui-widget-header {
+		background: var( --background-color-neutral, #27292d ) !important;
+		border-color: var( --border-color-subtle, #54595d );
+		color: var( --color-emphasized, #f8f9fa );
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ui-dialog-buttonpane {
+		border-top-color: var( --border-color-subtle, #54595d );
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog fieldset.ui-widget-content,
+	html.skin-theme-clientpref-os.ronda-tema-original .ronda-dialog .ronda-list.ui-widget-content {
+		background: transparent;
+		border-color: var( --border-color-subtle, #54595d );
+		color: inherit;
+	}
+}

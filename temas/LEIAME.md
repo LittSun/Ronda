@@ -7,10 +7,13 @@ seletor nas preferências: por enquanto os arquivos servem para avaliar os temas
 Regras para todo tema:
 - só CSS e fontes do sistema; nada de imagens, logotipos, ícones ou nomes de marcas de terceiros;
 - tudo restrito a `html.ronda-tema-<nome>` (barra `#ronda-toolbar` e janelas `.ronda-dialog`);
-- paleta própria e fixa (os temas não seguem o modo claro/escuro da wiki).
+- paleta própria e fixa (os temas não seguem o modo claro/escuro da wiki), exceto o Ronda original, que mantém o modo escuro da 0.7.20.
+
+O Ronda original funciona de outro jeito: o CSS principal só aplica o estilo novo da barra e das janelas quando `<html>` não tem a classe `ronda-tema-original`, e `original.css` devolve as regras da 0.7.20.
 
 | Arquivo | Tema |
 |---|---|
+| original.css | Ronda original (a aparência até a 0.7.20: barra clara e jQuery UI puro) |
 | previsao.css | Previsão do tempo |
 | prova.css | Prova (preto e branco) |
 | passaporte.css | Passaporte |
