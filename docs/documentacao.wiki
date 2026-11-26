@@ -209,6 +209,7 @@ File:Userscript Ronda Theme Onibus screenshot.png|'''Ônibus''': letreiro de des
 File:Userscript Ronda Theme Web 1.0 screenshot.png|'''Web 1.0''': página pessoal dos anos 90, com links azuis sublinhados e bordas em relevo.
 File:Userscript Ronda Theme Azulejo portugues screenshot.png|'''Azulejo português''': branco e azul-cobalto, com molduras duplas, bolinhas e listras diagonais.
 File:Userscript Ronda Theme Newton screenshot.png|'''Newton''': janelas arredondadas, botões em controle segmentado e chaves verdes no lugar das caixas.
+File:Userscript Ronda Theme Pregao screenshot.png|'''Pregão''': mesa de operações com fita de cotações, setas de alta e baixa nos botões e gráfico no título das janelas.
 </gallery>
 
 === Configuração avançada pelo common.js ===
