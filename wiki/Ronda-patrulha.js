@@ -2064,23 +2064,29 @@ var MAX = 10,
 		empty: ronda.msg( 'patrulha-nenhuma-pagina-nova-nao-patrulhada-que' ) },
 		{ id: 'SCORES', label: ronda.msg( 'patrulha-edicoes-a-revisar' ), title: ronda.msg( 'patrulha-edicoes-nao-patrulhadas-com-grande-chance' ),
 			right: 'patrol', params: function () {
-				return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: '!patrolled',
-					rcprop: 'user|comment|title|sizes|ids', rclimit: 150 };
+				return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: '!patrolled|oresreview',
+					rcprop: 'user|comment|title|sizes|ids|oresscores', rclimit: 50 };
 			}, key: 'recentchanges', link: 'revid', scores: true, empty: ronda.msg( 'patrulha-nenhuma-edicao-para-patrulhar-ou-desfazer' ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
 	],
-	scoreCache = {},
 	runId = 0;
 
-function pickSuspects( list, scores ) {
-	return list.filter( function ( rev ) {
-		var s = scores[ rev.revid ];
+function prob( item, model ) {
+	var m = item.oresscores && item.oresscores[ model ];
 
-		return s && s.damaging && s.goodfaith && s.damaging.prediction && !s.goodfaith.prediction;
+	return m && typeof m[ 'true' ] === 'number' ? m[ 'true' ] : null;
+}
+
+function pickSuspects( list ) {
+	return list.filter( function ( rev ) {
+		return prob( rev, 'damaging' ) !== null;
 	} ).sort( function ( a, b ) {
-		return scores[ b.revid ].damaging.probability[ 'true' ] - scores[ a.revid ].damaging.probability[ 'true' ];
+		var fa = prob( a, 'goodfaith' ) < 0.5 ? 0 : 1,
+			fb = prob( b, 'goodfaith' ) < 0.5 ? 0 : 1;
+
+		return fa - fb || prob( b, 'damaging' ) - prob( a, 'damaging' );
 	} ).slice( 0, MAX );
 }
 
@@ -2090,82 +2096,17 @@ function sizeDiff( item ) {
 	return d > 0 ? '+' + d : String( d );
 }
 
-ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff };
-
-function fetchScore( id, model, retry ) {
-	var key = model + ':' + id;
-
-	if ( scoreCache[ key ] ) {
-		return $.Deferred().resolve( scoreCache[ key ] ).promise();
-	}
-
-	return $.ajax( {
-		url: 'https://api.wikimedia.org/service/lw/inference/v1/models/ptwiki-' + model + ':predict',
-		method: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify( { rev_id: id } ),
-		dataType: 'json'
-	} ).then( function ( res ) {
-		scoreCache[ key ] = res.ptwiki.scores[ id ][ model ].score;
-		return scoreCache[ key ];
-	}, function ( xhr ) {
-		if ( retry && ( xhr.status === 503 || xhr.status === 429 ) ) {
-			return $.Deferred( function ( d ) {
-				setTimeout( function () {
-					fetchScore( id, model, false ).then( d.resolve, d.reject );
-				}, 1000 );
-			} ).promise();
-		}
-		return $.Deferred().reject( xhr ).promise();
-	} );
-}
-
-function pool( ids, model, onResult, onProgress, stats ) {
-	var d = $.Deferred(),
-		queue = ids.slice(),
-		total = ids.length,
-		finished = 0,
-		active = 0;
-
-	function next() {
-		if ( !queue.length && !active ) {
-			d.resolve();
-			return;
-		}
-		while ( active < 5 && queue.length ) {
-			start( queue.shift() );
-		}
-	}
-
-	function start( id ) {
-		active++;
-		fetchScore( id, model, true ).then( function ( score ) {
-			stats.ok++;
-			onResult( id, score );
-		}, function () {
-			stats.failures++;
-		} ).always( function () {
-			active--;
-			finished++;
-			onProgress( finished, total );
-			next();
-		} );
-	}
-
-	onProgress( 0, total );
-	next();
-	return d.promise();
-}
+ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
 
 function sep() {
 	return document.createTextNode( ' · ' );
 }
 
-function pct( score ) {
-	return Math.round( score.probability[ 'true' ] * 100 ) + '%';
+function pct( p ) {
+	return Math.round( p * 100 ) + '%';
 }
 
-function render( $out, def, list, scores ) {
+function render( $out, def, list ) {
 	var $ul = $( '<ul class="ronda-feed"></ul>' );
 
 	$out.empty();
@@ -2180,7 +2121,8 @@ function render( $out, def, list, scores ) {
 				: def.link === 'rcid' ? { redirect: 'no', rcid: item.rcid }
 					: def.link === 'revid' ? { diff: item.revid } : null,
 			$li = $( '<li></li>' ).append( $( '<a></a>' ).attr( 'href', mw.util.getUrl( item.title, params ) ).text( item.title ) ),
-			s = scores && scores[ item.revid ],
+			dano = def.scores ? prob( item, 'damaging' ) : null,
+			fe = def.scores ? prob( item, 'goodfaith' ) : null,
 			d, n, comment;
 
 		if ( def.link !== 'page' ) {
@@ -2193,9 +2135,11 @@ function render( $out, def, list, scores ) {
 			if ( item.user ) {
 				$li.append( sep(), $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Contributions/' + item.user ) ).text( item.user ) );
 			}
-			if ( s && s.damaging && s.goodfaith ) {
-				$li.append( sep(), $( '<span class="ronda-bad"></span>' ).text( 'dano ' + pct( s.damaging ) ),
-					' ', $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'patrulha-boa-fe', pct( s.goodfaith ) ) ) );
+			if ( dano !== null ) {
+				$li.append( sep(), $( '<span class="ronda-bad"></span>' ).text( 'dano ' + pct( dano ) ) );
+				if ( fe !== null ) {
+					$li.append( ' ', $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'patrulha-boa-fe', pct( fe ) ) ) );
+				}
 			}
 			comment = ( item.comment || '' ).replace( /<[^>]+>/g, '' ).trim();
 			if ( comment ) {
@@ -2213,59 +2157,16 @@ function load( def, $out ) {
 	$out.text( ronda.msg( 'patrulha-carregando' ) );
 
 	ronda.api.get( $.extend( { action: 'query' }, def.params() ) ).then( function ( data ) {
-		var list = ( data.query && data.query[ def.key ] ) || [],
-			scores = {},
-			stats = { ok: 0, failures: 0 },
-			ids;
+		var list = ( data.query && data.query[ def.key ] ) || [];
 
-		if ( !def.scores ) {
-			render( $out, def, list );
+		if ( id !== runId ) {
 			return;
 		}
-
-		ids = list.map( function ( r ) {
-			return r.revid;
-		} );
-
-		pool( ids, 'damaging', function ( rid, score ) {
-			if ( score.prediction ) {
-				scores[ rid ] = { damaging: score };
-			}
-		}, function ( done, total ) {
-			if ( id === runId ) {
-				$out.text( ronda.msg( 'patrulha-analisando-potencial-de-dano', done, total, stats.failures ? ' — ' + stats.failures + ' falha(s)' : '' ) );
-			}
-		}, stats ).then( function () {
-			var suspects = ids.filter( function ( rid ) {
-				return scores[ rid ];
-			} );
-
-			return suspects.length ? pool( suspects, 'goodfaith', function ( rid, score ) {
-				scores[ rid ].goodfaith = score;
-			}, function ( done, total ) {
-				if ( id === runId ) {
-					$out.text( ronda.msg( 'patrulha-verificando-boa-fe-nas-edicoes-suspeitas', total, done, total ) );
-				}
-			}, stats ) : null;
-		} ).then( function () {
-			var picked;
-
-			if ( id !== runId ) {
-				return;
-			}
-			if ( !stats.ok && stats.failures ) {
-				$out.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-as-pontuacoes' ) );
-				return;
-			}
-			picked = pickSuspects( list, scores );
-			if ( picked.length ) {
-				render( $out, def, picked, scores );
-			} else {
-				$out.text( ronda.msg( 'patrulha-nenhuma-edicao-suspeita-entre-as-analisadas', ids.length, stats.failures ? ' — ' + stats.failures + ' falha(s)' : '' ) );
-			}
-		} );
+		render( $out, def, def.scores ? pickSuspects( list ) : list );
 	}, function () {
-		$out.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-a-lista', def.label ) );
+		if ( id === runId ) {
+			$out.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-a-lista', def.label ) );
+		}
 	} );
 }
 

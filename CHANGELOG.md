@@ -5,6 +5,7 @@ Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada
 
 ## 0.7.21 — 26/11/2026
 - **Informações** e **Usuário** viram um só botão, **Informações**, o primeiro da barra, com os dois painéis inteiros: nas contribuições, mostra o do usuário; nas páginas e discussões de usuário, o da página e, abaixo, o do usuário; nas demais páginas, só o da página. O carregamento em segundo plano vale para os dois.
+- **Filas › Edições a revisar** usa as pontuações da extensão ORES da própria pt.wiki, numa só consulta, com o mesmo critério dos filtros de Mudanças recentes (antes eram até 300 pedidos ao LiftWing pelo api.wikimedia.org, que está sendo desativado). As de provável má-fé vêm primeiro.
 - Novos nomes: **Listar** passa a se chamar **Filas**, e **#R**, **Redirecionar**.
 
 ## 0.7.20 — 25/11/2026
