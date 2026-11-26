@@ -1,0 +1,194 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Moderno (janelas arredondadas)" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-moderno #ronda-toolbar {
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	color: #1d1d1f;
+	background: rgba( 236, 236, 238, 0.92 );
+	border: 1px solid rgba( 0, 0, 0, 0.08 );
+	border-radius: 12px;
+	box-shadow: none;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-brand {
+	color: #1d1d1f;
+	background: transparent;
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 0;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn.ui-button {
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	color: #1d1d1f !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 7px !important;
+	box-shadow: none !important;
+	margin: 0.15em 0 !important;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #1d1d1f !important;
+	background: rgba( 0, 0, 0, 0.06 ) !important;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #1d1d1f !important;
+	background: #fff !important;
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.18 ) !important;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #d70015 !important;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-userpanel {
+	color: #1d1d1f;
+	background: rgba( 255, 255, 255, 0.85 );
+	border-top: 1px solid rgba( 0, 0, 0, 0.08 );
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-up-table th {
+	color: #6e6e73;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-up-table td {
+	color: #1d1d1f;
+}
+
+html.ronda-tema-moderno #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-moderno #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-moderno #ronda-toolbar a {
+	color: #0066cc;
+}
+
+html.ronda-tema-moderno .ronda-dialog.ui-dialog {
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	color: #1d1d1f !important;
+	background: #f5f5f7 !important;
+	border: 1px solid rgba( 0, 0, 0, 0.12 ) !important;
+	border-radius: 12px !important;
+	box-shadow: 0 22px 60px rgba( 0, 0, 0, 0.28 ) !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar {
+	color: #1d1d1f !important;
+	background: transparent !important;
+	border-bottom: 0 !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #1d1d1f;
+	background: transparent;
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar-close {
+	color: #1d1d1f !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form fieldset {
+	background: #fff !important;
+	border: 1px solid rgba( 0, 0, 0, 0.1 ) !important;
+	border-radius: 10px !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form legend {
+	color: #6e6e73 !important;
+	background: transparent;
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-moderno .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 1px solid rgba( 0, 0, 0, 0.1 ) !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-moderno .ronda-dialog .ronda-form textarea,
+html.ronda-tema-moderno .ronda-dialog .ronda-form select {
+	color: #1d1d1f;
+	background: #fff;
+	border: 1px solid rgba( 0, 0, 0, 0.15 );
+	border-radius: 7px;
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #34c759;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #6e6e73;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ronda-form a {
+	color: #0066cc;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane {
+	background: transparent !important;
+	border-top: 0 !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	color: #1d1d1f !important;
+	background: #fff !important;
+	border: 1px solid rgba( 0, 0, 0, 0.15 ) !important;
+	border-radius: 7px !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: rgba( 0, 0, 0, 0.06 ) !important;
+	color: #1d1d1f !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #fff !important;
+	background: #0a84ff !important;
+	border-color: #0a84ff !important;
+}
+
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #ff3b30 !important;
+	border-color: #ff3b30 !important;
+}
+
+html.ronda-tema-moderno #ronda-toolbar { padding: 0.35em 0.5em !important; gap: 0.5em !important; align-items: center !important; backdrop-filter: blur( 12px ); }
+html.ronda-tema-moderno #ronda-toolbar .ronda-brand::before { content: ''; display: inline-block; width: 3.4em; height: 0.85em; margin-right: 0.8em;
+	background: radial-gradient( circle, #ff5f57 0.42em, transparent 0.45em ) 0 50% / 1.2em 100% no-repeat,
+		radial-gradient( circle, #febc2e 0.42em, transparent 0.45em ) 1.15em 50% / 1.2em 100% no-repeat,
+		radial-gradient( circle, #28c840 0.42em, transparent 0.45em ) 2.3em 50% / 1.2em 100% no-repeat; }
+html.ronda-tema-moderno #ronda-toolbar .ronda-toolbar-group { background: rgba( 0, 0, 0, 0.06 ); border-radius: 9px; padding: 0.15em; }
+html.ronda-tema-moderno #ronda-toolbar .ronda-btn .ui-button-text { padding: 0.3em 0.95em; }
+html.ronda-tema-moderno #ronda-toolbar .ronda-toolbar-admin { border-left: 0 !important; margin-left: 0.3em !important; }
+html.ronda-tema-moderno #ronda-toolbar .ronda-userpanel { border-radius: 10px; margin: 0.2em 0 0.1em; }
+html.ronda-tema-moderno .ronda-dialog.ui-dialog { border-radius: 16px !important; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar { justify-content: center; padding-top: 0.9em !important; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar::before { content: '' !important; padding: 0 !important; background: transparent !important; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-title { flex: 0 1 auto !important; text-align: center; font-size: 1.1em; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar-close { position: absolute !important; left: 14px !important; top: 16px !important; z-index: 1; display: block !important; flex: none !important; width: 12px !important; height: 12px !important; border-radius: 50% !important; background: #ff5f57 !important; color: transparent !important; box-shadow: 20px 0 0 #febc2e, 40px 0 0 #28c840 !important; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar { position: relative; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-titlebar-close::after { content: '' !important; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form legend { font-weight: 600 !important; font-size: 0.85em !important; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="checkbox" ] { appearance: none; width: 2.1em; height: 1.2em; border-radius: 999px; background: #d1d1d6; position: relative; vertical-align: -0.3em; margin-right: 0.35em; transition: background 0.15s; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="checkbox" ]::after { content: ''; position: absolute; top: 0.1em; left: 0.1em; width: 1em; height: 1em; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.3 ); transition: left 0.15s; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="checkbox" ]:checked { background: #34c759; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="checkbox" ]:checked::after { left: 1em; }
+html.ronda-tema-moderno .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-moderno .ronda-dialog .ronda-form select { border-radius: 7px !important; padding: 0.35em 0.6em; }
+html.ronda-tema-moderno .ronda-dialog .ui-dialog-buttonpane .ui-button { border-radius: 7px !important; }
+/* </nowiki> */

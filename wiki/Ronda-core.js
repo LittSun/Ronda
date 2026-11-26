@@ -1052,7 +1052,9 @@ ronda.THEMES = [
 	[ 'metro', 'Metrô' ],
 	[ 'ocorrencia', 'Boletim de ocorrência' ],
 	[ 'onibus', 'Ônibus' ],
-	[ 'web1', 'Web 1.0' ]
+	[ 'web1', 'Web 1.0' ],
+	[ 'azulejo', 'Azulejo português' ],
+	[ 'moderno', 'Moderno (janelas arredondadas)' ]
 ];
 
 ronda.applyTheme = function ( id ) {
@@ -1628,7 +1630,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Temas: escolha nas preferências a aparência da barra e das janelas, entre 18 opções (do Ronda original ao Terminal, à Bula e ao s y n t h w a v e)'
+	'Temas: escolha nas preferências a aparência da barra e das janelas, entre 20 opções (do Ronda original ao Terminal, à Bula, ao Azulejo português e ao s y n t h w a v e)'
 ];
 
 function saveOption( name, value ) {

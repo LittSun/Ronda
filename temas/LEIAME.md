@@ -30,3 +30,5 @@ O Ronda original funciona de outro jeito: o CSS principal só aplica o estilo no
 | ocorrencia.css | Boletim de ocorrência |
 | onibus.css | Ônibus |
 | web1.css | Web 1.0 |
+| azulejo.css | Azulejo português |
+| moderno.css | Moderno (janelas arredondadas) |
