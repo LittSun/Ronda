@@ -388,7 +388,7 @@ ronda.catalog.speedy = [
 ];
 
 ( function () {
-	var FONTES = ' Páginas pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, etc.), fóruns de discussão,'
+	var FONTES = ' Páginas pessoais, sites de fãs, sites colaborativos (como Discogs, IMDb, Wikipédia, etc.), fóruns de discussão,'
 			+ ' blogues (como Blogspot, Blogger, WordPress, etc.) e redes sociais (como Facebook, Instagram, Twitter, etc.)'
 			+ ' não são fontes confiáveis.',
 		SEM_FONTES = 'sem [[WP:FC|fontes confiáveis]] e [[WP:FI|independentes]] que confirmem as afirmações do texto e atestem ',
@@ -414,6 +414,8 @@ ronda.catalog.speedy = [
 		{ label: 'Esporte/desporto', text: esr( GENERICO, [ 'Desporto', 'desporto' ] ) },
 		{ label: 'História e sociedade', text: esr( GENERICO ) },
 		{ label: 'Medicina', text: esr( GENERICO ) },
+		{ label: 'Organização', template: 'ESR-organização', text: esr( 'Artigo sobre organização '
+			+ SEM_FONTES + ' notoriedade. ' + FONTES, ['Organizações', 'organizações'] ) },
 		{ label: 'Países', text: esr( GENERICO ) },
 		{ label: 'Pessoas', template: 'ESR-bio', text: esr( 'Biografia ' + SEM_FONTES
 			+ 'a notoriedade do biografado.', [ 'Biografias', 'biografias' ] ) },
