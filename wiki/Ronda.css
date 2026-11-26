@@ -199,6 +199,10 @@
 	border-collapse: collapse;
 }
 
+.ronda-qf td:last-child {
+	white-space: nowrap;
+}
+
 .ronda-qf td {
 	padding: 3px 6px;
 	vertical-align: top;
@@ -235,11 +239,13 @@
 	font-weight: bold;
 }
 
-#ronda-toolbar .ronda-ok {
+#ronda-toolbar .ronda-ok,
+.ronda-qf .ronda-ok {
 	color: var( --color-success, #14866d );
 }
 
-#ronda-toolbar .ronda-bad {
+#ronda-toolbar .ronda-bad,
+.ronda-qf .ronda-bad {
 	color: var( --color-destructive, #d73333 );
 }
 
