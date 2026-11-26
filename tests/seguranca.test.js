@@ -87,7 +87,7 @@ test( 'SEC-01: destino com conteúdo só é eliminado com as duas caixas marcada
 
 	$d.find( '.ronda-move-confirm input' ).prop( 'checked', true );
 	mover();
-	await a.esperar( 60 );
+	await a.ate( () => a.escritas().length >= 2 );
 	assert.deepStrictEqual( a.escritas().map( ( c ) => c.action ), [ 'delete', 'move' ] );
 } );
 
@@ -98,7 +98,7 @@ test( 'SEC-01: destino livre, Enter move direto', async () => {
 
 	$t.val( 'Livre' ).trigger( 'input' );
 	tecla( $t, 'Enter' );
-	await a.esperar( 80 );
+	await a.ate( () => a.escritas().length > 0 );
 
 	assert.deepStrictEqual( a.escritas().map( ( c ) => c.action ), [ 'move' ] );
 } );
