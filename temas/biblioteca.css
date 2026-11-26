@@ -1,0 +1,170 @@
+/**
+ * Ronda — tema "Biblioteca"
+ *
+ * Madeira, latão e sussurro: verde de abajur, papel envelhecido e títulos em
+ * letra serifada.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-biblioteca em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-biblioteca #ronda-toolbar,
+html.ronda-tema-biblioteca .ronda-dialog,
+html.ronda-tema-biblioteca .ronda-tooltip,
+html.ronda-tema-biblioteca .ronda-menu {
+	--background-color-base: #faf7ef;
+	--background-color-neutral-subtle: #f3eee2;
+	--background-color-neutral: #e6decb;
+	--background-color-interactive-subtle: #f3eee2;
+	--background-color-interactive-subtle--hover: #e6decb;
+	--background-color-interactive-subtle--active: #e9e2d1;
+	--background-color-inverted: #2c3a2e;
+	--color-inverted: #f3eee2;
+	--color-base: #3a3226;
+	--color-emphasized: #3a3226;
+	--color-subtle: #625846;
+	--border-color-subtle: #cdbf9f;
+	--border-color-base: #a89874;
+	--border-color-interactive: #a89874;
+	--border-color-muted: #e9e2d1;
+	--color-progressive: #8a6620;
+	--border-color-progressive: #8a6620;
+	--background-color-progressive: #8a6620;
+	--background-color-progressive-subtle: #f1e6cc;
+	--color-destructive: #a3322b;
+	--background-color-destructive: #a3322b;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-biblioteca.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-biblioteca.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-biblioteca.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-biblioteca.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #151812;
+	--background-color-neutral-subtle: #1c1f18;
+	--background-color-neutral: #2b2f24;
+	--background-color-interactive-subtle: #1c1f18;
+	--background-color-interactive-subtle--hover: #2b2f24;
+	--background-color-interactive-subtle--active: #22261d;
+	--background-color-inverted: #0e140f;
+	--color-inverted: #e8dfc8;
+	--color-base: #e6dfcd;
+	--color-emphasized: #e6dfcd;
+	--color-subtle: #ada38c;
+	--border-color-subtle: #363a2c;
+	--border-color-base: #545944;
+	--border-color-interactive: #545944;
+	--border-color-muted: #22261d;
+	--color-progressive: #d6b05e;
+	--border-color-progressive: #d6b05e;
+	--background-color-progressive: #8a6620;
+	--background-color-progressive-subtle: #33290f;
+	--color-destructive: #ef8a7c;
+	--background-color-destructive: #a3322b;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-biblioteca.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-biblioteca.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-biblioteca.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-biblioteca.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #151812;
+		--background-color-neutral-subtle: #1c1f18;
+		--background-color-neutral: #2b2f24;
+		--background-color-interactive-subtle: #1c1f18;
+		--background-color-interactive-subtle--hover: #2b2f24;
+		--background-color-interactive-subtle--active: #22261d;
+		--background-color-inverted: #0e140f;
+		--color-inverted: #e8dfc8;
+		--color-base: #e6dfcd;
+		--color-emphasized: #e6dfcd;
+		--color-subtle: #ada38c;
+		--border-color-subtle: #363a2c;
+		--border-color-base: #545944;
+		--border-color-interactive: #545944;
+		--border-color-muted: #22261d;
+		--color-progressive: #d6b05e;
+		--border-color-progressive: #d6b05e;
+		--background-color-progressive: #8a6620;
+		--background-color-progressive-subtle: #33290f;
+		--color-destructive: #ef8a7c;
+		--background-color-destructive: #a3322b;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form textarea,
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 1px;
+}
+
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-biblioteca .ronda-tooltip.ui-tooltip,
+html.ronda-tema-biblioteca .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-biblioteca .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-biblioteca .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-biblioteca .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-biblioteca #ronda-toolbar a,
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-biblioteca .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-biblioteca #ronda-toolbar,
+html.ronda-tema-biblioteca .ronda-dialog.ui-dialog {
+	border-radius: 1px !important;
+}
+
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-biblioteca .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 1px !important;
+}
+
+/* Letra serifada na aba e nos títulos */
+html.ronda-tema-biblioteca #ronda-toolbar .ronda-brand,
+html.ronda-tema-biblioteca .ronda-dialog .ui-dialog-titlebar::before,
+html.ronda-tema-biblioteca .ronda-dialog .ui-dialog-title {
+	font-family: Georgia, 'Times New Roman', serif;
+	letter-spacing: 0.01em;
+}
+
+html.ronda-tema-biblioteca .ronda-dialog .ronda-form legend {
+	font-family: Georgia, 'Times New Roman', serif;
+	font-style: italic;
+}

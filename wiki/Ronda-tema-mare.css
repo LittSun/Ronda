@@ -1,0 +1,144 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Maré baixa" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-mare #ronda-toolbar,
+html.ronda-tema-mare .ronda-dialog,
+html.ronda-tema-mare .ronda-tooltip,
+html.ronda-tema-mare .ronda-menu {
+	--background-color-base: #f9f9f6;
+	--background-color-neutral-subtle: #f1f1ec;
+	--background-color-neutral: #e2e4dc;
+	--background-color-interactive-subtle: #f1f1ec;
+	--background-color-interactive-subtle--hover: #e2e4dc;
+	--background-color-interactive-subtle--active: #e5e7df;
+	--background-color-inverted: #33504f;
+	--color-inverted: #f1f1ec;
+	--color-base: #31403f;
+	--color-emphasized: #31403f;
+	--color-subtle: #566563;
+	--border-color-subtle: #cfd3c8;
+	--border-color-base: #a7ae9f;
+	--border-color-interactive: #a7ae9f;
+	--border-color-muted: #e5e7df;
+	--color-progressive: #3a756d;
+	--border-color-progressive: #3a756d;
+	--background-color-progressive: #3a756d;
+	--background-color-progressive-subtle: #dcebe7;
+	--color-destructive: #a8413a;
+	--background-color-destructive: #a8413a;
+	--color-inverted-fixed: #fff;
+}
+
+html.ronda-tema-mare.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-mare.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-mare.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-mare.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #121a19;
+	--background-color-neutral-subtle: #182221;
+	--background-color-neutral: #24302f;
+	--background-color-interactive-subtle: #182221;
+	--background-color-interactive-subtle--hover: #24302f;
+	--background-color-interactive-subtle--active: #1c2625;
+	--background-color-inverted: #0d1716;
+	--color-inverted: #d9e6e2;
+	--color-base: #d5e0dd;
+	--color-emphasized: #d5e0dd;
+	--color-subtle: #93a6a2;
+	--border-color-subtle: #2a3836;
+	--border-color-base: #435553;
+	--border-color-interactive: #435553;
+	--border-color-muted: #1c2625;
+	--color-progressive: #86c7bd;
+	--border-color-progressive: #86c7bd;
+	--background-color-progressive: #3d7a72;
+	--background-color-progressive-subtle: #17302c;
+	--color-destructive: #ee8b82;
+	--background-color-destructive: #a8413a;
+	--color-inverted-fixed: #fff;
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-mare.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-mare.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-mare.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-mare.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #121a19;
+		--background-color-neutral-subtle: #182221;
+		--background-color-neutral: #24302f;
+		--background-color-interactive-subtle: #182221;
+		--background-color-interactive-subtle--hover: #24302f;
+		--background-color-interactive-subtle--active: #1c2625;
+		--background-color-inverted: #0d1716;
+		--color-inverted: #d9e6e2;
+		--color-base: #d5e0dd;
+		--color-emphasized: #d5e0dd;
+		--color-subtle: #93a6a2;
+		--border-color-subtle: #2a3836;
+		--border-color-base: #435553;
+		--border-color-interactive: #435553;
+		--border-color-muted: #1c2625;
+		--color-progressive: #86c7bd;
+		--border-color-progressive: #86c7bd;
+		--background-color-progressive: #3d7a72;
+		--background-color-progressive-subtle: #17302c;
+		--color-destructive: #ee8b82;
+		--background-color-destructive: #a8413a;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+html.ronda-tema-mare .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-mare .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-mare .ronda-dialog .ronda-form textarea,
+html.ronda-tema-mare .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 3px;
+}
+
+html.ronda-tema-mare .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-mare .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-mare .ronda-tooltip.ui-tooltip,
+html.ronda-tema-mare .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-mare .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-mare .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-mare .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-mare #ronda-toolbar a,
+html.ronda-tema-mare .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-mare .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+html.ronda-tema-mare #ronda-toolbar,
+html.ronda-tema-mare .ronda-dialog.ui-dialog {
+	border-radius: 3px !important;
+}
+
+html.ronda-tema-mare .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-mare .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 3px !important;
+}
+/* </nowiki> */

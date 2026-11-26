@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.25 — 26/11/2026
+- **Temas de humor**: 12 temas novos, pensados como estados de espírito — **Madrugada**, **Café coado**, **Neblina**, **Herbário**, **Brasa**, **Crepúsculo**, **Geada**, **Terra roxa**, **Biblioteca**, **Domingo à tarde**, **Maré baixa** e **Silêncio** (33 temas). Diferentemente dos demais temas próprios, cada um tem versão clara e escura, que acompanha o modo da wiki (inclusive o automático). Eles mantêm o formato do Padrão (cartão com título) e trocam só as cores, os cantos e, em alguns, a letra da aba e dos títulos; campos, menus de sugestão e dicas também passam a usar as cores do tema.
+
 ## 0.7.24 — 26/11/2026
 - **Propor eliminação**: um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.
 - **Prévia** opcional, como a dos avisos, em Manutenção, Esboço, Redirecionar e nas propostas rápida e semirrápida: mostra o diff do que vai mudar na página, sem gravar nada.

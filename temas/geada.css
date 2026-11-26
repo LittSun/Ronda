@@ -1,0 +1,156 @@
+/**
+ * Ronda — tema "Geada"
+ *
+ * Nítido, frio e preciso: branco de gelo, azul glacial e cantos retos.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-geada em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-geada #ronda-toolbar,
+html.ronda-tema-geada .ronda-dialog,
+html.ronda-tema-geada .ronda-tooltip,
+html.ronda-tema-geada .ronda-menu {
+	--background-color-base: #ffffff;
+	--background-color-neutral-subtle: #f4f9fb;
+	--background-color-neutral: #e2eef4;
+	--background-color-interactive-subtle: #f4f9fb;
+	--background-color-interactive-subtle--hover: #e2eef4;
+	--background-color-interactive-subtle--active: #e6f0f5;
+	--background-color-inverted: #2b4a5c;
+	--color-inverted: #f4f9fb;
+	--color-base: #23404f;
+	--color-emphasized: #23404f;
+	--color-subtle: #4b6676;
+	--border-color-subtle: #cfe1ea;
+	--border-color-base: #9fbfcf;
+	--border-color-interactive: #9fbfcf;
+	--border-color-muted: #e6f0f5;
+	--color-progressive: #1f6f94;
+	--border-color-progressive: #1f6f94;
+	--background-color-progressive: #1f6f94;
+	--background-color-progressive-subtle: #ddeef6;
+	--color-destructive: #b3383a;
+	--background-color-destructive: #b3383a;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-geada.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-geada.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-geada.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-geada.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #0b1820;
+	--background-color-neutral-subtle: #10202a;
+	--background-color-neutral: #1a3040;
+	--background-color-interactive-subtle: #10202a;
+	--background-color-interactive-subtle--hover: #1a3040;
+	--background-color-interactive-subtle--active: #132630;
+	--background-color-inverted: #07141c;
+	--color-inverted: #d6ebf5;
+	--color-base: #d6e8f1;
+	--color-emphasized: #d6e8f1;
+	--color-subtle: #8fb0c2;
+	--border-color-subtle: #1f3646;
+	--border-color-base: #355468;
+	--border-color-interactive: #355468;
+	--border-color-muted: #132630;
+	--color-progressive: #7cc4e6;
+	--border-color-progressive: #7cc4e6;
+	--background-color-progressive: #1f6f94;
+	--background-color-progressive-subtle: #10303f;
+	--color-destructive: #f08a86;
+	--background-color-destructive: #b3383a;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-geada.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-geada.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-geada.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-geada.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #0b1820;
+		--background-color-neutral-subtle: #10202a;
+		--background-color-neutral: #1a3040;
+		--background-color-interactive-subtle: #10202a;
+		--background-color-interactive-subtle--hover: #1a3040;
+		--background-color-interactive-subtle--active: #132630;
+		--background-color-inverted: #07141c;
+		--color-inverted: #d6ebf5;
+		--color-base: #d6e8f1;
+		--color-emphasized: #d6e8f1;
+		--color-subtle: #8fb0c2;
+		--border-color-subtle: #1f3646;
+		--border-color-base: #355468;
+		--border-color-interactive: #355468;
+		--border-color-muted: #132630;
+		--color-progressive: #7cc4e6;
+		--border-color-progressive: #7cc4e6;
+		--background-color-progressive: #1f6f94;
+		--background-color-progressive-subtle: #10303f;
+		--color-destructive: #f08a86;
+		--background-color-destructive: #b3383a;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-geada .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-geada .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-geada .ronda-dialog .ronda-form textarea,
+html.ronda-tema-geada .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 0;
+}
+
+html.ronda-tema-geada .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-geada .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-geada .ronda-tooltip.ui-tooltip,
+html.ronda-tema-geada .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-geada .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-geada .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-geada .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-geada #ronda-toolbar a,
+html.ronda-tema-geada .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-geada .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-geada #ronda-toolbar,
+html.ronda-tema-geada .ronda-dialog.ui-dialog {
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-geada .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-geada .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 0 !important;
+}

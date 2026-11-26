@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.24',
+		version: '0.7.25',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1136,7 +1136,19 @@ ronda.THEMES = [
 	[ 'web1', 'Web 1.0' ],
 	[ 'azulejo', 'Azulejo português' ],
 	[ 'newton', 'Newton' ],
-	[ 'pregao', 'Pregão' ]
+	[ 'pregao', 'Pregão' ],
+	[ 'madrugada', 'Madrugada' ],
+	[ 'cafe', 'Café coado' ],
+	[ 'neblina', 'Neblina' ],
+	[ 'herbario', 'Herbário' ],
+	[ 'brasa', 'Brasa' ],
+	[ 'crepusculo', 'Crepúsculo' ],
+	[ 'geada', 'Geada' ],
+	[ 'terraroxa', 'Terra roxa' ],
+	[ 'biblioteca', 'Biblioteca' ],
+	[ 'domingo', 'Domingo à tarde' ],
+	[ 'mare', 'Maré baixa' ],
+	[ 'silencio', 'Silêncio' ]
 ];
 
 ronda.applyTheme = function ( id ) {
@@ -1740,10 +1752,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com o atalho Detectar VDA',
-	'Prévia opcional em Manutenção, Esboço, Redirecionar e nas propostas de eliminação',
-	'Informações avisa quando a página é recriação de uma já eliminada, mostra artigos de título parecido e detalha páginas eliminadas',
-	'Filas: prévia da edição ao deixar o mouse sobre ela; novo tema Pregão'
+	'12 temas de humor, com versão clara e escura que acompanha o modo da wiki: Madrugada, Café coado, Neblina, Herbário, Brasa, Crepúsculo, Geada, Terra roxa, Biblioteca, Domingo à tarde, Maré baixa e Silêncio'
 ];
 
 function saveOption( name, value ) {

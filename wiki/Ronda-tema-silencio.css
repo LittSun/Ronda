@@ -1,0 +1,163 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Silêncio" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-silencio #ronda-toolbar,
+html.ronda-tema-silencio .ronda-dialog,
+html.ronda-tema-silencio .ronda-tooltip,
+html.ronda-tema-silencio .ronda-menu {
+	--background-color-base: #ffffff;
+	--background-color-neutral-subtle: #ffffff;
+	--background-color-neutral: #eeeeee;
+	--background-color-interactive-subtle: #ffffff;
+	--background-color-interactive-subtle--hover: #eeeeee;
+	--background-color-interactive-subtle--active: #bbbbbb;
+	--background-color-inverted: #111111;
+	--color-inverted: #ffffff;
+	--color-base: #111111;
+	--color-emphasized: #111111;
+	--color-subtle: #444444;
+	--border-color-subtle: #111111;
+	--border-color-base: #111111;
+	--border-color-interactive: #111111;
+	--border-color-muted: #bbbbbb;
+	--color-progressive: #111111;
+	--border-color-progressive: #111111;
+	--background-color-progressive: #111111;
+	--background-color-progressive-subtle: #eeeeee;
+	--color-destructive: #9b1c1c;
+	--background-color-destructive: #9b1c1c;
+	--color-inverted-fixed: #fff;
+}
+
+html.ronda-tema-silencio.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-silencio.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-silencio.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-silencio.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #000000;
+	--background-color-neutral-subtle: #000000;
+	--background-color-neutral: #1c1c1c;
+	--background-color-interactive-subtle: #000000;
+	--background-color-interactive-subtle--hover: #1c1c1c;
+	--background-color-interactive-subtle--active: #555555;
+	--background-color-inverted: #f2f2f2;
+	--color-inverted: #000000;
+	--color-base: #f2f2f2;
+	--color-emphasized: #f2f2f2;
+	--color-subtle: #bdbdbd;
+	--border-color-subtle: #f2f2f2;
+	--border-color-base: #f2f2f2;
+	--border-color-interactive: #f2f2f2;
+	--border-color-muted: #555555;
+	--color-progressive: #f2f2f2;
+	--border-color-progressive: #f2f2f2;
+	--background-color-progressive: #f2f2f2;
+	--background-color-progressive-subtle: #1c1c1c;
+	--color-destructive: #ff8a80;
+	--background-color-destructive: #ff8a80;
+	--color-inverted-fixed: #000000;
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-silencio.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-silencio.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-silencio.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-silencio.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #000000;
+		--background-color-neutral-subtle: #000000;
+		--background-color-neutral: #1c1c1c;
+		--background-color-interactive-subtle: #000000;
+		--background-color-interactive-subtle--hover: #1c1c1c;
+		--background-color-interactive-subtle--active: #555555;
+		--background-color-inverted: #f2f2f2;
+		--color-inverted: #000000;
+		--color-base: #f2f2f2;
+		--color-emphasized: #f2f2f2;
+		--color-subtle: #bdbdbd;
+		--border-color-subtle: #f2f2f2;
+		--border-color-base: #f2f2f2;
+		--border-color-interactive: #f2f2f2;
+		--border-color-muted: #555555;
+		--color-progressive: #f2f2f2;
+		--border-color-progressive: #f2f2f2;
+		--background-color-progressive: #f2f2f2;
+		--background-color-progressive-subtle: #1c1c1c;
+		--color-destructive: #ff8a80;
+		--background-color-destructive: #ff8a80;
+		--color-inverted-fixed: #000000;
+	}
+}
+
+html.ronda-tema-silencio .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-silencio .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-silencio .ronda-dialog .ronda-form textarea,
+html.ronda-tema-silencio .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 0;
+}
+
+html.ronda-tema-silencio .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-silencio .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-silencio .ronda-tooltip.ui-tooltip,
+html.ronda-tema-silencio .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-silencio .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-silencio .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-silencio .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-silencio #ronda-toolbar a,
+html.ronda-tema-silencio .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-silencio .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+html.ronda-tema-silencio #ronda-toolbar,
+html.ronda-tema-silencio .ronda-dialog.ui-dialog {
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-silencio .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-silencio .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-silencio #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	font-weight: bold !important;
+	box-shadow: inset 0 -2px 0 var( --color-base ) !important;
+}
+
+html.ronda-tema-silencio #ronda-toolbar .ronda-brand,
+html.ronda-tema-silencio .ronda-dialog .ui-dialog-titlebar::before {
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+}
+
+html.ronda-tema-silencio .ronda-dialog.ui-dialog {
+	box-shadow: none !important;
+}
+
+html.ronda-tema-silencio .ronda-dialog .ronda-form fieldset fieldset {
+	border-style: dotted !important;
+}
+/* </nowiki> */

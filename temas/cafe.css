@@ -1,0 +1,170 @@
+/**
+ * Ronda — tema "Café coado"
+ *
+ * Manhã, primeira edição do dia: creme, marrom de café e a aba em letra
+ * serifada.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-cafe em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-cafe #ronda-toolbar,
+html.ronda-tema-cafe .ronda-dialog,
+html.ronda-tema-cafe .ronda-tooltip,
+html.ronda-tema-cafe .ronda-menu {
+	--background-color-base: #fbf7f1;
+	--background-color-neutral-subtle: #f4ece2;
+	--background-color-neutral: #eadfd0;
+	--background-color-interactive-subtle: #f4ece2;
+	--background-color-interactive-subtle--hover: #eadfd0;
+	--background-color-interactive-subtle--active: #e8dccd;
+	--background-color-inverted: #3b2a20;
+	--color-inverted: #f4ece2;
+	--color-base: #4a3628;
+	--color-emphasized: #4a3628;
+	--color-subtle: #6e5646;
+	--border-color-subtle: #d6c3ad;
+	--border-color-base: #b39a80;
+	--border-color-interactive: #b39a80;
+	--border-color-muted: #e8dccd;
+	--color-progressive: #8a4f25;
+	--border-color-progressive: #8a4f25;
+	--background-color-progressive: #8a4f25;
+	--background-color-progressive-subtle: #f1e1d0;
+	--color-destructive: #a8322a;
+	--background-color-destructive: #a8322a;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-cafe.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-cafe.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-cafe.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-cafe.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #1e1611;
+	--background-color-neutral-subtle: #2a1f18;
+	--background-color-neutral: #3a2c22;
+	--background-color-interactive-subtle: #2a1f18;
+	--background-color-interactive-subtle--hover: #3a2c22;
+	--background-color-interactive-subtle--active: #33271f;
+	--background-color-inverted: #120c08;
+	--color-inverted: #e9dccb;
+	--color-base: #eadccb;
+	--color-emphasized: #eadccb;
+	--color-subtle: #b8a28c;
+	--border-color-subtle: #4a3a2e;
+	--border-color-base: #6b5545;
+	--border-color-interactive: #6b5545;
+	--border-color-muted: #33271f;
+	--color-progressive: #d9a274;
+	--border-color-progressive: #d9a274;
+	--background-color-progressive: #9a5b2e;
+	--background-color-progressive-subtle: #3a2718;
+	--color-destructive: #f08a78;
+	--background-color-destructive: #a8322a;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-cafe.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-cafe.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-cafe.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-cafe.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #1e1611;
+		--background-color-neutral-subtle: #2a1f18;
+		--background-color-neutral: #3a2c22;
+		--background-color-interactive-subtle: #2a1f18;
+		--background-color-interactive-subtle--hover: #3a2c22;
+		--background-color-interactive-subtle--active: #33271f;
+		--background-color-inverted: #120c08;
+		--color-inverted: #e9dccb;
+		--color-base: #eadccb;
+		--color-emphasized: #eadccb;
+		--color-subtle: #b8a28c;
+		--border-color-subtle: #4a3a2e;
+		--border-color-base: #6b5545;
+		--border-color-interactive: #6b5545;
+		--border-color-muted: #33271f;
+		--color-progressive: #d9a274;
+		--border-color-progressive: #d9a274;
+		--background-color-progressive: #9a5b2e;
+		--background-color-progressive-subtle: #3a2718;
+		--color-destructive: #f08a78;
+		--background-color-destructive: #a8322a;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-cafe .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-cafe .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-cafe .ronda-dialog .ronda-form textarea,
+html.ronda-tema-cafe .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 3px;
+}
+
+html.ronda-tema-cafe .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-cafe .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-cafe .ronda-tooltip.ui-tooltip,
+html.ronda-tema-cafe .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-cafe .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-cafe .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-cafe .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-cafe #ronda-toolbar a,
+html.ronda-tema-cafe .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-cafe .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-cafe #ronda-toolbar,
+html.ronda-tema-cafe .ronda-dialog.ui-dialog {
+	border-radius: 3px !important;
+}
+
+html.ronda-tema-cafe .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-cafe .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 3px !important;
+}
+
+/* Letra serifada na aba e nos títulos */
+html.ronda-tema-cafe #ronda-toolbar .ronda-brand,
+html.ronda-tema-cafe .ronda-dialog .ui-dialog-titlebar::before,
+html.ronda-tema-cafe .ronda-dialog .ui-dialog-title {
+	font-family: Georgia, 'Times New Roman', serif;
+	letter-spacing: 0.01em;
+}
+
+html.ronda-tema-cafe .ronda-dialog .ronda-form legend {
+	font-family: Georgia, 'Times New Roman', serif;
+	font-style: italic;
+}

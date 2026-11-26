@@ -1,0 +1,170 @@
+/**
+ * Ronda — tema "Domingo à tarde"
+ *
+ * Sem pressa, luz morna: creme, mel e cantos arredondados, com a aba em
+ * letra serifada.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-domingo em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-domingo #ronda-toolbar,
+html.ronda-tema-domingo .ronda-dialog,
+html.ronda-tema-domingo .ronda-tooltip,
+html.ronda-tema-domingo .ronda-menu {
+	--background-color-base: #fffcf4;
+	--background-color-neutral-subtle: #fbf5e6;
+	--background-color-neutral: #f1e6c9;
+	--background-color-interactive-subtle: #fbf5e6;
+	--background-color-interactive-subtle--hover: #f1e6c9;
+	--background-color-interactive-subtle--active: #f3ead2;
+	--background-color-inverted: #6f5a3a;
+	--color-inverted: #fbf5e6;
+	--color-base: #5a4a30;
+	--color-emphasized: #5a4a30;
+	--color-subtle: #7a6748;
+	--border-color-subtle: #eadbb5;
+	--border-color-base: #cdb985;
+	--border-color-interactive: #cdb985;
+	--border-color-muted: #f3ead2;
+	--color-progressive: #8f6510;
+	--border-color-progressive: #8f6510;
+	--background-color-progressive: #8f6510;
+	--background-color-progressive-subtle: #f7ebcb;
+	--color-destructive: #b0412e;
+	--background-color-destructive: #b0412e;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-domingo.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-domingo.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-domingo.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-domingo.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #1d180e;
+	--background-color-neutral-subtle: #262013;
+	--background-color-neutral: #383020;
+	--background-color-interactive-subtle: #262013;
+	--background-color-interactive-subtle--hover: #383020;
+	--background-color-interactive-subtle--active: #2b2517;
+	--background-color-inverted: #2a2112;
+	--color-inverted: #f5e6c4;
+	--color-base: #efe3c6;
+	--color-emphasized: #efe3c6;
+	--color-subtle: #b8a782;
+	--border-color-subtle: #423823;
+	--border-color-base: #645638;
+	--border-color-interactive: #645638;
+	--border-color-muted: #2b2517;
+	--color-progressive: #e6bd62;
+	--border-color-progressive: #e6bd62;
+	--background-color-progressive: #8f6510;
+	--background-color-progressive-subtle: #3a2e12;
+	--color-destructive: #f29478;
+	--background-color-destructive: #b0412e;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-domingo.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-domingo.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-domingo.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-domingo.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #1d180e;
+		--background-color-neutral-subtle: #262013;
+		--background-color-neutral: #383020;
+		--background-color-interactive-subtle: #262013;
+		--background-color-interactive-subtle--hover: #383020;
+		--background-color-interactive-subtle--active: #2b2517;
+		--background-color-inverted: #2a2112;
+		--color-inverted: #f5e6c4;
+		--color-base: #efe3c6;
+		--color-emphasized: #efe3c6;
+		--color-subtle: #b8a782;
+		--border-color-subtle: #423823;
+		--border-color-base: #645638;
+		--border-color-interactive: #645638;
+		--border-color-muted: #2b2517;
+		--color-progressive: #e6bd62;
+		--border-color-progressive: #e6bd62;
+		--background-color-progressive: #8f6510;
+		--background-color-progressive-subtle: #3a2e12;
+		--color-destructive: #f29478;
+		--background-color-destructive: #b0412e;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-domingo .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-domingo .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-domingo .ronda-dialog .ronda-form textarea,
+html.ronda-tema-domingo .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 5px;
+}
+
+html.ronda-tema-domingo .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-domingo .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-domingo .ronda-tooltip.ui-tooltip,
+html.ronda-tema-domingo .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-domingo .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-domingo .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-domingo .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-domingo #ronda-toolbar a,
+html.ronda-tema-domingo .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-domingo .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-domingo #ronda-toolbar,
+html.ronda-tema-domingo .ronda-dialog.ui-dialog {
+	border-radius: 5px !important;
+}
+
+html.ronda-tema-domingo .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-domingo .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 5px !important;
+}
+
+/* Letra serifada na aba e nos títulos */
+html.ronda-tema-domingo #ronda-toolbar .ronda-brand,
+html.ronda-tema-domingo .ronda-dialog .ui-dialog-titlebar::before,
+html.ronda-tema-domingo .ronda-dialog .ui-dialog-title {
+	font-family: Georgia, 'Times New Roman', serif;
+	letter-spacing: 0.01em;
+}
+
+html.ronda-tema-domingo .ronda-dialog .ronda-form legend {
+	font-family: Georgia, 'Times New Roman', serif;
+	font-style: italic;
+}
