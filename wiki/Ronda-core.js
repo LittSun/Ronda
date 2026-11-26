@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.20',
+		version: '0.7.21',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -775,11 +775,14 @@ ronda.ui.togglePanel = function ( id, build ) {
 
 	if ( $panel ) {
 		$panel.toggle();
-		return $panel;
+	} else {
+		$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
+		build( $panel );
 	}
-
-	$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
-	build( $panel );
+	$( '#ronda-toolbar .ronda-btn' ).removeClass( 'ronda-btn-on' );
+	if ( $panel.is( ':visible' ) ) {
+		$( '#ronda-toolbar .ronda-btn-' + id ).addClass( 'ronda-btn-on' );
+	}
 	return $panel;
 };
 
@@ -993,7 +996,7 @@ ronda.renderToolbar = function () {
 
 	available.forEach( function ( mod ) {
 		$( '<button type="button"></button>' )
-			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) )
+			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) + ( mod.panel ? ' ronda-btn-panel' : '' ) )
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
@@ -1367,9 +1370,9 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Meta-painel: clique em "Ronda" para ver a versão, as novidades, opções rápidas, as preferências, a documentação e o botão de informar erro',
-	'Informações em tabela, com proteção, criação, edições, manutenção, ligações, patrulha e visualizações',
-	'Os painéis Usuário e Informações carregam em segundo plano e abrem prontos'
+	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações; em páginas de usuário ele mostra o usuário e a página',
+	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
+	'Botões da barra no estilo do FastButtons: verde abre painéis, vermelho executa ações'
 ];
 
 function saveOption( name, value ) {

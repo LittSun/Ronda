@@ -2023,17 +2023,24 @@ function toggle( ctx ) {
 	} );
 }
 
-ronda.registerModule( {
-	id: 'usuario',
-	label: ronda.msg( 'patrulha-usuario-botao' ),
-	title: ronda.msg( 'patrulha-mostrar-ou-esconder-as-informacoes-do' ),
-	order: 2,
+ronda.userPanel = {
 	isAvailable: isAvailable,
-	open: toggle,
-	prefetch: function ( ctx ) {
-		loadAll( ctx.targetUser );
-	}
-} );
+	load: function ( ctx ) {
+		return loadAll( ctx.targetUser );
+	},
+	fill: function ( $el, ctx ) {
+		var user = ctx.targetUser,
+			isIP = mw.util.isIPAddress( user, true );
+
+		$el.text( ronda.msg( 'patrulha-carregando-informacoes-de', user ) );
+		return loadAll( user ).then( function ( d ) {
+			render( $el, ctx, user, isIP, d.info, d.talk, d.extra );
+		}, function () {
+			$el.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-as-informacoes', user ) );
+		} );
+	},
+	toggle: toggle
+};
 
 }( window.ronda ) );
 
@@ -2288,6 +2295,7 @@ function open() {
 
 ronda.registerModule( {
 	id: 'listar',
+	panel: true,
 	label: ronda.msg( 'patrulha-listar-botao' ),
 	title: ronda.msg( 'patrulha-paginas-vigiadas-mudancas-recentes-paginas-novas' ),
 	order: 48,

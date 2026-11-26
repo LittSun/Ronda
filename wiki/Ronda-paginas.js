@@ -2934,15 +2934,54 @@ function renderInfo( $panel, ctx, data ) {
 	$panel.append( L.build() );
 }
 
-function openInfo( ctx ) {
-	ronda.ui.togglePanel( 'info', function ( $panel ) {
-		$panel.text( ronda.msg( 'patrulha-carregando' ) );
-		loadInfo( ctx ).then( function ( data ) {
-			renderInfo( $panel, ctx, data );
-		}, function () {
-			$panel.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
-		} );
+function infoParts( ctx ) {
+	var user = !!( ronda.userPanel && ctx.targetUser && ronda.userPanel.isAvailable( ctx ) ),
+		page = ronda.isPageContext( ctx ) && ( !user || ctx.exists );
+
+	return { user: user, page: page };
+}
+
+function fillPageInfo( $el, ctx ) {
+	$el.text( ronda.msg( 'patrulha-carregando' ) );
+	loadInfo( ctx ).then( function ( data ) {
+		renderInfo( $el, ctx, data );
+	}, function () {
+		$el.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
 	} );
+}
+
+function openInfo( ctx ) {
+	var parts = infoParts( ctx );
+
+	ronda.ui.togglePanel( 'info', function ( $panel ) {
+		var $user, $page;
+
+		if ( parts.user ) {
+			$user = $( '<div class="ronda-info-part"></div>' ).appendTo( $panel );
+			if ( parts.page ) {
+				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-usuario', ctx.targetUser ) ).insertBefore( $user );
+			}
+			ronda.userPanel.fill( $user, ctx );
+		}
+		if ( parts.page ) {
+			if ( parts.user ) {
+				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-pagina', ctx.page ) ).appendTo( $panel );
+			}
+			$page = $( '<div class="ronda-info-part"></div>' ).appendTo( $panel );
+			fillPageInfo( $page, ctx );
+		}
+	} );
+}
+
+function prefetchInfo( ctx ) {
+	var parts = infoParts( ctx );
+
+	if ( parts.user ) {
+		ronda.userPanel.load( ctx );
+	}
+	if ( parts.page ) {
+		loadInfo( ctx );
+	}
 }
 
 function openRequest( ctx, options ) {
@@ -3096,7 +3135,7 @@ function isPage( ctx ) {
 
 ronda.registerModule( {
 	id: 'redirecionar',
-	label: '#R',
+	label: ronda.msg( 'paginas-redirecionar-botao' ),
 	title: ronda.msg( 'paginas-redirecionar-para-outro-titulo' ),
 	order: 14,
 	isAvailable: function ( ctx ) {
@@ -3130,6 +3169,7 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'busca',
+	panel: true,
 	label: ronda.msg( 'paginas-busca' ),
 	title: ronda.msg( 'paginas-opcoes-para-a-busca-de-fontes' ),
 	order: 40,
@@ -3141,6 +3181,7 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'petscan',
+	panel: true,
 	label: ronda.msg( 'paginas-petscan' ),
 	title: ronda.msg( 'paginas-procurar-paginas-nesta-categoria-com-o' ),
 	order: 40,
@@ -3152,14 +3193,17 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'info',
+	panel: true,
 	label: ronda.msg( 'paginas-informacoes' ),
-	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina' ),
-	order: 42,
+	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina-ou-usuario' ),
+	order: 2,
 	isAvailable: function ( ctx ) {
-		return ronda.isPageContext( ctx );
+		var parts = infoParts( ctx );
+
+		return parts.user || parts.page;
 	},
 	open: openInfo,
-	prefetch: loadInfo
+	prefetch: prefetchInfo
 } );
 
 ronda.registerModule( {

@@ -2254,17 +2254,30 @@ function toggle( ctx ) {
 	} );
 }
 
-ronda.registerModule( {
-	id: 'usuario',
-	label: ronda.msg( 'patrulha-usuario-botao' ),
-	title: ronda.msg( 'patrulha-mostrar-ou-esconder-as-informacoes-do' ),
-	order: 2,
+/*
+ * O painel de usuário não tem mais botão próprio: aparece dentro de Informações
+ * (Ronda-paginas.js), sozinho nas contribuições e junto do painel da página nas
+ * páginas de usuário. Aqui ficam a carga e o desenho.
+ */
+ronda.userPanel = {
 	isAvailable: isAvailable,
-	open: toggle,
-	prefetch: function ( ctx ) {
-		loadAll( ctx.targetUser );
-	}
-} );
+	load: function ( ctx ) {
+		return loadAll( ctx.targetUser );
+	},
+	/** Preenche $el com o painel do usuário de ctx.targetUser */
+	fill: function ( $el, ctx ) {
+		var user = ctx.targetUser,
+			isIP = mw.util.isIPAddress( user, true );
+
+		$el.text( ronda.msg( 'patrulha-carregando-informacoes-de', user ) );
+		return loadAll( user ).then( function ( d ) {
+			render( $el, ctx, user, isIP, d.info, d.talk, d.extra );
+		}, function () {
+			$el.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-as-informacoes', user ) );
+		} );
+	},
+	toggle: toggle
+};
 
 }( window.ronda ) );
 
@@ -2536,6 +2549,7 @@ function open() {
 
 ronda.registerModule( {
 	id: 'listar',
+	panel: true,
 	label: ronda.msg( 'patrulha-listar-botao' ),
 	title: ronda.msg( 'patrulha-paginas-vigiadas-mudancas-recentes-paginas-novas' ),
 	order: 48,
