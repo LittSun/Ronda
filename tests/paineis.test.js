@@ -158,6 +158,9 @@ test( 'Informações numa página eliminada: quem, por quê, quantas vezes, o qu
 		rights: [ 'edit', 'deletedhistory' ],
 		ctx: { type: 'view', ns: 0, page: 'Apagada', title: 'Apagada', exists: false },
 		responder: ( p ) => {
+			if ( p.list === 'logevents' && p.letype === 'create' ) {
+				return { query: { logevents: [ { action: 'create', user: 'Beltrano', timestamp: '2026-11-26T17:31:00Z' } ] } };
+			}
 			if ( p.prop === 'deletedrevisions' ) {
 				return { query: { pages: [ { title: 'Apagada', deletedrevisions: [
 					{ user: 'Fulano', timestamp: '2026-11-26T12:00:00Z', parentid: 2 },

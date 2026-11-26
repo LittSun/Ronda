@@ -10581,9 +10581,12 @@ function loadInfo( ctx ) {
 			} ),
 			// Títulos parecidos (artigos): uma busca pelo título
 			ctx.ns === 0 && ctx.exists && !ctx.isMainPage ? soft( ronda.api.get( { action: 'query', list: 'search',
-				srsearch: ctx.title, srnamespace: 0, srlimit: 10, srinfo: '', srprop: '' } ) ) : null
-		).then( function ( m, first, revs, deleted, patrol, views, lw, search ) {
+				srsearch: ctx.title, srnamespace: 0, srlimit: 10, srinfo: '', srprop: '' } ) ) : null,
+			// Página eliminada: a criação mais recente, pelo registro
+			!ctx.exists ? soft( ronda.api.get( { action: 'query', list: 'logevents', letype: 'create', letitle: ctx.page, lelimit: 1 } ) ) : null
+		).then( function ( m, first, revs, deleted, patrol, views, lw, search, created ) {
 			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk,
+				created: ( ( created && created.query ) || {} ).logevents || [],
 				similar: similarTitles( ctx.title, ( ( search && search.query ) || {} ).search || [] ) };
 		} );
 	} );
@@ -10644,23 +10647,22 @@ function renderInfo( $panel, ctx, data ) {
 			addTo( $status, a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-info-discussao-pe' ) ) );
 		}
 
-		// O que havia (quem pode ver edições eliminadas): quem criou a última versão da página,
-		// a última edição antes da eliminação, o total de edições e de editores
+		// Quem criou a última versão, pelo registro de criação (visível a todos)
+		created = ( data.created || [] )[ 0 ];
+		if ( created && created.user && created.timestamp <= last.timestamp ) {
+			$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+				a( mw.util.getUrl( 'Special:Contributions/' + created.user ), created.user ),
+				document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( created.timestamp ) ) ),
+				document.createTextNode( ' · ' ), a( mw.util.getUrl( 'Special:Log/create', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
+		}
+
+		// O que havia (quem pode ver edições eliminadas): a última edição antes da eliminação, edições e editores
 		drevs = data.deleted && ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] );
 		if ( drevs && drevs.length ) {
 			newest = drevs[ 0 ];
-			// As edições vêm da mais nova para a mais antiga; a criação mais recente é a primeira sem edição anterior
-			created = drevs.filter( function ( r ) {
-				return r.parentid === 0;
-			} )[ 0 ];
 			drevs.forEach( function ( r ) {
 				editors[ r.user || '' ] = true;
 			} );
-			if ( created && created.user ) {
-				$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
-					a( mw.util.getUrl( 'Special:Contributions/' + created.user ), created.user ),
-					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( created.timestamp ) ) ) );
-			}
 			if ( newest.user ) {
 				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
 					a( mw.util.getUrl( 'Special:Contributions/' + newest.user ), newest.user ),
