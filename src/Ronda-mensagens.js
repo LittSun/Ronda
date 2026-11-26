@@ -369,7 +369,7 @@ window.rondaMessages = {
 	'paginas-regra': 'Regra',
 	'paginas-observacao': 'Observação',
 	'paginas-pagina-proposta-para-eliminacao-rapida': 'Página proposta para eliminação rápida.',
-	'paginas-eliminacao-rapida': 'Eliminação rápida — $1',
+	'paginas-eliminacao-rapida': 'Eliminação rápida — [[WP:$1|$1]]',
 	'paginas-propor': 'Propor',
 	'paginas-outro-sem-assunto': 'Outro (sem assunto)',
 	'paginas-justificativa-a-assinatura-e-acrescentada-automa': 'Justificativa. A assinatura é acrescentada automaticamente.',
