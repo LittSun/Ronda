@@ -80,7 +80,9 @@ test( 'SEC-01: destino com conteúdo só é eliminado com as duas caixas marcada
 	const mover = () => $d.parent().find( '.ui-dialog-buttonpane button' ).first().trigger( 'click' );
 
 	$t.val( 'Brasil' ).trigger( 'input' ).trigger( 'blur' );
-	await a.ate( () => $d.find( 'input[type=checkbox]' ).filter( ( i, el ) => /Eliminar o destino/.test( a.$( el ).parent().text() ) ).length > 0 );
+	// Espera a verificação do destino (a situação aparece no diálogo)
+	await a.ate( () => $d.find( 'input[type=checkbox]' ).filter( ( i, el ) => /Eliminar o destino/.test( a.$( el ).parent().text() ) )
+		.closest( '.ronda-check, div, label' ).first().css( 'display' ) !== 'none' );
 	const $cb = $d.find( 'input[type=checkbox]' ).filter( ( i, el ) => /Eliminar o destino/.test( a.$( el ).parent().text() ) );
 
 	assert.strictEqual( $cb.prop( 'checked' ), false, 'a caixa começa desmarcada' );
