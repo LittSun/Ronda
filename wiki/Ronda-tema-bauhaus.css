@@ -131,6 +131,28 @@ html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-sug-reason {
 	color: #1e4fa3;
 }
 
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #111;
+	background: transparent;
+	border: 2px solid #111;
+	border-radius: 0;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #111;
+	background: color-mix( in srgb, #1e4fa3 16%, transparent );
+	border-color: #1e4fa3;
+	outline: 1px solid #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #1e4fa3;
+}
+
 html.ronda-tema-bauhaus .ronda-dialog .ronda-form a {
 	color: #1e4fa3;
 }

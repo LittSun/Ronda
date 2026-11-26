@@ -131,6 +131,28 @@ html.ronda-tema-previsao .ronda-dialog .ronda-form .ronda-sug-reason {
 	color: #4b6488;
 }
 
+html.ronda-tema-previsao .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #1a2b4a;
+	background: transparent;
+	border: 1px solid #b7cbe6;
+	border-radius: 999px;
+}
+
+html.ronda-tema-previsao .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #1a2b4a;
+	background: color-mix( in srgb, #2b74c9 16%, transparent );
+	border-color: #2b74c9;
+	outline: 1px solid #2b74c9;
+}
+
+html.ronda-tema-previsao .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #2b74c9;
+}
+
+html.ronda-tema-previsao .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #4b6488;
+}
+
 html.ronda-tema-previsao .ronda-dialog .ronda-form a {
 	color: #1a5fc2;
 }

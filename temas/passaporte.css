@@ -136,6 +136,28 @@ html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-sug-reason {
 	color: #5b7a6c;
 }
 
+html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #1d2b25;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #1d2b25;
+	background: color-mix( in srgb, #0b3d2e 16%, transparent );
+	border-color: #0b3d2e;
+	outline: 1px solid #0b3d2e;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #0b3d2e;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #5b7a6c;
+}
+
 html.ronda-tema-passaporte .ronda-dialog .ronda-form a {
 	color: #0b3d2e;
 }
@@ -187,7 +209,6 @@ html.ronda-tema-passaporte .ronda-dialog .ui-dialog-content {
 html.ronda-tema-passaporte .ronda-dialog .ui-dialog-titlebar::before { content: 'Passaporte ·' !important; background: transparent !important; color: #0b3d2e !important; font-weight: normal; letter-spacing: 0.25em; text-transform: uppercase; padding-right: 0 !important; }
 html.ronda-tema-passaporte .ronda-dialog .ui-dialog-title { text-transform: uppercase; letter-spacing: 0.2em; font-weight: normal !important; }
 html.ronda-tema-passaporte .ronda-dialog .ui-dialog-content { position: relative; }
-
 html.ronda-tema-passaporte .ronda-dialog .ronda-form legend { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75em !important; }
 html.ronda-tema-passaporte .ronda-dialog .ronda-form input[ type="text" ] { border-bottom: 1px solid #8fb3a4 !important; letter-spacing: 0.06em; }
 html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane { border-top: 1px solid #8fb3a4 !important; }

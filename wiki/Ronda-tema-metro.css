@@ -131,6 +131,28 @@ html.ronda-tema-metro .ronda-dialog .ronda-form .ronda-sug-reason {
 	color: #555;
 }
 
+html.ronda-tema-metro .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #1b1b1b;
+	background: transparent;
+	border: 2px solid #1b1b1b;
+	border-radius: 0;
+}
+
+html.ronda-tema-metro .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #1b1b1b;
+	background: color-mix( in srgb, #0a5ec2 16%, transparent );
+	border-color: #0a5ec2;
+	outline: 1px solid #0a5ec2;
+}
+
+html.ronda-tema-metro .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #0a5ec2;
+}
+
+html.ronda-tema-metro .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #555;
+}
+
 html.ronda-tema-metro .ronda-dialog .ronda-form a {
 	color: #0a5ec2;
 }
