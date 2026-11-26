@@ -1,0 +1,191 @@
+/**
+ * Ronda — tema "Boletim de ocorrência"
+ *
+ * Formulário oficial genérico: campos em caixas com rótulos pequenos, texto datilografado e carimbo.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-ocorrencia em <html>.
+ * Paleta própria e fixa: ignora o modo claro/escuro da wiki.
+ */
+
+html.ronda-tema-ocorrencia #ronda-toolbar {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1a1a1a;
+	background: #fbfaf5;
+	border: 1px solid #1a1a1a;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-brand {
+	color: #fbfaf5;
+	background: #1a1a1a;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 1px solid #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn.ui-button {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1a1a1a !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #1a1a1a !important;
+	background: #ecebe3 !important;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #1a1a1a !important;
+	background: #fbfaf5 !important;
+	box-shadow: inset 0 0 0 2px #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #a4161a !important;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-userpanel {
+	color: #1a1a1a;
+	background: #fbfaf5;
+	border-top: 1px solid #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-up-table th {
+	color: #555;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-up-table td {
+	color: #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-ocorrencia #ronda-toolbar a {
+	color: #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog.ui-dialog {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1a1a1a !important;
+	background: #fbfaf5 !important;
+	border: 1px solid #1a1a1a !important;
+	border-radius: 0 !important;
+	box-shadow: 0 3px 12px rgba( 0, 0, 0, 0.2 ) !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-titlebar {
+	color: #1a1a1a !important;
+	background: #fbfaf5 !important;
+	border-bottom: 2px solid #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #fbfaf5;
+	background: #1a1a1a;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-titlebar-close {
+	color: #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form fieldset {
+	background: transparent !important;
+	border: 1px solid #1a1a1a !important;
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form legend {
+	color: #1a1a1a !important;
+	background: transparent;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 1px solid #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form textarea,
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form select {
+	color: #1a1a1a;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #555;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form a {
+	color: #1a1a1a;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane {
+	background: #fbfaf5 !important;
+	border-top: 2px solid #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #1a1a1a !important;
+	background: transparent !important;
+	border: 1px solid #1a1a1a !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #ecebe3 !important;
+	color: #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #fbfaf5 !important;
+	background: #1a1a1a !important;
+	border-color: #1a1a1a !important;
+}
+
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #a4161a !important;
+	border-color: #a4161a !important;
+}
+
+/* Detalhes do tema */
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-brand { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85em; }
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-brand::after { content: '\00a0· B.O. nº 0722/2026'; font-weight: normal; }
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-btn .ui-button-text { text-transform: uppercase; font-size: 0.82em; letter-spacing: 0.04em; }
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-userpanel td { font-family: 'Courier New', monospace; }
+html.ronda-tema-ocorrencia #ronda-toolbar .ronda-up-table th { text-transform: uppercase; font-size: 0.75em; }
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-titlebar::before { content: 'Registro de ocorrência' !important; text-transform: uppercase; font-size: 0.8em; }
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-title { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9em; }
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form fieldset { border-radius: 0 !important; margin-top: 1.1em !important; }
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form legend { position: relative; top: 0.2em; padding: 0 0.3em !important; text-transform: uppercase; font-size: 0.7em !important; letter-spacing: 0.05em; background: #fbfaf5; }
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form label { font-family: 'Courier New', monospace; }
+html.ronda-tema-ocorrencia .ronda-dialog .ronda-form input[ type="text" ] { border-bottom: 1px dotted #1a1a1a !important; }
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-content { position: relative; }
+html.ronda-tema-ocorrencia .ronda-dialog .ui-dialog-content::after {
+	content: 'Conferido'; position: absolute; right: 1.2em; top: 0.6em; padding: 0.1em 0.5em; transform: rotate( -8deg );
+	border: 2px solid rgba( 164, 22, 26, 0.75 ); color: rgba( 164, 22, 26, 0.75 ); font: bold 0.95em 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;
+}

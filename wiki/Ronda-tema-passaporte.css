@@ -1,0 +1,197 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Passaporte" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-passaporte #ronda-toolbar {
+	font-family: Georgia, 'Times New Roman', serif;
+	color: #d4b45a;
+	background: #0b3d2e;
+	border: 0;
+	border-radius: 6px;
+	box-shadow: none;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-brand {
+	color: #d4b45a;
+	background: transparent;
+	font-family: Georgia, 'Times New Roman', serif;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 0;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-btn.ui-button {
+	font-family: Georgia, 'Times New Roman', serif;
+	color: #d4b45a !important;
+	background: transparent !important;
+	border: 1px solid #d4b45a !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	margin: 0.35em 0.2em !important;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-passaporte #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #d4b45a !important;
+	background: rgba( 212, 180, 90, 0.18 ) !important;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #0b3d2e !important;
+	background: #d4b45a !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #e9c46a !important;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-userpanel {
+	color: #1d2b25;
+	background: #f3f7f4;
+	border-top: 1px solid #9bb8ab;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-up-table th {
+	color: #5b7a6c;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-up-table td {
+	color: #1d2b25;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-passaporte #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-passaporte #ronda-toolbar a {
+	color: #0b3d2e;
+}
+
+html.ronda-tema-passaporte .ronda-dialog.ui-dialog {
+	font-family: Georgia, 'Times New Roman', serif;
+	color: #1d2b25 !important;
+	background: #f6faf7 !important;
+	border: 1px solid #8fb3a4 !important;
+	border-radius: 6px !important;
+	box-shadow: 0 4px 18px rgba( 11, 61, 46, 0.2 ) !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-titlebar {
+	color: #0b3d2e !important;
+	background: transparent !important;
+	border-bottom: 0 !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #d4b45a;
+	background: transparent;
+	font-family: Georgia, 'Times New Roman', serif;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-titlebar-close {
+	color: #0b3d2e !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form fieldset {
+	background: transparent !important;
+	border: 1px dashed #9bb8ab !important;
+	border-radius: 4px !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form legend {
+	color: #5b7a6c !important;
+	background: transparent;
+	font-family: Georgia, 'Times New Roman', serif;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-passaporte .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 3px solid #c0565a !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-passaporte .ronda-dialog .ronda-form textarea,
+html.ronda-tema-passaporte .ronda-dialog .ronda-form select {
+	color: #1d2b25;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #0b3d2e;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #5b7a6c;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ronda-form a {
+	color: #0b3d2e;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane {
+	background: #e6efe9 !important;
+	border-top: 0 !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: Georgia, 'Times New Roman', serif;
+	color: #0b3d2e !important;
+	background: transparent !important;
+	border: 1px solid #0b3d2e !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: rgba( 212, 180, 90, 0.18 ) !important;
+	color: #d4b45a !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #d4b45a !important;
+	background: #0b3d2e !important;
+	border-color: #0b3d2e !important;
+}
+
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #9b2f33 !important;
+	border-color: #9b2f33 !important;
+}
+
+html.ronda-tema-passaporte #ronda-toolbar .ronda-brand { letter-spacing: 0.35em; text-transform: uppercase; font-weight: normal; }
+html.ronda-tema-passaporte #ronda-toolbar .ronda-brand::before { content: '✶\00a0\00a0'; letter-spacing: 0; }
+html.ronda-tema-passaporte #ronda-toolbar .ronda-toolbar-admin { border-left: 0 !important; }
+html.ronda-tema-passaporte #ronda-toolbar .ronda-toolbar-admin::before { content: '✶'; align-self: center; margin: 0 0.3em; color: #d4b45a; }
+html.ronda-tema-passaporte #ronda-toolbar .ronda-userpanel,
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-content {
+	background-color: #f6faf7 !important;
+	background-image:
+		repeating-radial-gradient( circle at 50% 40%, rgba( 11, 61, 46, 0.07 ) 0 1px, transparent 1px 9px ),
+		repeating-radial-gradient( circle at 15% 90%, rgba( 192, 86, 90, 0.05 ) 0 1px, transparent 1px 11px ) !important;
+}
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-titlebar::before { content: 'Passaporte ·' !important; background: transparent !important; color: #0b3d2e !important; font-weight: normal; letter-spacing: 0.25em; text-transform: uppercase; padding-right: 0 !important; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-title { text-transform: uppercase; letter-spacing: 0.2em; font-weight: normal !important; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-content { position: relative; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-content::after {
+	content: 'Entrada negada\A en.wikipedia · 2026'; white-space: pre; position: absolute; right: 1.2em; top: 0.8em; padding: 0.2em 0.7em;
+	transform: rotate( 10deg ); border: 3px solid rgba( 192, 86, 90, 0.75 ); border-radius: 10px; color: rgba( 192, 86, 90, 0.85 );
+	font: bold 0.95em Georgia, serif; text-align: center; pointer-events: none;
+}
+html.ronda-tema-passaporte .ronda-dialog .ronda-form legend { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75em !important; }
+html.ronda-tema-passaporte .ronda-dialog .ronda-form input[ type="text" ] { border-bottom: 1px solid #8fb3a4 !important; letter-spacing: 0.06em; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane { border-top: 1px solid #8fb3a4 !important; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text { text-transform: uppercase; letter-spacing: 0.06em; }
+html.ronda-tema-passaporte .ronda-dialog .ui-dialog-buttonpane::after {
+	content: 'P<WIKRONDA<<PATRULHA<<RECENTE<<<<<<<<<<<<<<<<\A 0723<7WIK2611260M2712319<<<<<<<<<<<<<<08';
+	display: block; clear: both; white-space: pre; overflow: hidden; padding: 0.6em 0 0.1em; font: 0.9em/1.35 'Courier New', monospace; letter-spacing: 0.12em; color: #1d2b25;
+}
+/* </nowiki> */

@@ -124,6 +124,28 @@ Object.keys( FILES ).forEach( ( f ) => {
 	console.log( f.padEnd( 20 ) + String( code.length ).padStart( 7 ) + ' → ' + text.length );
 } );
 
+// Temas: temas/<id>.css → Ronda-tema-<id>.css (carregado só por quem escolhe o tema)
+( function () {
+	const tdir = path.join( root, 'temas' );
+
+	if ( !fs.existsSync( tdir ) ) {
+		return;
+	}
+	// Tira temas que deixaram de existir (renomeados ou removidos)
+	fs.readdirSync( out ).filter( ( f ) => /^Ronda-tema-.+\.css$/.test( f ) && !fs.existsSync( path.join( tdir, f.replace( /^Ronda-tema-/, '' ) ) ) )
+		.forEach( ( f ) => fs.unlinkSync( path.join( out, f ) ) );
+	fs.readdirSync( tdir ).filter( ( f ) => f.endsWith( '.css' ) ).sort().forEach( ( f ) => {
+		const code = fs.readFileSync( path.join( tdir, f ), 'utf8' ),
+			name = ( /tema "([^"]+)"/.exec( code ) || [ '', f ] )[ 1 ],
+			dest = 'Ronda-tema-' + f,
+			text = '/* @target ' + target + ' */\n/* Ronda — tema "' + name + '" */\n/* Documentação: [[' + DOC + ']] */\n/* <nowiki> */\n'
+				+ stripCss( code ) + '\n/* </nowiki> */\n';
+
+		fs.writeFileSync( path.join( out, dest ), text );
+		console.log( dest.padEnd( 28 ) + String( code.length ).padStart( 7 ) + ' → ' + text.length );
+	} );
+}() );
+
 // Versão (para a página de versão da documentação)
 const version = ( function () {
 	const m = /version:\s*'([^']+)'/.exec( fs.readFileSync( path.join( dir, 'Ronda-core.js' ), 'utf8' ) );

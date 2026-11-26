@@ -3,6 +3,10 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.23 — 26/11/2026
+- **Temas**: novo campo **Tema** nas preferências, que muda a aparência da barra, dos painéis e das janelas. São 20 opções: **Padrão** (cartão com título), **Ronda original** (a aparência até a 0.7.20, com a barra clara e o jQuery UI puro) e 18 temas próprios — Previsão do tempo, Prova (preto e branco), Passaporte, Volante de aposta, Bula, Bauhaus, Planta baixa, s y n t h w a v e, Brutalismo, Clássico em relevo, Retrô listrado, Terminal, Metrô, Boletim de ocorrência, Ônibus, Web 1.0, Azulejo português e Newton. Só CSS e fontes do sistema, sem imagens, logotipos ou marcas de terceiros; cada tema é um arquivo à parte (`Ronda-tema-<nome>.css`), carregado só por quem o escolhe.
+- O estilo da barra e das janelas da 0.7.22 passa a valer fora do tema Ronda original; a barra recolhida continua escondendo os botões em qualquer tema.
+
 ## 0.7.22 — 26/11/2026
 - **Janelas no estilo da barra** ("cartão com título"): o nome Ronda numa aba escura antes do título da janela e um ✕ plano; os grupos (Favoritos, Sugeridas, Fontes e referências…) viram cartões, com traço azul à esquerda nos Favoritos e nas Sugeridas; rodapé cinza com botões planos, o principal em azul e os perigosos em vermelho. Continuam sendo diálogos do jQuery UI, só com outra aparência, e as cores seguem o tema da wiki também no modo escuro (as regras próprias de modo escuro das janelas deixaram de ser necessárias).
 
