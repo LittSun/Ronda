@@ -40,8 +40,12 @@ function ambienteMover( destino ) {
 
 async function abrirMover( a ) {
 	a.ronda.getModule( 'mover' ).open( a.ronda.ctx );
-	await a.esperar();
-	return a.$( '.ronda-dialog' ).last();
+	// No CI o diálogo pode demorar mais que alguns milissegundos para abrir
+	await a.ate( () => a.$( '.ronda-dialog input[type=text]' ).length > 0 );
+	const $d = a.$( '.ronda-dialog' ).last();
+
+	assert.ok( $d.find( 'input[type=text]' ).length, 'o diálogo do Mover abriu' );
+	return $d;
 }
 
 test( 'SEC-01: Enter num destino com conteúdo não elimina nada', async () => {
@@ -76,7 +80,9 @@ test( 'SEC-01: destino com conteúdo só é eliminado com as duas caixas marcada
 	const mover = () => $d.parent().find( '.ui-dialog-buttonpane button' ).first().trigger( 'click' );
 
 	$t.val( 'Brasil' ).trigger( 'input' ).trigger( 'blur' );
-	await a.esperar();
+	// Espera a verificação do destino (a situação aparece no diálogo)
+	await a.ate( () => $d.find( 'input[type=checkbox]' ).filter( ( i, el ) => /Eliminar o destino/.test( a.$( el ).parent().text() ) )
+		.closest( '.ronda-check, div, label' ).first().css( 'display' ) !== 'none' );
 	const $cb = $d.find( 'input[type=checkbox]' ).filter( ( i, el ) => /Eliminar o destino/.test( a.$( el ).parent().text() ) );
 
 	assert.strictEqual( $cb.prop( 'checked' ), false, 'a caixa começa desmarcada' );
