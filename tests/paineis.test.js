@@ -184,9 +184,9 @@ test( 'Informações numa página eliminada: quem, por quê, quantas vezes, o qu
 	assert.match( t, /Eliminada em .* por Admin/ );
 	assert.match( t, /ER: A1/ );
 	assert.strictEqual( a.$( '#ronda-toolbar a[href="/wiki/WP:ER#A1"]' ).length, 1 );
-	assert.match( t, /eliminada 2 vezes/ );
+	assert.match( t, /2 eliminações, 1 restauro/ );
 	assert.match( t, /discussão de eliminação/ );
-	assert.match( t, /por Beltrano|por Fulano em/ );
+	assert.match( t, /Último autor: Fulano em/ );
 	assert.match( t, /Edições eliminadas: 3/ );
 	assert.match( t, /Editores: 2/ );
 	assert.match( t, /ainda há ligações para cá/ );

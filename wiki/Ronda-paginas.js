@@ -3461,8 +3461,12 @@ function renderInfo( $panel, ctx, data ) {
 			deletions = events.filter( function ( e ) {
 				return e.action === 'delete';
 			} ),
+			restores = events.filter( function ( e ) {
+				return e.action === 'restore';
+			} ).length,
+			more = events.length >= 20 ? '+' : '',
 			last = deletions[ 0 ],
-			drevs, oldest, newest, editors = {};
+			drevs, newest, editors = {};
 
 		if ( !last ) {
 			$status.append( $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
@@ -3475,9 +3479,9 @@ function renderInfo( $panel, ctx, data ) {
 				? $( '<span class="ronda-feed-muted"></span>' ).html( last.parsedcomment )
 				: $( '<span class="ronda-feed-muted"></span>' ).text( last.comment ) );
 		}
-		addTo( $status, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), deletions.length > 1
-			? ronda.msg( 'paginas-info-eliminada-vezes', deletions.length + ( events.length >= 20 ? '+' : '' ) )
-			: ronda.msg( 'paginas-info-registro' ) ) );
+		addTo( $status, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ),
+			ronda.msg( deletions.length === 1 && !more ? 'paginas-info-eliminacao' : 'paginas-info-eliminacoes', deletions.length + more ) +
+			( restores ? ronda.msg( restores === 1 ? 'paginas-info-restauro' : 'paginas-info-restauros', restores + more ) : '' ) ) );
 		if ( peExists ) {
 			addTo( $status, a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-info-discussao-pe' ) ) );
 		}
@@ -3485,22 +3489,17 @@ function renderInfo( $panel, ctx, data ) {
 		drevs = data.deleted && ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] );
 		if ( drevs && drevs.length ) {
 			newest = drevs[ 0 ];
-			oldest = drevs[ drevs.length - 1 ];
 			drevs.forEach( function ( r ) {
 				editors[ r.user || '' ] = true;
 			} );
-			if ( !data.deleted[ 'continue' ] && oldest.user ) {
-				$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
-					a( mw.util.getUrl( 'Special:Contributions/' + oldest.user ), oldest.user ),
-					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( oldest.timestamp ) ) ) );
+			if ( newest.user ) {
+				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-info-ultimo-autor' ) ),
+					a( mw.util.getUrl( 'Special:Contributions/' + newest.user ), newest.user ),
+					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( newest.timestamp ) ) ) ] );
 			}
 			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-edicoes-eliminadas' ) + ': ' ),
 				a( mw.util.getUrl( 'Special:Undelete/' + ctx.page ), drevs.length + ( data.deleted[ 'continue' ] ? '+' : '' ) ) ] );
-			addTo( $edits, document.createTextNode( ronda.msg( 'paginas-info-editores', Object.keys( editors ).length, '' ) ) );
-			if ( newest.user ) {
-				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
-					document.createTextNode( formatDateTime( newest.timestamp ) + ' (' + newest.user + ')' ) ] );
-			}
+			addTo( $edits, document.createTextNode( ronda.msg( 'paginas-info-editores', Object.keys( editors ).length + ( data.deleted[ 'continue' ] ? '+' : '' ), '' ) ) );
 		}
 
 		if ( ctx.ns % 2 === 0 ) {
