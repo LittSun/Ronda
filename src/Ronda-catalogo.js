@@ -366,7 +366,7 @@ ronda.catalog.deletionReasons = [
 	] },
 	{ label: 'Eliminação de páginas de usuário', ns: [ 2, 3 ], options: [
 		{ label: 'U1 - Uso impróprio da página ou subpágina de usuário', value: 'U1 - [[WP:ER#ERU1|Uso impróprio da página ou subpágina de usuário]]' },
-		{ label: 'U2 - Página de usuário criada por outro usuário', value: 'U2 - U2 - [[WP:ER#ERU2|Página de usuário criada por outro usuário]]' }
+		{ label: 'U2 - Página de usuário criada por outro usuário', value: 'U2 - [[WP:ER#ERU2|Página de usuário criada por outro usuário]]' }
 	] },
 	{ label: 'Eliminação de ficheiros', ns: [ 6 ], options: [
 		{ label: 'F1 - Ficheiro duplicado ou que não cumpre a política de conteúdo restrito', value: 'F1 - [[WP:ER#ERF1|Ficheiro duplicado ou que não cumpre a política de conteúdo restrito]]' }
