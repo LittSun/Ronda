@@ -132,7 +132,7 @@ function criar( opts ) {
 			options: { get: ( k ) => ( k in opcoes ? opcoes[ k ] : null ), set: ( k, v ) => { opcoes[ k ] = v; } },
 			tokens: { get: () => 'x' }
 		},
-		storage: { get: ( k ) => storage[ k ] || null, set: ( k, v ) => { storage[ k ] = v; }, getObject: () => null, setObject: () => {},
+		storage: { get: ( k ) => storage[ k ] || null, set: ( k, v ) => { storage[ k ] = v; }, remove: ( k ) => { delete storage[ k ]; }, getObject: () => null, setObject: () => {},
 			session: {
 				getObject: ( k ) => ( sessao[ k ] ? JSON.parse( sessao[ k ] ) : null ),
 				setObject: ( k, v ) => { sessao[ k ] = JSON.stringify( v ); },

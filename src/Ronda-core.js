@@ -1324,10 +1324,46 @@ function brand() {
 	return $brand.append( document.createTextNode( ronda.msg( 'core-nome' ) ) );
 }
 
+/*
+ * Modo de teste (só para o desenvolvedor, ativado pelo console):
+ *   ronda.modoTeste( true )   // liga e recarrega a página
+ *   ronda.modoTeste( false )  // desliga e recarrega
+ *   ronda.modoTeste()         // diz se está ligado
+ * Ligado, a barra mostra todos os módulos em todos os domínios, inclusive os que
+ * só abrem por outros (ER, ESR, Consenso), ignorando a disponibilidade de cada um.
+ * Os direitos continuam valendo: a API recusa o que a conta não pode fazer.
+ * Fica salvo neste navegador (localStorage), não na conta.
+ */
+ronda.TEST_USER = 'Little Sunshine';
+
+ronda.modoTeste = function ( on ) {
+	var allowed = mw.config.get( 'wgUserName' ) === ronda.TEST_USER;
+
+	if ( on === undefined ) {
+		return allowed && mw.storage.get( 'ronda-modo-teste' ) === '1';
+	}
+	if ( !allowed ) {
+		// eslint-disable-next-line no-console
+		console.warn( '[Ronda] ' + ronda.msg( 'core-teste-restrito' ) );
+		return false;
+	}
+	if ( on ) {
+		mw.storage.set( 'ronda-modo-teste', '1' );
+	} else {
+		mw.storage.remove( 'ronda-modo-teste' );
+	}
+	location.reload();
+	return !!on;
+};
+
 ronda.renderToolbar = function () {
 	var $group, $adminGroup, $bar,
 		ctx = ronda.ctx,
+		testing = ronda.modoTeste(),
 		available = ronda.modules.filter( function ( m ) {
+			if ( testing ) {
+				return true;
+			}
 			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação)
 			if ( m.hidden ) {
 				return false;
@@ -1358,7 +1394,18 @@ ronda.renderToolbar = function () {
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
-				mod.open( ctx );
+				if ( !testing ) {
+					mod.open( ctx );
+					return;
+				}
+				// No modo de teste o módulo pode abrir fora do contexto previsto: erro vai ao console
+				try {
+					mod.open( ctx );
+				} catch ( e ) {
+					// eslint-disable-next-line no-console
+					console.error( '[Ronda] modo de teste — "' + mod.id + '":', e );
+					mw.notify( ronda.msg( 'core-teste-erro', mod.label, e.message ), { title: ronda.msg( 'core-nome' ), type: 'error' } );
+				}
 			} )
 			.one( 'mouseenter focus', function () {
 				if ( ronda.config.prefetch !== false ) {
@@ -2538,6 +2585,13 @@ ronda.start = function () {
 				$( '<span class="ui-state-highlight ui-corner-all ronda-dry"></span>' )
 					.text( ronda.msg( 'core-simulacao' ) )
 					.attr( 'title', ronda.msg( 'core-nada-e-gravado-na-wiki-as' ) )
+			);
+		}
+		if ( $bar && ronda.modoTeste() ) {
+			$bar.find( '.ronda-brand' ).after(
+				$( '<span class="ui-state-error ui-corner-all ronda-dry ronda-teste"></span>' )
+					.text( ronda.msg( 'core-teste' ) )
+					.attr( 'title', ronda.msg( 'core-teste-dica' ) )
 			);
 		}
 		if ( $bar && ronda.isMobile() ) {

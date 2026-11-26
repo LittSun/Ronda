@@ -57,6 +57,18 @@ Dicas:
 - Para gravar de verdade, troque `dryRun: true` por `dryRun: false` no início do trecho, em páginas de teste.
 - As funções puras podem ser testadas direto no console, por exemplo `ronda.unlinkText( '[[Brasil|país]] e [[Brasil]]', 0, 'Brasil' )`.
 
+## Modo de teste
+
+Só para a conta do desenvolvedor (`ronda.TEST_USER`, hoje `Little Sunshine`). No console do navegador:
+
+```js
+ronda.modoTeste( true );   // liga e recarrega a página
+ronda.modoTeste( false );  // desliga e recarrega
+ronda.modoTeste();         // true se estiver ligado
+```
+
+Ligado, a barra mostra **todos os módulos em todos os domínios**, inclusive os que normalmente só abrem por outros (ER, ESR, Consenso), sem consultar a disponibilidade de cada um, e ganha o selo **Teste**. Se um módulo falhar ao abrir fora do contexto previsto, o erro vai para o console e para uma notificação. Os direitos da conta continuam valendo: o que ela não pode fazer, a API recusa. Fica salvo só neste navegador (`localStorage`, chave `ronda-modo-teste`). Para testar sem gravar nada, combine com o modo de simulação (`window.rondaConfig = { dryRun: true }`).
+
 ## Versões
 
 1. Suba o número em **dois** lugares: `version` em `src/Ronda-core.js` e em `package.json` (o `npm run verificar` acusa se ficarem diferentes).
