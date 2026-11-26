@@ -236,6 +236,21 @@
 	padding-top: 0;
 }
 
+/* Manutenção: sugeridas (com o motivo) e usadas recentemente */
+.ronda-form fieldset.ronda-tag-sug {
+	border-color: var( --border-color-progressive, #36c );
+}
+
+.ronda-form .ronda-sug-reason {
+	margin-left: 0.4em;
+	font-size: 0.85em;
+	color: var( --color-subtle, #54595d );
+}
+
+.ronda-form .ronda-sug-reason::before {
+	content: '— ';
+}
+
 /* Qualidade automática: janela com os critérios */
 .ronda-qf details {
 	margin: 8px 0;

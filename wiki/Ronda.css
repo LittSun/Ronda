@@ -215,6 +215,20 @@
 	padding-top: 0;
 }
 
+.ronda-form fieldset.ronda-tag-sug {
+	border-color: var( --border-color-progressive, #36c );
+}
+
+.ronda-form .ronda-sug-reason {
+	margin-left: 0.4em;
+	font-size: 0.85em;
+	color: var( --color-subtle, #54595d );
+}
+
+.ronda-form .ronda-sug-reason::before {
+	content: '— ';
+}
+
 .ronda-qf details {
 	margin: 8px 0;
 	padding: 2px 10px;

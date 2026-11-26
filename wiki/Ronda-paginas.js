@@ -422,10 +422,9 @@ function warnCreator( ctx, items ) {
 			appendtext: items.map( function ( item ) {
 				return '\n\n{{subst:Aviso-' + item.warn + '|' + ctx.page + '}} ~~' + '~~';
 			} ).join( '' ),
-			summary: 'Aviso sobre a marcação da página "[[' + ctx.page + ']]" com '
-				+ ( items.length === 1 ? 'a predefinição ' : 'as predefinições ' )
+			summary: 'Aviso: [[' + ctx.page + ']] marcada com '
 				+ listText( items.map( function ( item ) {
-					return '"[[Predefinição:' + item.template + '|' + item.template + ']]"';
+					return ronda.tpl( item.template );
 				} ) ),
 			watchlist: ronda.config.watchlist
 		} );
@@ -447,7 +446,7 @@ function followUps( ctx, result, values, byId, warn ) {
 					section: 'new',
 					sectiontitle: '[[' + ctx.page + ']]',
 					text: values[ id ].situacao + ' ~~' + '~~',
-					summary: 'Adicionando a página "' + ctx.page + '"',
+					summary: 'Manutenção urgente: [[' + ctx.page + ']]',
 					watchlist: ronda.config.watchlist
 				} );
 			} );
@@ -481,25 +480,93 @@ function summarize( r, o ) {
 
 	function names( ids ) {
 		return ids.map( function ( id ) {
-			var t = o.byId[ id ].template;
-			return '[[Predefinição:' + t + '|' + t + ']]';
+			return ronda.tpl( o.byId[ id ].template );
 		} ).join( ', ' );
 	}
 
 	if ( r.added.length ) {
-		parts.push( 'adicionando ' + names( r.added ) );
+		parts.push( names( r.added ) );
 	}
 	if ( r.removed.length ) {
-		parts.push( 'removendo ' + names( r.removed ) );
+		parts.push( 'retirada(s): ' + names( r.removed ) );
 	}
 	if ( !parts.length ) {
-		parts.push( ( o.useMP ? 'agrupando em ' : 'desagrupando ' ) + '{{' + o.mpName + '}}' );
+		parts.push( ( o.useMP ? 'agrupadas em ' : 'desagrupadas de ' ) + ronda.tpl( o.mpName ) );
 	}
 
-	return 'Manutenção: ' + parts.join( '; ' );
+	return 'Marcação: ' + parts.join( '; ' );
 }
 
-function showForm( ctx, text, aliases ) {
+function suggestTags( text, info ) {
+	var out = [],
+		q = ronda.quality,
+		present = info.present || {},
+		has = {},
+		t, refs, refsUnicas, temSecaoFontes, links, semSecoes, lead;
+
+	( ronda.catalog.maintenance || [] ).forEach( function ( m ) {
+		has[ m.id ] = true;
+	} );
+
+	function add( id, reason ) {
+		if ( has[ id ] && !present[ id ] && !out.some( function ( o ) {
+			return o.id === id;
+		} ) ) {
+			out.push( { id: id, reason: reason } );
+		}
+	}
+
+	if ( info.ns !== 0 || !q || /^\s*#(redirect|redirecionamento)/i.test( text ) ) {
+		return out;
+	}
+
+	t = text.replace( /<!--[\s\S]*?-->/g, '' );
+	refs = t.match( /<ref(?:\s[^>]*[^\/])?>|\{\{\s*(?:sfn|sfnp|harvnb|efn)\s*\|/gi ) || [];
+	refsUnicas = ( t.match( /<ref(?:\s[^>]*[^\/])?>[\s\S]*?<\/ref>/gi ) || [] ).length;
+	temSecaoFontes = /^==\s*(Referências|Bibliografia|Fontes|Notas e referências)\s*==\s*\n+\s*(\*|\{\{\s*(citar|cite|cita))/im.test( t );
+	links = q.ligacoes( t );
+	semSecoes = !/^==[^=]/m.test( t );
+	lead = t.slice( 0, t.search( /^==/m ) === -1 ? t.length : t.search( /^==/m ) )
+		.replace( /\{\{[\s\S]*?\}\}/g, '' ).replace( /\[\[(Ficheiro|File|Imagem|Image|Arquivo):[^\n]*\]\]/gi, '' ).trim();
+
+	if ( !present[ 's-fontes' ] && !present[ 's-fontes-bpv' ] && !present[ 's-notas' ] && !present[ 's-notas-bpv' ] &&
+		!present[ 'm-notas' ] && !present[ 'm-fontes-bpv' ] && !present[ '1f' ] ) {
+		if ( !refs.length && !temSecaoFontes ) {
+			add( info.living ? 's-fontes-bpv' : 's-fontes', ronda.msg( 'paginas-sug-sem-fontes' ) );
+		} else if ( !refs.length ) {
+			add( info.living ? 's-notas-bpv' : 's-notas', ronda.msg( 'paginas-sug-sem-notas' ) );
+		} else {
+			t = q.texto( text );
+			if ( t.semRef.length ) {
+				add( info.living ? 'm-fontes-bpv' : 'm-notas', ronda.msg( 'paginas-sug-mais-notas', t.semRef.slice( 0, 3 ).join( '; ' ) + ( t.semRef.length > 3 ? '…' : '' ) ) );
+			} else if ( refsUnicas === 1 && text.length >= 3000 ) {
+				add( '1f', ronda.msg( 'paginas-sug-uma-fonte' ) );
+			}
+		}
+	}
+	if ( /<ref(?:\s[^>]*)?>\s*\[?\s*https?:\/\/[^\s<\]]+\s*\]?\s*<\/ref>/i.test( text ) ) {
+		add( 'f-referencias', ronda.msg( 'paginas-sug-formatar-referencias' ) );
+	}
+	if ( info.categories === 0 ) {
+		add( 's-cat', ronda.msg( 'paginas-sug-sem-categorias' ) );
+	}
+	if ( text.length >= 1500 && links < 3 ) {
+		add( 'wkf', ronda.msg( 'paginas-sug-poucas-ligacoes', links ) );
+	} else if ( text.length >= 6000 && semSecoes ) {
+		add( 'wkf', ronda.msg( 'paginas-sug-sem-secoes' ) );
+	}
+	if ( !semSecoes && lead.length < 20 ) {
+		add( 'intro', ronda.msg( 'paginas-sug-sem-introducao' ) );
+	}
+	if ( info.disambig > 0 ) {
+		add( 'lig-ambiguas', ronda.msg( 'paginas-sug-desambiguacoes', info.disambig ) );
+	}
+	return out;
+}
+
+ronda.tags.suggest = suggestTags;
+
+function showForm( ctx, text, aliases, info ) {
 	var byId = {},
 		base, a, groupablePresent, items = [],
 		$filter = ronda.ui.text( '', ronda.msg( 'paginas-filtrar-marcacoes' ) ),
@@ -507,6 +574,8 @@ function showForm( ctx, text, aliases ) {
 			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-presentes-na-pagina-desmarque-para-remover' ) ) ),
 		$addBox = $( '<div class="ronda-tag-groups"></div>' ),
 		addGroups = {},
+		suggested = {},
+		recent = {},
 		cbMP, cbWarn, $dlg;
 
 	ronda.catalog.maintenance.forEach( function ( item ) {
@@ -531,6 +600,25 @@ function showForm( ctx, text, aliases ) {
 	};
 	a = analyze( text, base );
 
+	suggestTags( text, $.extend( { ns: ctx.ns, present: a.present }, info || {} ) ).forEach( function ( sg ) {
+		suggested[ sg.id ] = sg.reason;
+	} );
+	ronda.recentTags.list().forEach( function ( id, i ) {
+		if ( byId[ id ] && !a.present[ id ] && !suggested[ id ] ) {
+			recent[ id ] = i + 1;
+		}
+	} );
+	if ( !$.isEmptyObject( suggested ) ) {
+		addGroups[ ':sugeridas' ] = $( '<fieldset class="ui-widget-content ui-corner-all ronda-tag-sug"></fieldset>' )
+			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-sugeridas' ) ) )
+			.appendTo( $addBox );
+	}
+	if ( !$.isEmptyObject( recent ) ) {
+		addGroups[ ':recentes' ] = $( '<fieldset class="ui-widget-content ui-corner-all ronda-tag-recent"></fieldset>' )
+			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-usadas-recentemente' ) ) )
+			.appendTo( $addBox );
+	}
+
 	groupablePresent = a.lead.filter( function ( occ ) {
 		return !occ.id || byId[ occ.id ].groupable !== false;
 	} ).length;
@@ -554,7 +642,7 @@ function showForm( ctx, text, aliases ) {
 		cb.$element
 			.addClass( 'ronda-tag' + ( isPresent ? ' ronda-tag-present' : '' ) )
 			.attr( 'title', item.title )
-			.data( 'search', ( item.label + ' ' + item.template ).toLowerCase() )
+			.data( { search: ( item.label + ' ' + item.template ).toLowerCase(), id: item.id } )
 			.append( $params );
 
 		if ( inputs.length && !isPresent ) {
@@ -564,9 +652,21 @@ function showForm( ctx, text, aliases ) {
 			} );
 		}
 
-		( isPresent ? $presentBox : addGroup( item.group ) ).append( cb.$element );
+		if ( !isPresent && suggested[ item.id ] ) {
+			cb.$element.children( 'label' ).after( $( '<span class="ronda-sug-reason"></span>' ).text( suggested[ item.id ] ) );
+		}
+		( isPresent ? $presentBox
+			: suggested[ item.id ] ? addGroups[ ':sugeridas' ]
+				: recent[ item.id ] ? addGroups[ ':recentes' ]
+					: addGroup( item.group ) ).append( cb.$element );
 		items.push( { item: item, cb: cb, inputs: inputs, present: isPresent } );
 	} );
+
+	if ( addGroups[ ':recentes' ] ) {
+		addGroups[ ':recentes' ].children( '.ronda-tag' ).sort( function ( x, y ) {
+			return recent[ $( x ).data( 'id' ) ] - recent[ $( y ).data( 'id' ) ];
+		} ).appendTo( addGroups[ ':recentes' ] );
+	}
 
 	if ( $presentBox.children( '.ronda-tag' ).length === 0 ) {
 		$presentBox.append( $( '<p></p>' ).text( ronda.msg( 'paginas-nenhuma-marcacao-do-catalogo-encontrada-na' ) ) );
@@ -643,6 +743,7 @@ function showForm( ctx, text, aliases ) {
 				watchlist: ronda.config.watchlist
 			} );
 		} ).then( function ( res ) {
+			ronda.recentTags.push( result.added ).then( null, function () {} );
 			if ( res.form ) {
 				ronda.ui.onSave( function () {
 					return followUps( ctx, result, values, byId, cbWarn.isChecked() );
@@ -700,6 +801,34 @@ function showForm( ctx, text, aliases ) {
 	$dlg.tooltip( { tooltipClass: 'ronda-tooltip' } );
 }
 
+function suggestInfo( ctx ) {
+	if ( ctx.ns !== 0 || !ctx.exists ) {
+		return $.Deferred().resolve( {} ).promise();
+	}
+	return $.when(
+		ronda.api.get( { action: 'query', titles: ctx.page, prop: 'categories', clprop: 'hidden', cllimit: 'max' } ),
+		ronda.api.get( { action: 'query', titles: ctx.page, generator: 'links', gplnamespace: 0, gpllimit: 'max',
+			prop: 'pageprops', ppprop: 'disambiguation' } )
+	).then( function ( c, l ) {
+		var cats = ( ( ( c && c.query ? c : c[ 0 ] ).query.pages || [] )[ 0 ] || {} ).categories || [],
+			pages = ( ( l && l.query ? l : l[ 0 ] ).query || {} ).pages || [];
+
+		return {
+			categories: cats.filter( function ( x ) {
+				return !x.hidden;
+			} ).length,
+			living: cats.some( function ( x ) {
+				return /^Categoria:Pessoas vivas$/.test( x.title );
+			} ),
+			disambig: pages.filter( function ( p ) {
+				return p.pageprops && p.pageprops.disambiguation !== undefined;
+			} ).length
+		};
+	}, function () {
+		return $.Deferred().resolve( {} ).promise();
+	} );
+}
+
 function open( ctx, options ) {
 	$.when(
 		loadAliases( options && options.refresh ),
@@ -709,13 +838,14 @@ function open( ctx, options ) {
 			prop: 'revisions',
 			rvprop: 'content',
 			rvslots: 'main'
-		} )
-	).then( function ( aliases, res ) {
+		} ),
+		suggestInfo( ctx )
+	).then( function ( aliases, res, info ) {
 		var page = ( res && res.query ? res : res[ 0 ] ).query.pages[ 0 ],
 			text = ronda.inEditForm() ? $( '#wpTextbox1' ).val()
 				: ( page.revisions && page.revisions[ 0 ].slots.main.content ) || '';
 
-		showForm( ctx, text, aliases );
+		showForm( ctx, text, aliases, info );
 	}, ronda.fail );
 }
 
@@ -1052,7 +1182,7 @@ function showSpeedy( ctx, page ) {
 
 		tasks = tasksFor( page, function () {
 			return tagPage( page, buildER( r.rule, obs ),
-				'Página proposta para [[WP:ER|eliminação rápida]] (regra [[WP:' + r.rule + '|' + r.rule + ']])', false );
+				'Eliminação rápida: proposta pela regra [[WP:' + r.rule + '|' + r.rule + ']]', false );
 		}, !r.noWarn && warnType ? ( warnType === 'er'
 			? 'Aviso-ER|' + page.title + '|' + r.rule + ( obs.trim() ? '|3=' + paramSafe( obs.trim() ) : '' )
 			: 'Aviso-não remova|' + page.title + '|er' ) : null, extra.fn( page.title ) );
@@ -1152,7 +1282,7 @@ function showSemi( ctx, page ) {
 				text: text,
 				matrad: matrad,
 				language: lang
-			} ), 'Página proposta para [[WP:ESR|eliminação semirrápida]]', true );
+			} ), 'Eliminação semirrápida: página proposta', true );
 		}, cbWarn.isChecked() ? 'Aviso-ESR|' + page.title : null );
 
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-semirrapida' ) );
@@ -1420,9 +1550,8 @@ function createMaster( master, justification, extras, archived ) {
 			action: 'edit',
 			title: peTitle( master ),
 			text: text,
-			summary: extras.length
-				? 'Criando página de eliminação (proposta conjunta com ' + extras.length + ' página(s))'
-				: 'Criando página de eliminação',
+			summary: 'Eliminação por consenso: discussão aberta para [[' + master + ']]'
+				+ ( extras.length ? ' e mais ' + extras.length + ' página(s)' : '' ),
 			createonly: !archived,
 			watchlist: ronda.creationWatchlist()
 		} );
@@ -1434,7 +1563,7 @@ function createRedirect( title, master, archived ) {
 		action: 'edit',
 		title: peTitle( title ),
 		text: '#REDIRECIONAMENTO [[' + peTitle( master ) + ']]',
-		summary: 'Proposta conjunta: redirecionando para [[' + peTitle( master ) + ']]',
+		summary: 'Eliminação por consenso: proposta conjunta, discussão em [[' + peTitle( master ) + ']]',
 		createonly: !archived,
 		watchlist: ronda.creationWatchlist()
 	} );
@@ -1457,8 +1586,8 @@ function tagPage( page, master, isBundle ) {
 
 			return ronda.params( {
 				text: buildTaggedText( revision.content, cfg().tagCode, useNoinclude ),
-				summary: 'Página proposta para [[WP:Eliminação por consenso|eliminação por consenso]]'
-					+ ( isBundle ? ' (proposta conjunta: [[' + peTitle( master ) + ']])' : '' ),
+				summary: 'Eliminação por consenso: proposta, discussão em [[' + peTitle( master ) + ']]'
+					+ ( isBundle ? ' (conjunta)' : '' ),
 				nocreate: true,
 				watchlist: ronda.config.watchlist
 			} );
@@ -2424,7 +2553,7 @@ function openRedirect( ctx ) {
 
 		var params = {
 				text: redirectText( ctx.ns, target, reason ),
-				summary: 'Feito redirecionamento para [[' + target + ']]' + ( reason ? ' (' + reason + ')' : '' ),
+				summary: 'Redirecionamento: para [[' + target + ']]' + ( reason ? ' — ' + reason : '' ),
 				watchlist: ronda.config.watchlist
 			},
 			edit = ctx.exists || ronda.inEditForm()
@@ -2498,7 +2627,7 @@ function openStub( ctx ) {
 				}
 				return ronda.params( {
 					text: addStub( rev.content, template ),
-					summary: 'Página marcada como [[WP:EBC|esboço]]',
+					summary: 'Marcação: ' + ronda.tpl( template ),
 					minor: true,
 					nocreate: true,
 					watchlist: ronda.config.watchlist
@@ -2553,7 +2682,7 @@ function openMerge( ctx ) {
 				return ronda.editPage( p.title, function ( rev ) {
 					return ronda.params( {
 						text: ( ronda.useNoinclude( page ) ? '<noinclude>' + tpl + '</noinclude>' : tpl ) + '\n' + rev.content,
-						summary: 'Adicionando proposta de fusão',
+						summary: 'Fusão: proposta com [[' + code.split( '|' )[ 1 ] + ']]',
 						nocreate: true,
 						watchlist: ronda.config.watchlist
 					} );
@@ -3402,7 +3531,7 @@ function openRequest( ctx, options ) {
 				action: 'edit',
 				title: r.page,
 				appendtext: '\n' + buildRequest( model, { request: r, target: target, target2: target2, text: text, hide: hide } ),
-				summary: 'Adicionando novo pedido',
+				summary: 'Pedido: ' + r.label.toLowerCase() + ( target ? ' — [[' + ( r.target === 'user' ? 'Special:Contributions/' + target + '|' + target : ':' + target ) + ']]' : '' ),
 				watchlist: ronda.config.watchlist
 			} );
 		} ).then( function () {
@@ -3451,7 +3580,7 @@ function openUnsigned() {
 			el.value = el.value.slice( 0, start ) + code + el.value.slice( end );
 		}
 		$( '#wpSummary' ).val( function ( i, v ) {
-			return ( v ? v + '; ' : '' ) + 'Adicionando a "[[Predefinição:Não assinou]]"';
+			return ( v ? v + '; ' : '' ) + 'Marcação: ' + ronda.tpl( 'Não assinou' );
 		} );
 		ronda.ui.close( $dlg );
 	}

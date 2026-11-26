@@ -1,6 +1,6 @@
 {{Info/Script de usuário
 |nome               = Ronda
-|descrição          = Reúne o FastButtons e o DiffTools em uma só<br/>barra de patrulha, manutenção e administração
+|descrição          = Barra de patrulha, manutenção e administração,<br/>com sugestões de marcação e Desfazer
 |logo               = UserScript Ronda Icon.svg
 |tamanho-logo       = 50px
 |captura            = Userscript Ronda screenshot.png
@@ -11,7 +11,16 @@
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
-O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote. Combina funções do [[WP:FB|FastButtons]] e do DiffTools (Reversão e avisos), com recursos inspirados no [[WP:Twinkle|Twinkle]].
+O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote.
+
+Além disso, o Ronda:
+* '''sugere marcações''' a partir do próprio artigo (sem referências, sem categorias, poucas ligações, ligações para desambiguações…) e guarda as '''usadas recentemente''';
+* '''estima a qualidade''' do artigo pelos critérios do quadro de parâmetros de qualidade e mostra o que falta para o nível seguinte;
+* oferece '''Desfazer''' depois de cada ação, por alguns minutos;
+* reúne num só painel, '''Informações''', os dados da página e do usuário;
+* mostra '''filas de patrulha''' com as edições que a própria wiki aponta como provavelmente danosas.
+
+Quem usava o FastButtons ou o DiffTools encontra as mesmas tarefas; veja [[#Para quem vem do FastButtons ou do DiffTools|a seção sobre a migração]].
 [[File:Userscript Ronda Batch screenshot.png|thumb|Captura de tela das ações em lote do Ronda]]
 
 Os botões variam conforme a página e as permissões do usuário. O Ronda facilita as tarefas, mas não substitui as políticas da Wikipédia: confira os critérios aplicáveis antes de executar uma ação.
@@ -107,6 +116,10 @@ Para IPs, inclui informações sobre faixas /24 ou /64, WHOIS, localização, pr
 === Manutenção e edição ===
 {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}} reúne marcações por tema, permite filtrá-las e remover as já presentes. Reconhece redirecionamentos de predefinições e marcações dentro ou fora de {{tl|Múltiplos problemas}}, podendo agrupá-las ou separá-las. Quando aplicável, avisa o criador e registra a página em [[Wikipédia:Páginas precisando de manutenção]].
 
+Nos artigos, o diálogo abre com dois painéis no topo:
+* '''Sugeridas para esta página:''' marcações que o Ronda detecta pelo texto, cada uma com o motivo ao lado: nenhuma referência ({{tl|Sem-fontes}}, ou a versão para biografias de pessoas vivas), fontes no fim sem notas no texto ({{tl|Sem notas}}), seções sem referência ({{tl|Mais notas}}), uma única referência ({{tl|Uma-fonte}}), referências só com o endereço ({{tl|Formatar referências}}), nenhuma categoria visível ({{tl|Sem cat}}), poucas ligações internas ou texto longo sem seções ({{tl|Wikificação}}), artigo sem introdução ({{tl|Má introdução}}) e ligações para desambiguações ({{tl|Ligações ambíguas}}). Nada vem marcado: a decisão continua sendo de quem patrulha.
+* '''Usadas recentemente:''' as últimas marcações que você aplicou, salvas na sua conta.
+
 * {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}: insere {{tl|Esboço}} ou {{tl|Esboço-tema}}, com sugestões de predefinições existentes, antes das categorias.
 * {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}: substitui o conteúdo por um redirecionamento. Em categorias, usa {{tl|Redirecionamento de categoria}}, com motivo; também cria redirecionamentos em páginas inexistentes, adicionando-as às páginas vigiadas.
 * {{Usuário:Little Sunshine/Ronda/Botão|Fusão}}: insere {{tl|f-de}} na página que permanece e {{tl|f-com}} na outra.
@@ -135,7 +148,12 @@ Estas ferramentas aparecem apenas para usuários com os direitos necessários. {
 
 '''Limites dos reversores:''' podem bloquear somente IPs e contas não confirmadas, por vandalismo leve ou destrutivo e por até 24 horas. Não podem aplicar bloqueios parciais, impedir criação de contas nem alterar ou remover bloqueios feitos por outros. O formulário restringe motivos e durações. Para contas confirmadas, oferece pedidos de notificação de vandalismo ou incidente. Bloqueios fora desses limites constituem abuso da ferramenta.
 
-Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda segue os critérios do FastButtons: não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
+Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
+
+=== Desfazer ===
+Depois de cada ação que edita páginas (marcar, avisar, propor eliminação, fazer um pedido…), aparece uma notificação com o que o Ronda gravou e o link '''Desfazer'''. Edições feitas com menos de 30 segundos de intervalo contam como uma ação só. Se a página recarregar, a notificação volta uma vez; o Desfazer fica disponível por 10 minutos.
+
+Cada edição é desfeita como no histórico (da última para a primeira). Se alguém editou a página depois, aquela edição não é desfeita e o Ronda avisa. Páginas criadas pela ação (como uma discussão de eliminação) são eliminadas por quem tem esse direito; para os demais, ficam listadas para pedir a eliminação. Ações administrativas (eliminar, bloquear, proteger, mover) não entram no Desfazer.
 
 === Buscas, informações e pedidos ===
 * {{Usuário:Little Sunshine/Ronda/Botão|Busca}}: pesquisa o título no Google, Google Notícias, Livros, Acadêmico, Google Brasil e Portugal e Bing.
@@ -220,9 +238,28 @@ importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [
 * Antes de agir, consulte a política correspondente, como [[Wikipédia:Vandalismo]] ou [[WP:ER]].
 
 == Monitoramento de edições ==
+Os resumos de edição do Ronda seguem um padrão próprio: o tipo da ação e o detalhe, como <code><nowiki>Marcação: {{[[Pre:Sem-fontes|Sem-fontes]]}}</nowiki></code>, <code>Eliminação rápida: proposta pela regra R1</code> ou <code>Pedido: proteção — [[Página]]</code>. Os resumos dos avisos a usuários continuam no formato de sempre ("Aviso sobre…", "Segundo aviso sobre…"), que o Ronda e outras ferramentas usam para reconhecer o nível dos avisos anteriores.
+
 As edições e ações realizadas pelo Ronda acrescentam ao resumo a identificação <code><nowiki>(via [[User:Little Sunshine/Ronda|script]] #Ronda)</nowiki></code>. Esse texto é fixo e não pode ser alterado nas preferências.
 
 As ações podem ser acompanhadas pela [https://hashtags.wmcloud.org/?query=Ronda&project=pt.wikipedia.org&startdate=&enddate=&search_type=or&user= ferramenta de hashtags].
+
+== Para quem vem do FastButtons ou do DiffTools ==
+O Ronda faz as tarefas das duas ferramentas, com algumas diferenças de nome e de lugar:
+{| class="wikitable"
+! Antes !! No Ronda
+|-
+| Barra do FastButtons e menus que se abrem embaixo || Barra única; marcações em diálogos com busca, sugestões e usadas recentemente
+|-
+| ''#R'' || {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}
+|-
+| ''Listar'' || {{Usuário:Little Sunshine/Ronda/Botão|Filas}}, com as edições a revisar apontadas pela própria wiki
+|-
+| ''Informações'' e o painel de usuário || {{Usuário:Little Sunshine/Ronda/Botão|Informações}}, com a página e o usuário juntos nas páginas de usuário
+|-
+| Reversão e avisos do DiffTools || {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}}, com o nível sugerido a partir dos avisos anteriores (inclusive os deixados pelo DiffTools)
+|}
+As predefinições e os avisos são os mesmos da comunidade; os critérios para avisar criadores também.
 
 == Créditos ==
 * '''FastButtons:''' Racso, Macy, Danilo.mac, Helder, !Silent e demais colaboradores.

@@ -795,7 +795,7 @@ function showForm( ctx, mode, talk, plan ) {
 					action: 'edit',
 					title: cfg().reportPage,
 					appendtext: '\n\n{{subst:NUI|' + user + '}}',
-					summary: 'Adicionando pedido de revisão de nome de usuário',
+					summary: 'Pedido: revisão do nome de usuário [[Special:Contributions/' + user + '|' + user + ']]',
 					watchlist: ronda.config.watchlist
 				} );
 			} } );
@@ -929,7 +929,7 @@ function reportVandal( user, c, page ) {
 			action: 'edit',
 			title: title,
 			appendtext: '\n' + body,
-			summary: 'Notificando vandalismo de [[Special:Contributions/' + user + '|' + user + ']]',
+			summary: 'Pedido: vandalismo — [[Special:Contributions/' + user + '|' + user + ']]',
 			watchlist: ronda.config.watchlist
 		} );
 	} );

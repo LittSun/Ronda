@@ -599,8 +599,8 @@ function showDialog( ctx, titles, truncated, options ) {
 				return this.value;
 			} ).get(),
 			reason = $reason.val().trim(),
-			summary = ( ctx.ns === 6 ? 'Removendo usos de [[:' : 'Removendo ligações para [[:' )
-				+ ctx.page + ']]' + ( reason ? ': ' + reason : '' );
+			summary = 'Desligar: ' + ( ctx.ns === 6 ? 'usos de [[:' : 'ligações para [[:' )
+				+ ctx.page + ']] retirados' + ( reason ? ' — ' + reason : '' );
 
 		if ( !selected.length ) {
 			return;
