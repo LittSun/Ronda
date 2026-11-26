@@ -160,9 +160,9 @@ test( 'Informações numa página eliminada: quem, por quê, quantas vezes, o qu
 		responder: ( p ) => {
 			if ( p.prop === 'deletedrevisions' ) {
 				return { query: { pages: [ { title: 'Apagada', deletedrevisions: [
-					{ user: 'Fulano', timestamp: '2026-11-26T12:00:00Z' },
-					{ user: 'Beltrano', timestamp: '2026-11-25T12:00:00Z' },
-					{ user: 'Fulano', timestamp: '2026-11-24T12:00:00Z' } ] } ] } };
+					{ user: 'Fulano', timestamp: '2026-11-26T12:00:00Z', parentid: 2 },
+					{ user: 'Beltrano', timestamp: '2026-11-25T12:00:00Z', parentid: 0 },
+					{ user: 'Fulano', timestamp: '2026-11-24T12:00:00Z', parentid: 0 } ] } ] } };
 			}
 			if ( /info\|revisions\|categories/.test( p.prop || '' ) ) {
 				return { query: {
@@ -186,7 +186,8 @@ test( 'Informações numa página eliminada: quem, por quê, quantas vezes, o qu
 	assert.strictEqual( a.$( '#ronda-toolbar a[href="/wiki/WP:ER#A1"]' ).length, 1 );
 	assert.match( t, /2 eliminações, 1 restauro/ );
 	assert.match( t, /discussão de eliminação/ );
-	assert.match( t, /Último autor: Fulano em/ );
+	assert.match( t, /por Beltrano em/, 'quem criou a última versão, não a primeira' );
+	assert.match( t, /Última edição: Fulano em/ );
 	assert.match( t, /Edições eliminadas: 3/ );
 	assert.match( t, /Editores: 2/ );
 	assert.match( t, /ainda há ligações para cá/ );

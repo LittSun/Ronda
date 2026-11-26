@@ -558,7 +558,6 @@ window.rondaMessages = {
 	'paginas-info-eliminacoes': '$1 eliminações',
 	'paginas-info-restauro': ', $1 restauro',
 	'paginas-info-restauros': ', $1 restauros',
-	'paginas-info-ultimo-autor': 'Último autor: ',
 	'paginas-info-discussao-pe': 'discussão de eliminação',
 	'paginas-info-ainda-ligada': 'ainda há ligações para cá no domínio principal',
 	'paginas-info-sem-ligacoes': 'nenhuma ligação do domínio principal',
@@ -10624,7 +10623,7 @@ function renderInfo( $panel, ctx, data ) {
 			} ).length,
 			more = events.length >= 20 ? '+' : '',
 			last = deletions[ 0 ],
-			drevs, newest, editors = {};
+			drevs, newest, created, editors = {};
 
 		if ( !last ) {
 			$status.append( $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
@@ -10645,15 +10644,25 @@ function renderInfo( $panel, ctx, data ) {
 			addTo( $status, a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-info-discussao-pe' ) ) );
 		}
 
-		// O que havia: último autor, edições e editores eliminados (quem pode vê-los)
+		// O que havia (quem pode ver edições eliminadas): quem criou a última versão da página,
+		// a última edição antes da eliminação, o total de edições e de editores
 		drevs = data.deleted && ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] );
 		if ( drevs && drevs.length ) {
 			newest = drevs[ 0 ];
+			// As edições vêm da mais nova para a mais antiga; a criação mais recente é a primeira sem edição anterior
+			created = drevs.filter( function ( r ) {
+				return r.parentid === 0;
+			} )[ 0 ];
 			drevs.forEach( function ( r ) {
 				editors[ r.user || '' ] = true;
 			} );
+			if ( created && created.user ) {
+				$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+					a( mw.util.getUrl( 'Special:Contributions/' + created.user ), created.user ),
+					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( created.timestamp ) ) ) );
+			}
 			if ( newest.user ) {
-				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-info-ultimo-autor' ) ),
+				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
 					a( mw.util.getUrl( 'Special:Contributions/' + newest.user ), newest.user ),
 					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( newest.timestamp ) ) ) ] );
 			}

@@ -3466,7 +3466,7 @@ function renderInfo( $panel, ctx, data ) {
 			} ).length,
 			more = events.length >= 20 ? '+' : '',
 			last = deletions[ 0 ],
-			drevs, newest, editors = {};
+			drevs, newest, created, editors = {};
 
 		if ( !last ) {
 			$status.append( $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
@@ -3489,11 +3489,19 @@ function renderInfo( $panel, ctx, data ) {
 		drevs = data.deleted && ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] );
 		if ( drevs && drevs.length ) {
 			newest = drevs[ 0 ];
+			created = drevs.filter( function ( r ) {
+				return r.parentid === 0;
+			} )[ 0 ];
 			drevs.forEach( function ( r ) {
 				editors[ r.user || '' ] = true;
 			} );
+			if ( created && created.user ) {
+				$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+					a( mw.util.getUrl( 'Special:Contributions/' + created.user ), created.user ),
+					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( created.timestamp ) ) ) );
+			}
 			if ( newest.user ) {
-				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-info-ultimo-autor' ) ),
+				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
 					a( mw.util.getUrl( 'Special:Contributions/' + newest.user ), newest.user ),
 					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( newest.timestamp ) ) ) ] );
 			}

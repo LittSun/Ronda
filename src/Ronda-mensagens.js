@@ -541,7 +541,6 @@ window.rondaMessages = {
 	'paginas-info-eliminacoes': '$1 eliminações',
 	'paginas-info-restauro': ', $1 restauro',
 	'paginas-info-restauros': ', $1 restauros',
-	'paginas-info-ultimo-autor': 'Último autor: ',
 	'paginas-info-discussao-pe': 'discussão de eliminação',
 	'paginas-info-ainda-ligada': 'ainda há ligações para cá no domínio principal',
 	'paginas-info-sem-ligacoes': 'nenhuma ligação do domínio principal',
