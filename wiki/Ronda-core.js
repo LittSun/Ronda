@@ -1058,10 +1058,35 @@ function brand() {
 	return $brand.append( document.createTextNode( ronda.msg( 'core-nome' ) ) );
 }
 
+ronda.TEST_USER = 'Little Sunshine';
+
+ronda.modoTeste = function ( on ) {
+	var allowed = mw.config.get( 'wgUserName' ) === ronda.TEST_USER;
+
+	if ( on === undefined ) {
+		return allowed && mw.storage.get( 'ronda-modo-teste' ) === '1';
+	}
+	if ( !allowed ) {
+		console.warn( '[Ronda] ' + ronda.msg( 'core-teste-restrito' ) );
+		return false;
+	}
+	if ( on ) {
+		mw.storage.set( 'ronda-modo-teste', '1' );
+	} else {
+		mw.storage.remove( 'ronda-modo-teste' );
+	}
+	location.reload();
+	return !!on;
+};
+
 ronda.renderToolbar = function () {
 	var $group, $adminGroup, $bar,
 		ctx = ronda.ctx,
+		testing = ronda.modoTeste(),
 		available = ronda.modules.filter( function ( m ) {
+			if ( testing ) {
+				return true;
+			}
 			if ( m.hidden ) {
 				return false;
 			}
@@ -1088,7 +1113,16 @@ ronda.renderToolbar = function () {
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
-				mod.open( ctx );
+				if ( !testing ) {
+					mod.open( ctx );
+					return;
+				}
+				try {
+					mod.open( ctx );
+				} catch ( e ) {
+					console.error( '[Ronda] modo de teste — "' + mod.id + '":', e );
+					mw.notify( ronda.msg( 'core-teste-erro', mod.label, e.message ), { title: ronda.msg( 'core-nome' ), type: 'error' } );
+				}
 			} )
 			.one( 'mouseenter focus', function () {
 				if ( ronda.config.prefetch !== false ) {
@@ -2148,6 +2182,13 @@ ronda.start = function () {
 				$( '<span class="ui-state-highlight ui-corner-all ronda-dry"></span>' )
 					.text( ronda.msg( 'core-simulacao' ) )
 					.attr( 'title', ronda.msg( 'core-nada-e-gravado-na-wiki-as' ) )
+			);
+		}
+		if ( $bar && ronda.modoTeste() ) {
+			$bar.find( '.ronda-brand' ).after(
+				$( '<span class="ui-state-error ui-corner-all ronda-dry ronda-teste"></span>' )
+					.text( ronda.msg( 'core-teste' ) )
+					.attr( 'title', ronda.msg( 'core-teste-dica' ) )
 			);
 		}
 		if ( $bar && ronda.isMobile() ) {
