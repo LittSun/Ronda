@@ -3898,7 +3898,7 @@ ronda.catalog.speedy = [
 		{ label: 'História e sociedade', text: esr( GENERICO ) },
 		{ label: 'Medicina', text: esr( GENERICO ) },
 		{ label: 'Organização', template: 'ESR-organização', text: esr( 'Artigo sobre organização ' + SEM_FONTES
-			+ 'a notoriedade da organização.', [ 'Organizações', 'organizações' ] ) },
+			+ 'a notoriedade da organização.' ) },
 		{ label: 'Países', text: esr( GENERICO ) },
 		{ label: 'Pessoas', template: 'ESR-bio', text: esr( 'Biografia ' + SEM_FONTES
 			+ 'a notoriedade do biografado.', [ 'Biografias', 'biografias' ] ) },
