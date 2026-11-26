@@ -15,7 +15,7 @@
 - [x] Confirmações e prévia no Avisar; notificação de vandalismo depois do terceiro aviso
 - [x] Restaurar páginas e ações em lote (eliminar, restaurar, proteger)
 - [x] Preferências salvas na conta
-- [ ] Fila de patrulha com "Próxima" a partir de "Edições a revisar" (LiftWing)
+- [ ] Fila de patrulha com "Próxima" a partir de "Edições a revisar" (extensão ORES)
 - [ ] Talkback, IP compartilhado, ER com várias regras, registro pessoal das propostas, marcações de redirecionamento e de ficheiro
 - [ ] Versões de compatibilidade de `window.fastButtons` e do hook `fastButtons.ready`
 - [x] Painel do usuário ampliado (histórico, atividade, CheckUser, IPs, ações em massa)

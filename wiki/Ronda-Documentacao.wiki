@@ -1,17 +1,26 @@
 {{Info/Script de usuário
 |nome               = Ronda
-|descrição          = Reúne o FastButtons e o DiffTools em uma só<br/>barra de patrulha, manutenção e administração
+|descrição          = Barra de patrulha, manutenção e administração,<br/>com sugestões de marcação e Desfazer
 |logo               = UserScript Ronda Icon.svg
 |tamanho-logo       = 50px
 |captura            = Userscript Ronda screenshot.png
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.20|0.7.20]]
+|versão             = [[/Changelog#0.7.21|0.7.21]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
-O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote. Combina funções do [[WP:FB|FastButtons]] e do DiffTools (Reversão e avisos), com recursos inspirados no [[WP:Twinkle|Twinkle]].
+O '''Ronda''' reúne numa barra acima do título da página ferramentas de patrulhamento, manutenção e administração da Wikipédia. Permite reverter edições, avisar usuários, marcar páginas para manutenção ou eliminação e fazer pedidos. Usuários com as permissões necessárias também podem eliminar, bloquear, proteger e executar ações em lote.
+
+Além disso, o Ronda:
+* '''sugere marcações''' a partir do próprio artigo (sem referências, sem categorias, poucas ligações, ligações para desambiguações…) e guarda as '''usadas recentemente''';
+* '''estima a qualidade''' do artigo pelos critérios do quadro de parâmetros de qualidade e mostra o que falta para o nível seguinte;
+* oferece '''Desfazer''' depois de cada ação, por alguns minutos;
+* reúne num só painel, '''Informações''', os dados da página e do usuário;
+* mostra '''filas de patrulha''' com as edições que a própria wiki aponta como provavelmente danosas.
+
+Quem usava o FastButtons ou o DiffTools encontra as mesmas tarefas; veja [[#Para quem vem do FastButtons ou do DiffTools|a seção sobre a migração]].
 [[File:Userscript Ronda Batch screenshot.png|thumb|Captura de tela das ações em lote do Ronda]]
 
 Os botões variam conforme a página e as permissões do usuário. O Ronda facilita as tarefas, mas não substitui as políticas da Wikipédia: confira os critérios aplicáveis antes de executar uma ação.
@@ -37,15 +46,13 @@ A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; 
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} || Envia avisos à discussão de um usuário.
 |-
-| {{Usuário:Little Sunshine/Ronda/Botão|Usuário}} || Exibe informações sobre uma conta ou IP e atalhos para ações.
-|-
-| {{Usuário:Little Sunshine/Ronda/Botão|Listar}} || Mostra listas de páginas e edições para patrulhamento.
+| {{Usuário:Little Sunshine/Ronda/Botão|Filas}} || Mostra filas de páginas e edições para patrulhamento.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}} || Adiciona ou remove predefinições de manutenção.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Esboço}} || Marca um artigo como esboço.
 |-
-| {{Usuário:Little Sunshine/Ronda/Botão|#R}} || Cria um redirecionamento.
+| {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}} || Cria um redirecionamento.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Fusão}} || Propõe a fusão de páginas.
 |-
@@ -61,7 +68,7 @@ A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; 
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|PetScan}} || Localiza páginas de uma categoria que precisam de melhorias.
 |-
-| {{Usuário:Little Sunshine/Ronda/Botão|Informações}} || Exibe dados e registros da página.
+| {{Usuário:Little Sunshine/Ronda/Botão|Informações}} || Exibe dados e registros da página e, em páginas de usuário e contribuições, do usuário.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Pedido}} || Prepara pedidos aos administradores.
 |-
@@ -80,7 +87,7 @@ A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; 
 | {{Usuário:Little Sunshine/Ronda/Botão|Lote|tipo=admin}} || Elimina, restaura ou protege várias páginas.
 |}
 
-Os botões que alteram o texto aparecem em páginas compatíveis, inclusive durante a edição e em diferenças entre versões; os que agem sobre a página também podem aparecer no histórico. Ferramentas de usuário aparecem nas contribuições e nas páginas e discussões de usuário. {{Usuário:Little Sunshine/Ronda/Botão|Pedido}} e {{Usuário:Little Sunshine/Ronda/Botão|Listar}} estão disponíveis em todas as páginas. Ações administrativas ficam agrupadas à direita, em vermelho, e dependem das permissões correspondentes. {{Usuário:Little Sunshine/Ronda/Botão|Usuário}}, {{Usuário:Little Sunshine/Ronda/Botão|Busca}}, {{Usuário:Little Sunshine/Ronda/Botão|PetScan}}, {{Usuário:Little Sunshine/Ronda/Botão|Informações}} e {{Usuário:Little Sunshine/Ronda/Botão|Listar}} expandem uma faixa na barra, em vez de abrir uma janela.
+Os botões que alteram o texto aparecem em páginas compatíveis, inclusive durante a edição e em diferenças entre versões; os que agem sobre a página também podem aparecer no histórico. Nas contribuições, {{Usuário:Little Sunshine/Ronda/Botão|Informações}} mostra o usuário; nas páginas e discussões de usuário, mostra a página e, abaixo, o usuário. {{Usuário:Little Sunshine/Ronda/Botão|Pedido}} e {{Usuário:Little Sunshine/Ronda/Botão|Filas}} estão disponíveis em todas as páginas. Ações administrativas ficam agrupadas à direita, em vermelho, e dependem das permissões correspondentes. {{Usuário:Little Sunshine/Ronda/Botão|Informações}}, {{Usuário:Little Sunshine/Ronda/Botão|Busca}}, {{Usuário:Little Sunshine/Ronda/Botão|PetScan}} e {{Usuário:Little Sunshine/Ronda/Botão|Filas}} expandem uma faixa na barra, em vez de abrir uma janela.
 
 === Patrulhamento e reversão ===
 '''Reversão rápida.''' Ao lado de edições recentes, nas diferenças, históricos, contribuições, mudanças recentes e páginas vigiadas, podem aparecer três links:
@@ -92,7 +99,7 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 
 {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} permite voltar à versão da esquerda de uma diferença, partindo da versão atual. Se houver edições posteriores de outras pessoas, o diálogo as identifica e exige a opção '''Reverter mesmo assim'''. Quando o resultado é equivalente, reversores utilizam a reversão rápida. É possível acrescentar um comentário, marcar a edição como patrulhada quando essa opção existir e selecionar avisos para o autor; estes só são enviados após uma reversão bem-sucedida. O botão {{Usuário:Little Sunshine/Ronda/Botão|Reverter agora}} faz a reversão na hora, enquanto os avisos ainda estão sendo escolhidos; depois, basta clicar em {{Usuário:Little Sunshine/Ronda/Botão|Enviar aviso|tipo=azul}}.
 
-{{Usuário:Little Sunshine/Ronda/Botão|Listar}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar apontadas pelo LiftWing como danosas e de má-fé (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
+{{Usuário:Little Sunshine/Ronda/Botão|Filas}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar que a própria wiki aponta como provavelmente danosas, com as de provável má-fé primeiro (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
 
 === Avisos e informações de usuários ===
 {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe.
@@ -102,19 +109,23 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 * '''Confirmações:''' há alerta se o mesmo aviso tiver sido enviado nas últimas 24 horas ou se a discussão tiver sido editada há menos de um minuto.
 * '''Casos especiais:''' quando o autor não puder ser identificado, o Ronda pergunta quem avisar. Há avisos específicos para as categorias de nomes impróprios da [[Wikipédia:Política de nome de usuário]], com observação e pedido de revisão opcionais, além de notificações de bloqueio ({{tl|bloqueado}}, {{tl|bloqueado-disc}}, {{tl|bloqueado-CPV}} e {{tl|proxy}}). O aviso de vandalismo repetido é colocado no topo da discussão. O aviso de '''assinatura não permitida''' traz uma caixa para cada ponto das [[Wikipédia:Regras para assinaturas|regras para assinaturas]]; os pontos marcados entram no aviso.
 
-{{Usuário:Little Sunshine/Ronda/Botão|Usuário}} apresenta um resumo de contas e IPs: bloqueios locais e globais, situação global da conta, registro, edições, grupos e datas de atribuição de direitos, bloqueios anteriores (o último com duração e motivo), bloqueios em outras wikis, ocorrências no [[Especial:Registro de abusos|registro do filtro de abusos]] nos últimos 30 dias, edições ocultadas, reversões entre as cem contribuições mais recentes, páginas criadas ou eliminadas, atividade recente e avisos dos últimos 30 dias. As informações ficam numa tabela, um tema por linha; ações e links ficam numa coluna à direita. Oferece links para registros e ferramentas pertinentes, inclusive verificações para quem tem a permissão.
+O painel do usuário, em {{Usuário:Little Sunshine/Ronda/Botão|Informações}}, apresenta um resumo de contas e IPs: bloqueios locais e globais, situação global da conta, registro, edições, grupos e datas de atribuição de direitos, bloqueios anteriores (o último com duração e motivo), bloqueios em outras wikis, ocorrências no [[Especial:Registro de abusos|registro do filtro de abusos]] nos últimos 30 dias, edições ocultadas, reversões entre as cem contribuições mais recentes, páginas criadas ou eliminadas, atividade recente e avisos dos últimos 30 dias. As informações ficam numa tabela, um tema por linha; ações e links ficam numa coluna à direita. Oferece links para registros e ferramentas pertinentes, inclusive verificações para quem tem a permissão.
 
 Para IPs, inclui informações sobre faixas /24 ou /64, WHOIS, localização, proxies, Spur e contribuições globais. As informações da ferramenta de IP da Wikipédia só são consultadas ao clicar, pois o acesso é registrado. O painel também oferece atalhos para avisar, bloquear, '''reverter todas no topo''' (com conferência prévia) e '''eliminar as criadas''' (abrindo o Lote).
 
 === Manutenção e edição ===
 {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}} reúne marcações por tema, permite filtrá-las e remover as já presentes. Reconhece redirecionamentos de predefinições e marcações dentro ou fora de {{tl|Múltiplos problemas}}, podendo agrupá-las ou separá-las. Quando aplicável, avisa o criador e registra a página em [[Wikipédia:Páginas precisando de manutenção]].
 
+Nos artigos, o diálogo abre com dois painéis no topo:
+* '''Sugeridas para esta página:''' marcações que o Ronda detecta pelo texto, cada uma com o motivo ao lado: nenhuma referência ({{tl|Sem-fontes}}, ou a versão para biografias de pessoas vivas), fontes no fim sem notas no texto ({{tl|Sem notas}}), seções sem referência ({{tl|Mais notas}}), uma única referência ({{tl|Uma-fonte}}), referências só com o endereço ({{tl|Formatar referências}}), nenhuma categoria visível ({{tl|Sem cat}}), poucas ligações internas ou texto longo sem seções ({{tl|Wikificação}}), artigo sem introdução ({{tl|Má introdução}}) e ligações para desambiguações ({{tl|Ligações ambíguas}}). Nada vem marcado: a decisão continua sendo de quem patrulha.
+* '''Usadas recentemente:''' as últimas marcações que você aplicou, salvas na sua conta.
+
 * {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}: insere {{tl|Esboço}} ou {{tl|Esboço-tema}}, com sugestões de predefinições existentes, antes das categorias.
-* {{Usuário:Little Sunshine/Ronda/Botão|#R}}: substitui o conteúdo por um redirecionamento. Em categorias, usa {{tl|Redirecionamento de categoria}}, com motivo; também cria redirecionamentos em páginas inexistentes, adicionando-as às páginas vigiadas.
+* {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}: substitui o conteúdo por um redirecionamento. Em categorias, usa {{tl|Redirecionamento de categoria}}, com motivo; também cria redirecionamentos em páginas inexistentes, adicionando-as às páginas vigiadas.
 * {{Usuário:Little Sunshine/Ronda/Botão|Fusão}}: insere {{tl|f-de}} na página que permanece e {{tl|f-com}} na outra.
 * {{Usuário:Little Sunshine/Ronda/Botão|Não assinou}}: insere {{tl|Não assinou}} na posição do cursor ao editar discussões ou páginas do domínio Wikipédia.
 
-No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}}, {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}, {{Usuário:Little Sunshine/Ronda/Botão|#R}}, {{Usuário:Little Sunshine/Ronda/Botão|ER}} e {{Usuário:Little Sunshine/Ronda/Botão|ESR}} modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
+No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}}, {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}, {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}, {{Usuário:Little Sunshine/Ronda/Botão|ER}} e {{Usuário:Little Sunshine/Ronda/Botão|ESR}} modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
 
 === Movimentação e eliminação ===
 {{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. Essa eliminação nunca vem marcada: é preciso marcar a opção e, se o destino não for um redirecionamento simples para a página, marcar também uma segunda caixa de confirmação. Com o destino ocupado, Enter não move nada. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
@@ -137,12 +148,17 @@ Estas ferramentas aparecem apenas para usuários com os direitos necessários. {
 
 '''Limites dos reversores:''' podem bloquear somente IPs e contas não confirmadas, por vandalismo leve ou destrutivo e por até 24 horas. Não podem aplicar bloqueios parciais, impedir criação de contas nem alterar ou remover bloqueios feitos por outros. O formulário restringe motivos e durações. Para contas confirmadas, oferece pedidos de notificação de vandalismo ou incidente. Bloqueios fora desses limites constituem abuso da ferramenta.
 
-Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda segue os critérios do FastButtons: não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
+Ações com várias etapas exibem progresso e registro de resultados. Nos avisos aos criadores, o Ronda não avisa o próprio usuário, IPs que criaram a página há mais de 24 horas nem autores de páginas originadas por moção.
+
+=== Desfazer ===
+Depois de cada ação que edita páginas (marcar, avisar, propor eliminação, fazer um pedido…), aparece uma notificação com o que o Ronda gravou e o link '''Desfazer'''. Edições feitas com menos de 30 segundos de intervalo contam como uma ação só. Se a página recarregar, a notificação volta uma vez; o Desfazer fica disponível por 10 minutos.
+
+Cada edição é desfeita como no histórico (da última para a primeira). Se alguém editou a página depois, aquela edição não é desfeita e o Ronda avisa. Páginas criadas pela ação (como uma discussão de eliminação) são eliminadas por quem tem esse direito; para os demais, ficam listadas para pedir a eliminação. Ações administrativas (eliminar, bloquear, proteger, mover) não entram no Desfazer.
 
 === Buscas, informações e pedidos ===
 * {{Usuário:Little Sunshine/Ronda/Botão|Busca}}: pesquisa o título no Google, Google Notícias, Livros, Acadêmico, Google Brasil e Portugal e Bing.
 * {{Usuário:Little Sunshine/Ronda/Botão|PetScan}}: localiza páginas de uma categoria sem fontes, que precisam de revisão ou wikificação ou que são muito pequenas.
-* {{Usuário:Little Sunshine/Ronda/Botão|Informações}}: mostra, numa tabela, a situação da página (propostas e eliminações anteriores), a proteção atual, quem a criou e quando, o número de edições e de editores, tamanho e qualidade (inclusive a estimativa do LiftWing e a contagem de referências), as marcações de manutenção presentes, as ligações (categorias, afluentes do domínio principal, outras línguas e item no Wikidata), o que falta patrulhar e as visualizações dos últimos 30 dias. Páginas novas não patrulhadas podem ser marcadas como patrulhadas pelo próprio painel. Para páginas inexistentes, informa a data da eliminação, quando disponível.
+* {{Usuário:Little Sunshine/Ronda/Botão|Informações}}: mostra, numa tabela, a situação da página (propostas e eliminações anteriores), a proteção atual, quem a criou e quando, o número de edições e de editores, tamanho e qualidade (inclusive a qualidade estimada automaticamente pelos critérios do quadro de parâmetros de qualidade, com o que falta para o nível seguinte e um link para ver todos os critérios, e a contagem de referências), as marcações de manutenção presentes, as ligações (categorias, afluentes do domínio principal, outras línguas e item no Wikidata), o que falta patrulhar e as visualizações dos últimos 30 dias. Páginas novas não patrulhadas podem ser marcadas como patrulhadas pelo próprio painel. Para páginas inexistentes, informa a data da eliminação, quando disponível.
 * {{Usuário:Little Sunshine/Ronda/Botão|Pedido}}: prepara solicitações de vandalismo, desproteção, edição, histórico, proteção, restauro, ocultação, nome impróprio, incidente e outros casos, com o alvo e o modelo da página de pedidos preenchidos.
 
 === Uso no celular ===
@@ -158,7 +174,7 @@ Clicar no nome '''Ronda''', no início da barra, abre o '''meta-painel''', com:
 
 Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam essas opções. Depois de cada atualização, uma faixa com as novidades da versão se abre sozinha uma vez, e o nome '''Ronda''' ganha o selo '''novo''' até que o meta-painel seja aberto. Em qualquer uma dessas faixas, '''Não mostrar mais''' impede que elas voltem a se abrir sozinhas; o selo continua avisando das versões novas, e o meta-painel continua no nome '''Ronda'''.
 
-Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. Os painéis {{Usuário:Little Sunshine/Ronda/Botão|Usuário}} e {{Usuário:Little Sunshine/Ronda/Botão|Informações}} são carregados em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
+Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. O painel {{Usuário:Little Sunshine/Ronda/Botão|Informações}} é carregado em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
 
@@ -222,9 +238,28 @@ importScript('Usuário:Little Sunshine/Scripts/Ronda-loader.js') // Ligação: [
 * Antes de agir, consulte a política correspondente, como [[Wikipédia:Vandalismo]] ou [[WP:ER]].
 
 == Monitoramento de edições ==
+Os resumos de edição do Ronda seguem um padrão próprio: o tipo da ação e o detalhe, como <code><nowiki>Marcação: {{[[Pre:Sem-fontes|Sem-fontes]]}}</nowiki></code>, <code>Eliminação rápida: proposta pela regra R1</code> ou <code>Pedido: proteção — [[Página]]</code>. Os resumos dos avisos a usuários continuam no formato de sempre ("Aviso sobre…", "Segundo aviso sobre…"), que o Ronda e outras ferramentas usam para reconhecer o nível dos avisos anteriores.
+
 As edições e ações realizadas pelo Ronda acrescentam ao resumo a identificação <code><nowiki>(via [[User:Little Sunshine/Ronda|script]] #Ronda)</nowiki></code>. Esse texto é fixo e não pode ser alterado nas preferências.
 
 As ações podem ser acompanhadas pela [https://hashtags.wmcloud.org/?query=Ronda&project=pt.wikipedia.org&startdate=&enddate=&search_type=or&user= ferramenta de hashtags].
+
+== Para quem vem do FastButtons ou do DiffTools ==
+O Ronda faz as tarefas das duas ferramentas, com algumas diferenças de nome e de lugar:
+{| class="wikitable"
+! Antes !! No Ronda
+|-
+| Barra do FastButtons e menus que se abrem embaixo || Barra única; marcações em diálogos com busca, sugestões e usadas recentemente
+|-
+| ''#R'' || {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}
+|-
+| ''Listar'' || {{Usuário:Little Sunshine/Ronda/Botão|Filas}}, com as edições a revisar apontadas pela própria wiki
+|-
+| ''Informações'' e o painel de usuário || {{Usuário:Little Sunshine/Ronda/Botão|Informações}}, com a página e o usuário juntos nas páginas de usuário
+|-
+| Reversão e avisos do DiffTools || {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} e {{Usuário:Little Sunshine/Ronda/Botão|Avisar}}, com o nível sugerido a partir dos avisos anteriores (inclusive os deixados pelo DiffTools)
+|}
+As predefinições e os avisos são os mesmos da comunidade; os critérios para avisar criadores também.
 
 == Créditos ==
 * '''FastButtons:''' Racso, Macy, Danilo.mac, Helder, !Silent e demais colaboradores.

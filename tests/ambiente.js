@@ -95,6 +95,7 @@ function criar( opts ) {
 	};
 
 	const storage = {};
+	const sessao = {};
 	const opcoes = Object.assign( {}, opts.options || {} );
 	w.mw = {
 		config: { get: ( k ) => ( k === undefined ? config : config[ k ] ), set: ( k, v ) => { config[ k ] = v; } },
@@ -117,7 +118,12 @@ function criar( opts ) {
 			options: { get: ( k ) => ( k in opcoes ? opcoes[ k ] : null ), set: ( k, v ) => { opcoes[ k ] = v; } },
 			tokens: { get: () => 'x' }
 		},
-		storage: { get: ( k ) => storage[ k ] || null, set: ( k, v ) => { storage[ k ] = v; }, getObject: () => null, setObject: () => {} },
+		storage: { get: ( k ) => storage[ k ] || null, set: ( k, v ) => { storage[ k ] = v; }, getObject: () => null, setObject: () => {},
+			session: {
+				getObject: ( k ) => ( sessao[ k ] ? JSON.parse( sessao[ k ] ) : null ),
+				setObject: ( k, v ) => { sessao[ k ] = JSON.stringify( v ); },
+				remove: ( k ) => { delete sessao[ k ]; }
+			} },
 		hook: () => ( { add: () => {}, fire: () => {} } ),
 		notify: ( m ) => { notificacoes.push( typeof m === 'string' ? m : $( m ).text() ); return D(); },
 		message: ( k ) => ( { exists: () => false, text: () => k, plain: () => k, parse: () => k } ),

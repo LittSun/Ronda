@@ -1,6 +1,18 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.20]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.21]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.21"></span>0.7.21 — 26/11/2026 ==
+* '''Informações''' e '''Usuário''' viram um só botão, '''Informações''', o primeiro da barra, com os dois painéis inteiros: nas contribuições, mostra o do usuário; nas páginas e discussões de usuário, o da página e, abaixo, o do usuário; nas demais páginas, só o da página. O carregamento em segundo plano vale para os dois.
+* '''Filas › Edições a revisar''' usa as pontuações da extensão ORES da própria pt.wiki, numa só consulta, com o mesmo critério dos filtros de Mudanças recentes (antes eram até 300 pedidos ao LiftWing pelo api.wikimedia.org, que está sendo desativado). As de provável má-fé vêm primeiro.
+* '''Informações › Qualidade''': a estimativa do LiftWing dá lugar à '''avaliação automática''' pelos critérios do quadro "Parâmetros de qualidade" (incorporada do script QualidadeFeedback): mostra o nível estimado, o que falta para o seguinte e, em '''ver critérios''', todos os itens de cada nível. Na versão atual do artigo, referências e imagens são contadas na página exibida; fora dela, no wikitexto. O resultado fica guardado por revisão, e o painel não depende mais do api.wikimedia.org.
+* '''Barra com cara nova''' ("cartão com título"): o nome Ronda numa aba escura à esquerda, botões planos dentro do cartão, ações administrativas à direita em vermelho e o botão do painel aberto marcado em azul. As faixas (Informações, Filas, novidades) abrem dentro do cartão, em fundo branco. No modo escuro, as cores seguem o tema da wiki. Os diálogos continuam como estavam.
+* '''Manutenção › Sugeridas para esta página''': nos artigos, um painel no topo, como os Favoritos do Avisar, com as marcações que o próprio texto indica e o motivo de cada uma (nenhuma referência, fontes sem notas, seções sem referência, uma só referência, referências só com URL, nenhuma categoria visível, poucas ligações ou texto longo sem seções, sem introdução, ligações para desambiguações). Em biografias de pessoas vivas, sugere as versões BPV. Nada vem marcado.
+* '''Manutenção › Usadas recentemente''': as últimas marcações aplicadas, salvas na conta.
+* '''Desfazer''': depois de cada ação que edita páginas, uma notificação mostra o que foi gravado e oferece '''Desfazer''' (por 10 minutos, também depois de a página recarregar). Desfaz da última edição para a primeira; páginas criadas são eliminadas por quem pode eliminar ou ficam listadas.
+* '''Resumos de edição''' num padrão próprio ("Marcação: <nowiki>{{</nowiki><nowiki>[[</nowiki>Pre:Sem-fontes|Sem-fontes<nowiki>]]</nowiki><nowiki>}}</nowiki>", "Eliminação rápida: proposta pela regra R1", "Pedido: proteção — <nowiki>[[</nowiki>Página<nowiki>]]</nowiki>"…), no lugar das frases herdadas. Os resumos dos avisos a usuários não mudam, porque servem para reconhecer o nível dos avisos anteriores.
+* '''Documentação''' apresenta o que o Ronda faz de próprio; a migração do FastButtons e do DiffTools ganhou uma seção à parte.
+* Novos nomes: '''Listar''' passa a se chamar '''Filas''', e '''#R''', '''Redirecionar'''.
 
 == <span id="0.7.20"></span>0.7.20 — 25/11/2026 ==
 * '''Informar erro''': as informações técnicas fazem parte da mensagem; a assinatura vem no fim, depois delas.

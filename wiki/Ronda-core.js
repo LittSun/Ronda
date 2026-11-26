@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.20',
+		version: '0.7.21',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -212,6 +212,11 @@ ronda.params = function ( params ) {
 
 ronda.creationWatchlist = function () {
 	return ronda.config.watchlist === 'unwatch' ? 'unwatch' : 'watch';
+};
+
+ronda.tpl = function ( name ) {
+	name = String( name ).split( '|' )[ 0 ].replace( /^subst:/i, '' ).trim();
+	return '{{[[Pre:' + name + '|' + name + ']]}}';
 };
 
 ronda.post = function ( params ) {
@@ -500,7 +505,7 @@ ronda.warnCreator = function ( title, code, summary, extra ) {
 
 			if ( code ) {
 				parts.push( '{{subst:' + code + '}} ~~' + '~~' );
-				summaries.push( summary || 'Aviso sobre a eliminação da página "[[' + title + ']]"' );
+				summaries.push( summary || 'Aviso: proposta de eliminação de [[' + title + ']]' );
 			}
 			if ( add && add.text ) {
 				parts.push( add.text );
@@ -775,11 +780,14 @@ ronda.ui.togglePanel = function ( id, build ) {
 
 	if ( $panel ) {
 		$panel.toggle();
-		return $panel;
+	} else {
+		$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
+		build( $panel );
 	}
-
-	$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
-	build( $panel );
+	$( '#ronda-toolbar .ronda-btn' ).removeClass( 'ronda-btn-on' );
+	if ( $panel.is( ':visible' ) ) {
+		$( '#ronda-toolbar .ronda-btn-' + id ).addClass( 'ronda-btn-on' );
+	}
 	return $panel;
 };
 
@@ -1239,6 +1247,46 @@ ronda.favorites = ( function () {
 	};
 }() );
 
+ronda.RECENT_TAGS_OPTION = 'userjs-ronda-recentes';
+ronda.recentTags = ( function () {
+	var MAX = 8,
+		list;
+
+	try {
+		list = JSON.parse( mw.user.options.get( ronda.RECENT_TAGS_OPTION ) || '[]' );
+	} catch ( e ) {
+		list = [];
+	}
+	if ( !Array.isArray( list ) ) {
+		list = [];
+	}
+
+	return {
+		list: function () {
+			return list.slice();
+		},
+		push: function ( ids ) {
+			var value;
+
+			if ( !ids || !ids.length ) {
+				return $.Deferred().resolve().promise();
+			}
+			list = ids.concat( list.filter( function ( id ) {
+				return ids.indexOf( id ) === -1;
+			} ) ).slice( 0, MAX );
+			value = JSON.stringify( list );
+			if ( mw.user.options && mw.user.options.set ) {
+				mw.user.options.set( ronda.RECENT_TAGS_OPTION, value );
+			}
+			return new mw.Api().postWithToken( 'csrf', {
+				action: 'options',
+				optionname: ronda.RECENT_TAGS_OPTION,
+				optionvalue: value
+			} );
+		}
+	};
+}() );
+
 ronda.defaults = $.extend( true, {}, ronda.config );
 $.extend( true, ronda.config, ronda.savedPrefs, window.rondaConfig || {} );
 
@@ -1263,6 +1311,166 @@ if ( ronda.config.dryRun ) {
 		} ).promise();
 	};
 }
+
+var UNDO_KEY = 'ronda-desfazer',
+	UNDO_GAP = 30 * 1000,
+	UNDO_TTL = 10 * 60 * 1000,
+	undoPaused = false,
+	undoTimer = null;
+
+function undoStore() {
+	return mw.storage && mw.storage.session ? mw.storage.session : null;
+}
+
+function undoGroup() {
+	var st = undoStore(),
+		g = st && st.getObject( UNDO_KEY );
+
+	return g && g.edits && !g.done && Date.now() - g.last < UNDO_TTL ? g : null;
+}
+
+function undoSave( g ) {
+	var st = undoStore();
+
+	if ( st ) {
+		if ( g ) {
+			st.setObject( UNDO_KEY, g );
+		} else {
+			st.remove( UNDO_KEY );
+		}
+	}
+}
+
+function undoLabel( g ) {
+	var titles = [];
+
+	g.edits.forEach( function ( e ) {
+		if ( titles.indexOf( e.title ) === -1 ) {
+			titles.push( e.title );
+		}
+	} );
+	return ronda.msg( g.edits.length === 1 ? 'core-desfazer-uma' : 'core-desfazer-varias', g.edits.length,
+		titles.slice( 0, 3 ).join( ', ' ) + ( titles.length > 3 ? '…' : '' ) );
+}
+
+function undoRecord( e ) {
+	var g = undoGroup(),
+		now = Date.now();
+
+	if ( !g || now - g.last > UNDO_GAP ) {
+		g = { first: now, last: now, edits: [] };
+	}
+	g.last = now;
+	g.edits.push( e );
+	undoSave( g );
+	ronda.undo.current = g;
+
+	clearTimeout( undoTimer );
+	undoTimer = setTimeout( function () {
+		ronda.undo.offer();
+	}, 1500 );
+}
+
+ronda.undo = {
+	current: null,
+
+	offer: function ( afterLoad ) {
+		var g = undoGroup(),
+			$msg;
+
+		if ( !g || ( afterLoad && g.offeredAfterLoad ) ) {
+			return;
+		}
+		if ( afterLoad ) {
+			g.offeredAfterLoad = true;
+			undoSave( g );
+		}
+		$msg = $( '<div></div>' ).append(
+			$( '<span></span>' ).text( undoLabel( g ) + ' ' ),
+			$( '<a href="#" role="button" class="ronda-undo"></a>' ).text( ronda.msg( 'core-desfazer' ) ).on( 'click', function ( ev ) {
+				ev.preventDefault();
+				$( this ).replaceWith( document.createTextNode( ronda.msg( 'core-desfazendo' ) ) );
+				ronda.undo.run( g );
+			} )
+		);
+		mw.notify( $msg, { title: ronda.msg( 'core-nome' ), tag: 'ronda-undo', autoHideSeconds: 'long' } );
+	},
+
+	run: function ( g ) {
+		var done = 0,
+			manual = [],
+			failed = [];
+
+		undoPaused = true;
+		g.done = true;
+		undoSave( null );
+
+		return ronda.sequence( g.edits.slice().reverse(), function ( e ) {
+			var req;
+
+			if ( e.created ) {
+				if ( !ronda.can( 'delete' ) ) {
+					manual.push( e.title );
+					return $.Deferred().resolve().promise();
+				}
+				req = ronda.post( { action: 'delete', title: e.title, reason: ronda.msg( 'core-desfazer-motivo-criacao' ) } );
+			} else {
+				req = ronda.post( { action: 'edit', title: e.title, undo: e.newrevid, undoafter: e.oldrevid,
+					nocreate: true, summary: ronda.msg( 'core-desfazer-resumo' ) } );
+			}
+			return req.then( function () {
+				done++;
+			}, function () {
+				failed.push( e.title );
+				return $.Deferred().resolve().promise();
+			} );
+		} ).always( function () {
+			var cur = ronda.ctx && ronda.ctx.page,
+				$m = $( '<div></div>' ).append( $( '<p></p>' ).text( ronda.msg( 'core-desfeitas', done ) ) );
+
+			undoPaused = false;
+			if ( failed.length ) {
+				$m.append( $( '<p></p>' ).text( ronda.msg( 'core-desfazer-falhou', failed.join( ', ' ) ) ) );
+			}
+			if ( manual.length ) {
+				$m.append( $( '<p></p>' ).text( ronda.msg( 'core-desfazer-criadas', manual.join( ', ' ) ) ) );
+			}
+			mw.notify( $m, { title: ronda.msg( 'core-nome' ), type: failed.length || manual.length ? 'warn' : 'success',
+				autoHide: !( failed.length || manual.length ), tag: 'ronda-undo' } );
+			if ( done && cur && g.edits.some( function ( e ) {
+				return e.title === cur;
+			} ) ) {
+				setTimeout( function () {
+					location.reload();
+				}, 1200 );
+			}
+		} );
+	}
+};
+
+( function () {
+	var post = api.postWithToken;
+
+	api.postWithToken = function ( type, params ) {
+		var req = post.apply( this, arguments );
+
+		if ( !undoPaused && params && params.action === 'edit' ) {
+			req.then( function ( res ) {
+				var e = res && res.edit;
+
+				if ( e && e.result === 'Success' && e.newrevid && !e.nochange ) {
+					undoRecord( {
+						title: e.title || params.title,
+						oldrevid: e.oldrevid || 0,
+						newrevid: e.newrevid,
+						created: e[ 'new' ] === true || e[ 'new' ] === ''
+					} );
+				}
+			} );
+		}
+		return req;
+	};
+}() );
 
 ronda.isMobile = function () {
 	return mw.config.get( 'skin' ) === 'minerva' || document.body.classList.contains( 'mw-mf' );
@@ -1367,9 +1575,11 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Meta-painel: clique em "Ronda" para ver a versão, as novidades, opções rápidas, as preferências, a documentação e o botão de informar erro',
-	'Informações em tabela, com proteção, criação, edições, manutenção, ligações, patrulha e visualizações',
-	'Os painéis Usuário e Informações carregam em segundo plano e abrem prontos'
+	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações, o primeiro da barra; em páginas de usuário ele mostra a página e o usuário',
+	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
+	'Barra com cara nova: o nome Ronda numa aba escura, botões planos e o painel aberto marcado em azul',
+	'Manutenção sugere marcações pelo próprio artigo e lembra as usadas recentemente',
+	'Desfazer: depois de cada ação, uma notificação permite desfazer o que o Ronda gravou'
 ];
 
 function saveOption( name, value ) {
@@ -1761,6 +1971,7 @@ ronda.start = function () {
 		addControls( $bar );
 		addWelcome( $bar );
 		showNews( $bar );
+		ronda.undo.offer( true );
 		if ( $bar ) {
 			schedulePrefetch( ctx );
 		}

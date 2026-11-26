@@ -9,8 +9,15 @@ function ambienteInfo() {
 	return criar( {
 		rights: [ 'edit', 'patrol', 'deletedhistory' ],
 		ctx: { type: 'view', ns: 0, page: 'Teste', title: 'Teste', exists: true },
-		ajax: ( o ) => ( /pageviews/.test( o.url ) ? { items: [ { views: 100 }, { views: 23 } ] } : /articlequality/.test( o.url ) ? { score: 0.42 } : undefined ),
+		ajax: ( o ) => ( /pageviews/.test( o.url ) ? { items: [ { views: 100 }, { views: 23 } ] } : undefined ),
 		responder: ( p ) => {
+			if ( p.prop === 'revisions|templates' ) {
+				return { query: { pages: [ { title: 'Teste', revisions: [ { size: 1234, slots: { main: { content: 'Texto curto sobre [[Algo]].' } } } ],
+					templates: [ { title: 'Predefinição:Sem-fontes' } ] } ] } };
+			}
+			if ( p.list === 'categorymembers' ) {
+				return { query: { categorymembers: p.cmtype === 'page' ? [ { title: 'Predefinição:Sem-fontes' } ] : [] } };
+			}
 			if ( p.list === 'recentchanges' ) {
 				return { query: { recentchanges: [ { type: 'new', rcid: 99 }, { type: 'edit', rcid: 100 } ] } };
 			}
@@ -57,7 +64,8 @@ test( 'Informações: proteção, criação, editores, manutenção, ligações,
 	assert.match( t, /página nova não patrulhada/ );
 	assert.match( t, /1 edição não patrulhada/ );
 	assert.match( t, /123 visualizações/ );
-	assert.match( t, /estimada pelo LiftWing: 42%/ );
+	assert.match( t, /estimada automaticamente: 1/ );
+	assert.match( t, /para a 2 falta: .*ligações internas \(1; ≥ 10\)/ );
 	assert.match( t, /marcar como patrulhada/ );
 } );
 
@@ -88,13 +96,13 @@ test( 'Informações: marcar como patrulhada envia o rcid da página nova', asyn
 	assert.deepStrictEqual( a.escritas( 'patrol' ).map( ( c ) => c.rcid ), [ 99 ] );
 } );
 
-test( 'Usuário: o pré-carregamento faz as consultas uma vez só', async () => {
+test( 'Informações nas contribuições: só o usuário, com pré-carregamento', async () => {
 	const a = criar( {
 		rights: [ 'edit' ],
 		ctx: { type: 'contribs', ns: -1, page: 'Especial:Contribuições/Fulano', targetUser: 'Fulano' },
 		responder: ( p ) => ( p.list === 'users|usercontribs' ? { query: { users: [ { name: 'Fulano', editcount: 5, groups: [ 'user' ] } ], usercontribs: [] } } : undefined )
 	} );
-	const mod = a.ronda.getModule( 'usuario' );
+	const mod = a.ronda.getModule( 'info' );
 
 	a.$( 'body' ).append( '<div id="ronda-toolbar"></div>' );
 	mod.prefetch( a.ronda.ctx );
@@ -106,4 +114,41 @@ test( 'Usuário: o pré-carregamento faz as consultas uma vez só', async () => 
 	assert.ok( antes > 0 );
 	assert.strictEqual( a.consultas.length, antes );
 	assert.match( a.$( '#ronda-toolbar' ).text(), /Edições: 5/ );
+} );
+
+test( 'Informações numa página de usuário: página e usuário juntos, a página primeiro', async () => {
+	const a = criar( {
+		rights: [ 'edit' ],
+		ctx: { type: 'view', ns: 2, page: 'Usuário(a):Fulano', title: 'Fulano', exists: true, targetUser: 'Fulano' },
+		responder: ( p ) => {
+			if ( p.list === 'users|usercontribs' ) {
+				return { query: { users: [ { name: 'Fulano', editcount: 5, groups: [ 'user' ] } ], usercontribs: [] } };
+			}
+			if ( /info\|revisions\|categories/.test( p.prop || '' ) ) {
+				return { query: { pages: [ { title: 'Usuário(a):Fulano', ns: 2, pageid: 7, length: 321, revisions: [ { timestamp: '2026-11-20T10:00:00Z', user: 'Fulano' } ] } ] } };
+			}
+		}
+	} );
+
+	a.$( 'body' ).append( '<div id="ronda-toolbar"></div>' );
+	assert.ok( a.ronda.getModule( 'info' ).isAvailable( a.ronda.ctx ) );
+	assert.strictEqual( a.ronda.getModule( 'usuario' ), null, 'sem botão Usuário separado' );
+	a.ronda.getModule( 'info' ).open( a.ronda.ctx );
+	await a.esperar( 80 );
+	const t = a.$( '#ronda-toolbar' ).text();
+
+	assert.match( t, /Usuário: Fulano/ );
+	assert.match( t, /Edições: 5/ );
+	assert.match( t, /Página: Usuário\(a\):Fulano/ );
+	assert.match( t, /321 bytes/ );
+	assert.ok( t.indexOf( 'Página:' ) < t.indexOf( 'Usuário: Fulano' ), 'página antes do usuário' );
+} );
+
+test( 'Informações num artigo: só a página', async () => {
+	const a = criar( { ctx: { type: 'view', ns: 0, page: 'Teste', title: 'Teste', exists: true } } );
+
+	a.$( 'body' ).append( '<div id="ronda-toolbar"></div>' );
+	a.ronda.getModule( 'info' ).open( a.ronda.ctx );
+	await a.esperar( 60 );
+	assert.doesNotMatch( a.$( '#ronda-toolbar' ).text(), /Usuário:/ );
 } );

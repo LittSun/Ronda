@@ -477,10 +477,9 @@ function warnCreator( ctx, items ) {
 			appendtext: items.map( function ( item ) {
 				return '\n\n{{subst:Aviso-' + item.warn + '|' + ctx.page + '}} ~~' + '~~';
 			} ).join( '' ),
-			summary: 'Aviso sobre a marcação da página "[[' + ctx.page + ']]" com '
-				+ ( items.length === 1 ? 'a predefinição ' : 'as predefinições ' )
+			summary: 'Aviso: [[' + ctx.page + ']] marcada com '
 				+ listText( items.map( function ( item ) {
-					return '"[[Predefinição:' + item.template + '|' + item.template + ']]"';
+					return ronda.tpl( item.template );
 				} ) ),
 			watchlist: ronda.config.watchlist
 		} );
@@ -502,7 +501,7 @@ function followUps( ctx, result, values, byId, warn ) {
 					section: 'new',
 					sectiontitle: '[[' + ctx.page + ']]',
 					text: values[ id ].situacao + ' ~~' + '~~',
-					summary: 'Adicionando a página "' + ctx.page + '"',
+					summary: 'Manutenção urgente: [[' + ctx.page + ']]',
 					watchlist: ronda.config.watchlist
 				} );
 			} );
@@ -536,29 +535,108 @@ function summarize( r, o ) {
 
 	function names( ids ) {
 		return ids.map( function ( id ) {
-			var t = o.byId[ id ].template;
-			return '[[Predefinição:' + t + '|' + t + ']]';
+			return ronda.tpl( o.byId[ id ].template );
 		} ).join( ', ' );
 	}
 
 	if ( r.added.length ) {
-		parts.push( 'adicionando ' + names( r.added ) );
+		parts.push( names( r.added ) );
 	}
 	if ( r.removed.length ) {
-		parts.push( 'removendo ' + names( r.removed ) );
+		parts.push( 'retirada(s): ' + names( r.removed ) );
 	}
 	if ( !parts.length ) {
-		parts.push( ( o.useMP ? 'agrupando em ' : 'desagrupando ' ) + '{{' + o.mpName + '}}' );
+		parts.push( ( o.useMP ? 'agrupadas em ' : 'desagrupadas de ' ) + ronda.tpl( o.mpName ) );
 	}
 
-	return 'Manutenção: ' + parts.join( '; ' );
+	return 'Marcação: ' + parts.join( '; ' );
 }
+
+/**
+ * Marcações sugeridas pelo próprio texto (e por dados da API), para o painel
+ * "Sugeridas" do diálogo. Só sugere o que existe no catálogo e ainda não está
+ * na página; nas famílias (fontes), sugere uma só.
+ * @param {string} text Wikitexto
+ * @param {Object} info { ns, categories: número de categorias visíveis ou null,
+ *   living: biografia de pessoa viva, disambig: ligações para desambiguações,
+ *   present: { id: true } }
+ * @return {Array} [ { id, reason } ]
+ */
+function suggestTags( text, info ) {
+	var out = [],
+		q = ronda.quality,
+		present = info.present || {},
+		has = {},
+		t, refs, refsUnicas, temSecaoFontes, links, semSecoes, lead;
+
+	( ronda.catalog.maintenance || [] ).forEach( function ( m ) {
+		has[ m.id ] = true;
+	} );
+
+	function add( id, reason ) {
+		if ( has[ id ] && !present[ id ] && !out.some( function ( o ) {
+			return o.id === id;
+		} ) ) {
+			out.push( { id: id, reason: reason } );
+		}
+	}
+
+	if ( info.ns !== 0 || !q || /^\s*#(redirect|redirecionamento)/i.test( text ) ) {
+		return out;
+	}
+
+	t = text.replace( /<!--[\s\S]*?-->/g, '' );
+	refs = t.match( /<ref(?:\s[^>]*[^\/])?>|\{\{\s*(?:sfn|sfnp|harvnb|efn)\s*\|/gi ) || [];
+	refsUnicas = ( t.match( /<ref(?:\s[^>]*[^\/])?>[\s\S]*?<\/ref>/gi ) || [] ).length;
+	temSecaoFontes = /^==\s*(Referências|Bibliografia|Fontes|Notas e referências)\s*==\s*\n+\s*(\*|\{\{\s*(citar|cite|cita))/im.test( t );
+	links = q.ligacoes( t );
+	semSecoes = !/^==[^=]/m.test( t );
+	lead = t.slice( 0, t.search( /^==/m ) === -1 ? t.length : t.search( /^==/m ) )
+		.replace( /\{\{[\s\S]*?\}\}/g, '' ).replace( /\[\[(Ficheiro|File|Imagem|Image|Arquivo):[^\n]*\]\]/gi, '' ).trim();
+
+	// Fontes: uma sugestão só, da mais grave para a mais leve
+	if ( !present[ 's-fontes' ] && !present[ 's-fontes-bpv' ] && !present[ 's-notas' ] && !present[ 's-notas-bpv' ] &&
+		!present[ 'm-notas' ] && !present[ 'm-fontes-bpv' ] && !present[ '1f' ] ) {
+		if ( !refs.length && !temSecaoFontes ) {
+			add( info.living ? 's-fontes-bpv' : 's-fontes', ronda.msg( 'paginas-sug-sem-fontes' ) );
+		} else if ( !refs.length ) {
+			add( info.living ? 's-notas-bpv' : 's-notas', ronda.msg( 'paginas-sug-sem-notas' ) );
+		} else {
+			t = q.texto( text );
+			if ( t.semRef.length ) {
+				add( info.living ? 'm-fontes-bpv' : 'm-notas', ronda.msg( 'paginas-sug-mais-notas', t.semRef.slice( 0, 3 ).join( '; ' ) + ( t.semRef.length > 3 ? '…' : '' ) ) );
+			} else if ( refsUnicas === 1 && text.length >= 3000 ) {
+				add( '1f', ronda.msg( 'paginas-sug-uma-fonte' ) );
+			}
+		}
+	}
+	if ( /<ref(?:\s[^>]*)?>\s*\[?\s*https?:\/\/[^\s<\]]+\s*\]?\s*<\/ref>/i.test( text ) ) {
+		add( 'f-referencias', ronda.msg( 'paginas-sug-formatar-referencias' ) );
+	}
+	if ( info.categories === 0 ) {
+		add( 's-cat', ronda.msg( 'paginas-sug-sem-categorias' ) );
+	}
+	if ( text.length >= 1500 && links < 3 ) {
+		add( 'wkf', ronda.msg( 'paginas-sug-poucas-ligacoes', links ) );
+	} else if ( text.length >= 6000 && semSecoes ) {
+		add( 'wkf', ronda.msg( 'paginas-sug-sem-secoes' ) );
+	}
+	if ( !semSecoes && lead.length < 20 ) {
+		add( 'intro', ronda.msg( 'paginas-sug-sem-introducao' ) );
+	}
+	if ( info.disambig > 0 ) {
+		add( 'lig-ambiguas', ronda.msg( 'paginas-sug-desambiguacoes', info.disambig ) );
+	}
+	return out;
+}
+
+ronda.tags.suggest = suggestTags;
 
 /* ================================================================== *
  * Interface
  * ================================================================== */
 
-function showForm( ctx, text, aliases ) {
+function showForm( ctx, text, aliases, info ) {
 	var byId = {},
 		base, a, groupablePresent, items = [],
 		$filter = ronda.ui.text( '', ronda.msg( 'paginas-filtrar-marcacoes' ) ),
@@ -566,6 +644,8 @@ function showForm( ctx, text, aliases ) {
 			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-presentes-na-pagina-desmarque-para-remover' ) ) ),
 		$addBox = $( '<div class="ronda-tag-groups"></div>' ),
 		addGroups = {},
+		suggested = {},
+		recent = {},
 		cbMP, cbWarn, $dlg;
 
 	ronda.catalog.maintenance.forEach( function ( item ) {
@@ -591,6 +671,26 @@ function showForm( ctx, text, aliases ) {
 	};
 	a = analyze( text, base );
 
+	// Sugeridas e usadas recentemente: painéis no topo, como os Favoritos do Avisar
+	suggestTags( text, $.extend( { ns: ctx.ns, present: a.present }, info || {} ) ).forEach( function ( sg ) {
+		suggested[ sg.id ] = sg.reason;
+	} );
+	ronda.recentTags.list().forEach( function ( id, i ) {
+		if ( byId[ id ] && !a.present[ id ] && !suggested[ id ] ) {
+			recent[ id ] = i + 1;
+		}
+	} );
+	if ( !$.isEmptyObject( suggested ) ) {
+		addGroups[ ':sugeridas' ] = $( '<fieldset class="ui-widget-content ui-corner-all ronda-tag-sug"></fieldset>' )
+			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-sugeridas' ) ) )
+			.appendTo( $addBox );
+	}
+	if ( !$.isEmptyObject( recent ) ) {
+		addGroups[ ':recentes' ] = $( '<fieldset class="ui-widget-content ui-corner-all ronda-tag-recent"></fieldset>' )
+			.append( $( '<legend></legend>' ).text( ronda.msg( 'paginas-usadas-recentemente' ) ) )
+			.appendTo( $addBox );
+	}
+
 	// Respeita o estado atual quando já há duas ou mais marcações agrupáveis
 	groupablePresent = a.lead.filter( function ( occ ) {
 		return !occ.id || byId[ occ.id ].groupable !== false;
@@ -615,7 +715,7 @@ function showForm( ctx, text, aliases ) {
 		cb.$element
 			.addClass( 'ronda-tag' + ( isPresent ? ' ronda-tag-present' : '' ) )
 			.attr( 'title', item.title )
-			.data( 'search', ( item.label + ' ' + item.template ).toLowerCase() )
+			.data( { search: ( item.label + ' ' + item.template ).toLowerCase(), id: item.id } )
 			.append( $params );
 
 		if ( inputs.length && !isPresent ) {
@@ -625,9 +725,21 @@ function showForm( ctx, text, aliases ) {
 			} );
 		}
 
-		( isPresent ? $presentBox : addGroup( item.group ) ).append( cb.$element );
+		if ( !isPresent && suggested[ item.id ] ) {
+			cb.$element.children( 'label' ).after( $( '<span class="ronda-sug-reason"></span>' ).text( suggested[ item.id ] ) );
+		}
+		( isPresent ? $presentBox
+			: suggested[ item.id ] ? addGroups[ ':sugeridas' ]
+				: recent[ item.id ] ? addGroups[ ':recentes' ]
+					: addGroup( item.group ) ).append( cb.$element );
 		items.push( { item: item, cb: cb, inputs: inputs, present: isPresent } );
 	} );
+
+	if ( addGroups[ ':recentes' ] ) {
+		addGroups[ ':recentes' ].children( '.ronda-tag' ).sort( function ( x, y ) {
+			return recent[ $( x ).data( 'id' ) ] - recent[ $( y ).data( 'id' ) ];
+		} ).appendTo( addGroups[ ':recentes' ] );
+	}
 
 	if ( $presentBox.children( '.ronda-tag' ).length === 0 ) {
 		$presentBox.append( $( '<p></p>' ).text( ronda.msg( 'paginas-nenhuma-marcacao-do-catalogo-encontrada-na' ) ) );
@@ -704,6 +816,7 @@ function showForm( ctx, text, aliases ) {
 				watchlist: ronda.config.watchlist
 			} );
 		} ).then( function ( res ) {
+			ronda.recentTags.push( result.added ).then( null, function () {} );
 			// Formulário de edição: avisos e registros só quando o usuário publicar
 			if ( res.form ) {
 				ronda.ui.onSave( function () {
@@ -762,6 +875,35 @@ function showForm( ctx, text, aliases ) {
 	$dlg.tooltip( { tooltipClass: 'ronda-tooltip' } );
 }
 
+/** Dados para as sugestões: categorias visíveis, biografia de pessoa viva, ligações para desambiguações */
+function suggestInfo( ctx ) {
+	if ( ctx.ns !== 0 || !ctx.exists ) {
+		return $.Deferred().resolve( {} ).promise();
+	}
+	return $.when(
+		ronda.api.get( { action: 'query', titles: ctx.page, prop: 'categories', clprop: 'hidden', cllimit: 'max' } ),
+		ronda.api.get( { action: 'query', titles: ctx.page, generator: 'links', gplnamespace: 0, gpllimit: 'max',
+			prop: 'pageprops', ppprop: 'disambiguation' } )
+	).then( function ( c, l ) {
+		var cats = ( ( ( c && c.query ? c : c[ 0 ] ).query.pages || [] )[ 0 ] || {} ).categories || [],
+			pages = ( ( l && l.query ? l : l[ 0 ] ).query || {} ).pages || [];
+
+		return {
+			categories: cats.filter( function ( x ) {
+				return !x.hidden;
+			} ).length,
+			living: cats.some( function ( x ) {
+				return /^Categoria:Pessoas vivas$/.test( x.title );
+			} ),
+			disambig: pages.filter( function ( p ) {
+				return p.pageprops && p.pageprops.disambiguation !== undefined;
+			} ).length
+		};
+	}, function () {
+		return $.Deferred().resolve( {} ).promise();
+	} );
+}
+
 function open( ctx, options ) {
 	$.when(
 		loadAliases( options && options.refresh ),
@@ -771,13 +913,14 @@ function open( ctx, options ) {
 			prop: 'revisions',
 			rvprop: 'content',
 			rvslots: 'main'
-		} )
-	).then( function ( aliases, res ) {
+		} ),
+		suggestInfo( ctx )
+	).then( function ( aliases, res, info ) {
 		var page = ( res && res.query ? res : res[ 0 ] ).query.pages[ 0 ],
 			text = ronda.inEditForm() ? $( '#wpTextbox1' ).val()
 				: ( page.revisions && page.revisions[ 0 ].slots.main.content ) || '';
 
-		showForm( ctx, text, aliases );
+		showForm( ctx, text, aliases, info );
 	}, ronda.fail );
 }
 
@@ -1172,7 +1315,7 @@ function showSpeedy( ctx, page ) {
 
 		tasks = tasksFor( page, function () {
 			return tagPage( page, buildER( r.rule, obs ),
-				'Página proposta para [[WP:ER|eliminação rápida]] (regra [[WP:' + r.rule + '|' + r.rule + ']])', false );
+				'Eliminação rápida: proposta pela regra [[WP:' + r.rule + '|' + r.rule + ']]', false );
 		}, !r.noWarn && warnType ? ( warnType === 'er'
 			? 'Aviso-ER|' + page.title + '|' + r.rule + ( obs.trim() ? '|3=' + paramSafe( obs.trim() ) : '' )
 			: 'Aviso-não remova|' + page.title + '|er' ) : null, extra.fn( page.title ) );
@@ -1277,7 +1420,7 @@ function showSemi( ctx, page ) {
 				text: text,
 				matrad: matrad,
 				language: lang
-			} ), 'Página proposta para [[WP:ESR|eliminação semirrápida]]', true );
+			} ), 'Eliminação semirrápida: página proposta', true );
 		}, cbWarn.isChecked() ? 'Aviso-ESR|' + page.title : null );
 
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-semirrapida' ) );
@@ -1609,9 +1752,8 @@ function createMaster( master, justification, extras, archived ) {
 			action: 'edit',
 			title: peTitle( master ),
 			text: text,
-			summary: extras.length
-				? 'Criando página de eliminação (proposta conjunta com ' + extras.length + ' página(s))'
-				: 'Criando página de eliminação',
+			summary: 'Eliminação por consenso: discussão aberta para [[' + master + ']]'
+				+ ( extras.length ? ' e mais ' + extras.length + ' página(s)' : '' ),
 			createonly: !archived,
 			watchlist: ronda.creationWatchlist()
 		} );
@@ -1623,7 +1765,7 @@ function createRedirect( title, master, archived ) {
 		action: 'edit',
 		title: peTitle( title ),
 		text: '#REDIRECIONAMENTO [[' + peTitle( master ) + ']]',
-		summary: 'Proposta conjunta: redirecionando para [[' + peTitle( master ) + ']]',
+		summary: 'Eliminação por consenso: proposta conjunta, discussão em [[' + peTitle( master ) + ']]',
 		createonly: !archived,
 		watchlist: ronda.creationWatchlist()
 	} );
@@ -1646,8 +1788,8 @@ function tagPage( page, master, isBundle ) {
 
 			return ronda.params( {
 				text: buildTaggedText( revision.content, cfg().tagCode, useNoinclude ),
-				summary: 'Página proposta para [[WP:Eliminação por consenso|eliminação por consenso]]'
-					+ ( isBundle ? ' (proposta conjunta: [[' + peTitle( master ) + ']])' : '' ),
+				summary: 'Eliminação por consenso: proposta, discussão em [[' + peTitle( master ) + ']]'
+					+ ( isBundle ? ' (conjunta)' : '' ),
 				nocreate: true,
 				watchlist: ronda.config.watchlist
 			} );
@@ -2687,7 +2829,7 @@ function openRedirect( ctx ) {
 
 		var params = {
 				text: redirectText( ctx.ns, target, reason ),
-				summary: 'Feito redirecionamento para [[' + target + ']]' + ( reason ? ' (' + reason + ')' : '' ),
+				summary: 'Redirecionamento: para [[' + target + ']]' + ( reason ? ' — ' + reason : '' ),
 				watchlist: ronda.config.watchlist
 			},
 			edit = ctx.exists || ronda.inEditForm()
@@ -2764,7 +2906,7 @@ function openStub( ctx ) {
 				}
 				return ronda.params( {
 					text: addStub( rev.content, template ),
-					summary: 'Página marcada como [[WP:EBC|esboço]]',
+					summary: 'Marcação: ' + ronda.tpl( template ),
 					minor: true,
 					nocreate: true,
 					watchlist: ronda.config.watchlist
@@ -2821,7 +2963,7 @@ function openMerge( ctx ) {
 				return ronda.editPage( p.title, function ( rev ) {
 					return ronda.params( {
 						text: ( ronda.useNoinclude( page ) ? '<noinclude>' + tpl + '</noinclude>' : tpl ) + '\n' + rev.content,
-						summary: 'Adicionando proposta de fusão',
+						summary: 'Fusão: proposta com [[' + code.split( '|' )[ 1 ] + ']]',
 						nocreate: true,
 						watchlist: ronda.config.watchlist
 					} );
@@ -2955,21 +3097,376 @@ function pageviews( title ) {
 	} );
 }
 
-/** Qualidade estimada pelo modelo independente de língua do LiftWing (0 a 1); null se não der */
-function liftwingQuality( revid ) {
-	return $.ajax( {
-		url: 'https://api.wikimedia.org/service/lw/inference/v1/models/articlequality:predict',
-		method: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify( { rev_id: revid, lang: 'pt' } ),
-		dataType: 'json'
-	} ).then( function ( r ) {
-		var score = r && ( r.score !== undefined ? r.score : r.prediction !== undefined ? r.prediction : null );
+/* ---------------- Qualidade automática ----------------
+ *
+ * Incorporado do script Usuário:Little Sunshine/Scripts/AvalicaoAutomatica.js
+ * (QualidadeFeedback): verifica os critérios do quadro "Parâmetros de qualidade"
+ * (níveis 2 a 6) a partir do wikitexto, das predefinições transcluídas e, quando o
+ * painel é aberto na própria página, das referências e imagens exibidas. As
+ * contagens são estimativas; a avaliação oficial continua sendo dos editores.
+ */
+var QF = {
+	categoriaAvisos: 'Categoria:!Avisos para artigos com problemas',
+	profundidade: 3,
+	cacheAvisos: 24 * 60 * 60,
+	cacheResultado: 30 * 24 * 60 * 60,
+	larguraMinImagem: 60,
+	bytesMinParagrafo: 100,
+	bytesMaxParagrafo: 2500,
+	predQ2: [ 'Contexto', 'Reciclagem', 'Reciclar-sobre' ],
+	predQ3Extra: [ 'Esboço', 'Wikificação', 'Revisão' ],
+	predBom: [ 'Artigo bom' ],
+	predDestacado: [ 'Artigo destacado' ],
+	regexRef: /<ref[\s>\/]|\{\{\s*(?:sfn|sfnp|harvnb|harv|efn)\s*[|}]/i
+};
 
-		return typeof score === 'number' ? score : null;
-	}, function () {
+function qfBytes( s ) {
+	return unescape( encodeURIComponent( s ) ).length;
+}
+
+function qfFmt( n ) {
+	return Number( n ).toLocaleString( 'pt-BR' );
+}
+
+function qfRemoverRepetido( texto, re ) {
+	var anterior, i = 0;
+
+	do {
+		anterior = texto;
+		texto = texto.replace( re, '' );
+	} while ( texto !== anterior && ++i < 30 );
+	return texto;
+}
+
+function qfProsa( texto ) {
+	texto = qfRemoverRepetido( texto, /\{\{[^{}]*\}\}/g );
+	texto = texto.replace( /^\{\|[\s\S]*?^\|\}/gm, '' );
+	return texto.replace( /<ref[^>]*\/>/gi, '' ).replace( /<ref[^>]*>[\s\S]*?<\/ref>/gi, '' );
+}
+
+/** Seções, parágrafos (≥ 100 bytes), maior parágrafo e seções sem referência */
+function qfTexto( wt ) {
+	var limpo = wt.replace( /<!--[\s\S]*?-->/g, '' )
+			.replace( /<(gallery|pre|syntaxhighlight|source|math|timeline|imagemap|score)\b[^>]*>[\s\S]*?<\/\1>/gi, '' ),
+		secoes = [ { nivel: 0, titulo: 'introdução', linhas: [] } ],
+		r = { n2: 0, n3: 0, paragrafos: 0, maxPar: 0, secaoMaiorPar: '', semRef: [] };
+
+	limpo.split( '\n' ).forEach( function ( linha ) {
+		var m = linha.match( /^(={1,6})\s*(.+?)\s*\1\s*$/ );
+
+		if ( m ) {
+			secoes.push( { nivel: m[ 1 ].length, titulo: m[ 2 ], linhas: [] } );
+		} else {
+			secoes[ secoes.length - 1 ].linhas.push( linha );
+		}
+	} );
+
+	secoes.forEach( function ( sec ) {
+		var bruto = sec.linhas.join( '\n' ),
+			validos = 0;
+
+		if ( sec.nivel === 2 ) {
+			r.n2++;
+		}
+		if ( sec.nivel === 3 ) {
+			r.n3++;
+		}
+		qfProsa( bruto ).split( /\n\s*\n/ ).map( function ( b ) {
+			return b.trim();
+		} ).filter( function ( b ) {
+			return b && !/^[*#:;|!]/.test( b ) && !/^\{\|/.test( b ) &&
+				!/^\[\[\s*(Categoria|Category|Ficheiro|File|Imagem|Image|Arquivo)\s*:[^\n]*\]\]$/i.test( b );
+		} ).forEach( function ( b ) {
+			var tam = qfBytes( b );
+
+			if ( tam > r.maxPar ) {
+				r.maxPar = tam;
+				r.secaoMaiorPar = sec.titulo;
+			}
+			if ( tam >= QF.bytesMinParagrafo ) {
+				validos++;
+			}
+		} );
+		r.paragrafos += validos;
+		if ( sec.nivel > 0 && validos > 1 && !QF.regexRef.test( bruto ) ) {
+			r.semRef.push( sec.titulo );
+		}
+	} );
+	r.secoes = r.n2 + Math.floor( r.n3 / 5 );
+	return r;
+}
+
+/** Ligações internas do wikitexto, exceto ficheiros, categorias e interwikis */
+function qfLigacoes( wt ) {
+	var t = wt.replace( /<!--[\s\S]*?-->/g, '' ),
+		re = /\[\[([^\[\]|\n]+)/g,
+		ignorar = /^(Ficheiro|File|Imagem|Image|Arquivo|Categoria|Category)\s*:/i,
+		interwiki = /^(?:[a-z]{2,3}|[a-z]{2,3}-[a-z]+|commons|wikt|wikisource|wikidata|d|w|c|s|b|q|v|n)\s*:/i,
+		m, alvo, n = 0;
+
+	while ( ( m = re.exec( t ) ) !== null ) {
+		alvo = m[ 1 ].trim();
+		if ( alvo && alvo.charAt( 0 ) !== '#' && !ignorar.test( alvo ) && !interwiki.test( alvo ) ) {
+			n++;
+		}
+	}
+	return n;
+}
+
+/** Referências e imagens no wikitexto, quando a página exibida não serve para contar */
+function qfContagemTexto( wt ) {
+	var t = wt.replace( /<!--[\s\S]*?-->/g, '' ),
+		refs = ( t.match( /<ref(?:\s[^>]*[^\/])?>|\{\{\s*(?:sfn|sfnp|efn)\s*\|/gi ) || [] ).length,
+		imgs = ( t.match( /\[\[\s*(?:Ficheiro|File|Imagem|Image|Arquivo)\s*:/gi ) || [] ).length +
+			( t.match( /\|\s*(?:imagem|image|foto)\s*=\s*[^|\n{}]+\.(?:jpe?g|png|svg|gif|tiff?|webp)/gi ) || [] ).length;
+
+	return { refs: refs, imagens: imgs };
+}
+
+/** Referências e imagens renderizadas no corpo do artigo (só na própria página, na versão atual) */
+function qfContagemPagina() {
+	var n = 0;
+
+	$( '#mw-content-text .mw-parser-output img' ).each( function () {
+		var $i = $( this );
+
+		if ( !$i.closest( '.navbox,.navbar,.ambox,.metadata,.mbox-small,.noprint,.reference,.hatnote,.mw-editsection,.sistersitebox' ).length &&
+			( parseInt( $i.attr( 'width' ), 10 ) || 0 ) >= QF.larguraMinImagem ) {
+			n++;
+		}
+	} );
+	return { refs: $( '#mw-content-text ol.references > li' ).length, imagens: n };
+}
+
+/**
+ * Avalia os critérios.
+ * @param {Object} art { content, size, templates: [ 'Predefinição:…' ] }
+ * @param {Object} avisos Títulos das predefinições de aviso, como chaves
+ * @param {Object} cont { refs, imagens, aproximado }
+ * @return {Object} { estimado, alvo, niveis: [ { n, ok, itens: [ { nome, atual, meta, ok } ] } ], aproximado }
+ */
+function avaliarQualidade( art, avisos, cont ) {
+	var P = ( mw.config.get( 'wgFormattedNamespaces' ) || {} )[ 10 ] + ':',
+		tem = {},
+		t = qfTexto( art.content ),
+		links = qfLigacoes( art.content ),
+		niveis, estimado, alvo, maior, secoes;
+
+	art.templates.forEach( function ( x ) {
+		tem[ x ] = true;
+	} );
+
+	function presentes( nomes ) {
+		return nomes.filter( function ( n ) {
+			return tem[ P + n ];
+		} );
+	}
+	function item( nome, atual, meta, ok ) {
+		return { nome: nome, atual: String( atual ), meta: meta, ok: !!ok };
+	}
+	function lista( l ) {
+		return l.length ? 'presentes: ' + l.join( ', ' ) : 'nenhuma';
+	}
+	function todos( l ) {
+		return l.every( function ( i ) {
+			return i.ok;
+		} );
+	}
+
+	var q2Tpl = presentes( QF.predQ2 ),
+		q3Tpl = presentes( QF.predQ2.concat( QF.predQ3Extra ) ),
+		avisoTpl = art.templates.filter( function ( x ) {
+			return avisos[ x ];
+		} ).map( function ( x ) {
+			return x.slice( P.length );
+		} ),
+		bom = presentes( QF.predBom ).length > 0,
+		dest = presentes( QF.predDestacado ).length > 0;
+
+	maior = item( 'Parágrafo mais longo', qfFmt( t.maxPar ) + ' B' + ( t.maxPar > QF.bytesMaxParagrafo ? ' (em: ' + t.secaoMaiorPar + ')' : '' ),
+		'≤ ' + qfFmt( QF.bytesMaxParagrafo ) + ' B', t.maxPar <= QF.bytesMaxParagrafo );
+	secoes = t.secoes + ' (' + t.n2 + ' de nível 2, ' + t.n3 + ' de nível 3)';
+
+	niveis = [
+		{ n: 2, itens: [
+			item( 'Tamanho e referências', qfFmt( art.size ) + ' B, ' + cont.refs + ' ref.', '≥ 2 000 B com ≥ 1 ref., ou ≥ 8 000 B',
+				art.size >= 8000 || ( art.size >= 2000 && cont.refs >= 1 ) ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 10', links >= 10 ),
+			item( 'Parágrafos (≥ 100 B)', t.paragrafos, '≥ 5', t.paragrafos >= 5 ),
+			maior,
+			item( 'Predefinições proibidas (contexto, reciclagem, reciclar-sobre)', lista( q2Tpl ), 'nenhuma', !q2Tpl.length )
+		] },
+		{ n: 3, itens: [
+			item( 'Tamanho', qfFmt( art.size ) + ' B', '≥ 12 000 B', art.size >= 12000 ),
+			item( 'Referências', cont.refs, '≥ 5', cont.refs >= 5 ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 30', links >= 30 ),
+			item( 'Seções (nível 2 + 1 a cada 5 de nível 3)', secoes, '≥ 3', t.secoes >= 3 ),
+			item( 'Imagens', cont.imagens, '≥ 1', cont.imagens >= 1 ),
+			maior,
+			item( 'Predefinições proibidas (nível 2 + esboço, wikificação, revisão)', lista( q3Tpl ), 'nenhuma', !q3Tpl.length )
+		] },
+		{ n: 4, itens: [
+			item( 'Tamanho', qfFmt( art.size ) + ' B', '≥ 20 000 B', art.size >= 20000 ),
+			item( 'Referências', cont.refs, '≥ 10', cont.refs >= 10 ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 50', links >= 50 ),
+			item( 'Seções (nível 2 + 1 a cada 5 de nível 3)', secoes, '≥ 5', t.secoes >= 5 ),
+			item( 'Imagens', cont.imagens, '≥ 2', cont.imagens >= 2 ),
+			maior,
+			item( 'Predefinições de aviso de "artigo com problemas"', lista( avisoTpl ), 'nenhuma', !avisoTpl.length ),
+			item( 'Referências em todas as seções com mais de um parágrafo',
+				t.semRef.length ? 'sem referência em: ' + t.semRef.join( '; ' ) : 'todas com referência', 'todas', !t.semRef.length )
+		] },
+		{ n: 5, itens: [ item( 'Predefinição "Artigo bom" (aprovado na EAD)', bom ? 'presente' : 'ausente', 'presente', bom ) ] },
+		{ n: 6, itens: [ item( 'Predefinição "Artigo destacado" (aprovado na EAD)', dest ? 'presente' : 'ausente', 'presente', dest ) ] }
+	];
+	niveis.forEach( function ( nv ) {
+		nv.ok = todos( nv.itens );
+	} );
+
+	estimado = 1;
+	if ( dest ) {
+		estimado = 6;
+	} else if ( bom ) {
+		estimado = 5;
+	} else {
+		[ 2, 3, 4 ].forEach( function ( n ) {
+			if ( niveis[ n - 2 ].ok ) {
+				estimado = n;
+			}
+		} );
+	}
+	alvo = estimado < 4 ? estimado + 1 : null;
+	return { estimado: estimado, alvo: alvo, niveis: niveis, aproximado: !!cont.aproximado };
+}
+
+/** Itens que faltam para o próximo nível (vazio se já está no 4 ou acima) */
+function qfFaltam( res ) {
+	return res.alvo ? res.niveis[ res.alvo - 2 ].itens.filter( function ( i ) {
+		return !i.ok;
+	} ) : [];
+}
+
+ronda.quality = { avaliar: avaliarQualidade, texto: qfTexto, ligacoes: qfLigacoes, contagemTexto: qfContagemTexto, faltam: qfFaltam };
+
+/** Predefinições de aviso (categoria e subcategorias), guardadas por um dia */
+function qfAvisos() {
+	var KEY = 'ronda-qualidade-avisos',
+		cache = mw.storage.getObject( KEY ),
+		titulos = {},
+		visitadas = {};
+
+	if ( cache && cache.length ) {
+		cache.forEach( function ( x ) {
+			titulos[ x ] = true;
+		} );
+		return $.Deferred().resolve( titulos ).promise();
+	}
+
+	function listar( cat, tipo, cont, out ) {
+		return ronda.api.get( $.extend( { action: 'query', list: 'categorymembers', cmtitle: cat, cmtype: tipo, cmlimit: 'max' }, cont ) )
+			.then( function ( r ) {
+				( r.query.categorymembers || [] ).forEach( function ( x ) {
+					out.push( x.title );
+				} );
+				return r[ 'continue' ] ? listar( cat, tipo, r[ 'continue' ], out ) : out;
+			} );
+	}
+	function percorrer( cat, prof ) {
+		if ( visitadas[ cat ] ) {
+			return $.Deferred().resolve().promise();
+		}
+		visitadas[ cat ] = true;
+		return listar( cat, 'page', {}, [] ).then( function ( pags ) {
+			pags.forEach( function ( x ) {
+				titulos[ x ] = true;
+			} );
+			return prof > 0 ? listar( cat, 'subcat', {}, [] ).then( function ( subs ) {
+				return subs.reduce( function ( p, sub ) {
+					return p.then( function () {
+						return percorrer( sub, prof - 1 );
+					} );
+				}, $.Deferred().resolve().promise() );
+			} ) : null;
+		} );
+	}
+
+	return percorrer( QF.categoriaAvisos, QF.profundidade ).then( function () {
+		mw.storage.setObject( KEY, Object.keys( titulos ), QF.cacheAvisos );
+		return titulos;
+	} );
+}
+
+/** Wikitexto, tamanho e todas as predefinições transcluídas da versão atual */
+function qfArtigo( page, cont, out ) {
+	out = out || { content: '', size: 0, templates: [] };
+	return ronda.api.get( $.extend( { action: 'query', titles: page, prop: 'revisions|templates',
+		rvprop: 'content|size', rvslots: 'main', tllimit: 'max' }, cont ) ).then( function ( r ) {
+		var p = ( r.query.pages || [] )[ 0 ] || {};
+
+		if ( p.revisions && p.revisions[ 0 ] ) {
+			out.content = p.revisions[ 0 ].slots.main.content;
+			out.size = p.revisions[ 0 ].size;
+		}
+		( p.templates || [] ).forEach( function ( t ) {
+			out.templates.push( t.title );
+		} );
+		return r[ 'continue' ] ? qfArtigo( page, r[ 'continue' ], out ) : out;
+	} );
+}
+
+/**
+ * Qualidade automática de um artigo, por revisão (guardada por 30 dias).
+ * Referências e imagens vêm da página exibida quando ela é a versão atual;
+ * fora dela (diff, histórico, versão antiga), são estimadas pelo wikitexto.
+ */
+function autoQuality( ctx, revid ) {
+	var key = 'ronda-qualidade:' + ctx.page,
+		naPagina = ctx.type === 'view' && mw.config.get( 'wgRevisionId' ) === revid,
+		cache = mw.storage.getObject( key );
+
+	if ( cache && cache.rev === revid && cache.res && ( !cache.res.aproximado || !naPagina ) ) {
+		return $.Deferred().resolve( cache.res ).promise();
+	}
+	return $.when( qfArtigo( ctx.page ), qfAvisos() ).then( function ( art, avisos ) {
+		var cont = naPagina ? qfContagemPagina() : $.extend( { aproximado: true }, qfContagemTexto( art.content ) ),
+			res = avaliarQualidade( art, avisos, cont );
+
+		mw.storage.setObject( key, { rev: revid, res: res }, QF.cacheResultado );
+		return res;
+	} ).then( null, function () {
 		return $.Deferred().resolve( null ).promise();
 	} );
+}
+
+/** Janela com todos os critérios, nível a nível */
+function showQuality( res ) {
+	var $box = $( '<div class="ronda-qf"></div>' );
+
+	$box.append( $( '<p></p>' ).append( ronda.msg( 'paginas-qualidade-estimada' ) + ': ', $( '<b class="ronda-qf-nivel"></b>' ).text( res.estimado ) ) );
+	res.niveis.forEach( function ( nv ) {
+		var $t = $( '<table></table>' ),
+			$d = $( '<details></details>' ).append( $( '<summary></summary>' ).append(
+				$( '<span></span>' ).addClass( nv.ok ? 'ronda-ok' : 'ronda-bad' ).text( nv.ok ? '✔ ' : '✖ ' ),
+				ronda.msg( 'paginas-qualidade-nivel', nv.n ) ) );
+
+		if ( nv.n === res.alvo ) {
+			$d.attr( 'open', 'open' );
+		}
+		nv.itens.forEach( function ( i ) {
+			$t.append( $( '<tr></tr>' ).append(
+				$( '<td></td>' ).append( $( '<span></span>' ).addClass( i.ok ? 'ronda-ok' : 'ronda-bad' ).text( i.ok ? '✔' : '✖' ) ),
+				$( '<td></td>' ).text( i.nome ),
+				$( '<td></td>' ).text( i.atual ),
+				$( '<td></td>' ).text( ronda.msg( 'paginas-qualidade-meta', i.meta ) )
+			) );
+		} );
+		$box.append( $d.append( $t ) );
+	} );
+	$box.append( $( '<p class="ronda-qf-nota"></p>' ).append(
+		document.createTextNode( ronda.msg( res.aproximado ? 'paginas-qualidade-nota-aproximada' : 'paginas-qualidade-nota' ) + ' ' ),
+		$( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Wikipédia:Avaliação automática' ) ).text( 'Wikipédia:Avaliação automática' ) ) );
+
+	ronda.ui.dialog( { title: ronda.msg( 'paginas-qualidade-titulo' ), width: 760, content: $box } );
 }
 
 function soft( promise ) {
@@ -2982,7 +3479,7 @@ function soft( promise ) {
 
 /**
  * Dados do painel Informações, buscados uma vez por página (também em segundo plano).
- * @return {jQuery.Promise} { main, first, revisions, deleted, patrol, views, lwQuality }
+ * @return {jQuery.Promise} { main, first, revisions, deleted, patrol, views, autoQuality }
  */
 function loadInfo( ctx ) {
 	return ronda.memo( 'info:' + ctx.page, function () {
@@ -3032,10 +3529,10 @@ function loadInfo( ctx ) {
 					return x.title === ctx.page;
 				} )[ 0 ];
 
-				return ctx.ns === 0 && p && p.lastrevid ? liftwingQuality( p.lastrevid ) : null;
+				return ctx.ns === 0 && p && p.lastrevid && !ctx.isMainPage ? autoQuality( ctx, p.lastrevid ) : null;
 			} )
 		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
-			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, lwQuality: lw, pe: pe, talk: talk };
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk };
 		} );
 	} );
 }
@@ -3142,9 +3639,22 @@ function renderInfo( $panel, ctx, data ) {
 					: qualityFromCategories( talkPage && talkPage.categories );
 			addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-qualidade' ) + ': ' ), $( '<b></b>' ).text( quality || 'desconhecida' ) ] );
 		}
-		if ( typeof data.lwQuality === 'number' ) {
-			addTo( $content, $( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-liftwing-dica' ) )
-				.text( ronda.msg( 'paginas-info-liftwing', Math.round( data.lwQuality * 100 ) ) ) );
+		if ( data.autoQuality ) {
+			addTo( $content, [
+				$( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-qualidade-auto-dica' ) )
+					.text( ronda.msg( 'paginas-info-qualidade-auto', data.autoQuality.estimado ) ),
+				document.createTextNode( ' ' ),
+				$( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-qualidade-criterios' ) ).on( 'click', function ( e ) {
+					e.preventDefault();
+					showQuality( data.autoQuality );
+				} )
+			] );
+			if ( qfFaltam( data.autoQuality ).length ) {
+				addTo( $content, $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'paginas-info-qualidade-falta',
+					data.autoQuality.alvo, qfFaltam( data.autoQuality ).map( function ( i ) {
+						return i.nome.replace( / \(.*\)$/, '' ).toLowerCase() + ' (' + i.atual + '; ' + i.meta + ')';
+					} ).join( ', ' ) ) ) );
+			}
 		}
 		// Referências: contadas no texto exibido (só quando o painel é aberto na própria página)
 		if ( ctx.ns === 0 && ( ctx.type === 'view' || ctx.type === 'diff' ) ) {
@@ -3231,15 +3741,57 @@ function renderInfo( $panel, ctx, data ) {
 	$panel.append( L.build() );
 }
 
-function openInfo( ctx ) {
-	ronda.ui.togglePanel( 'info', function ( $panel ) {
-		$panel.text( ronda.msg( 'patrulha-carregando' ) );
-		loadInfo( ctx ).then( function ( data ) {
-			renderInfo( $panel, ctx, data );
-		}, function () {
-			$panel.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
-		} );
+/*
+ * Informações reúne, inteiros, os painéis da página e do usuário:
+ * - contribuições: só o do usuário;
+ * - páginas e discussões de usuário: os dois, o da página primeiro;
+ * - demais páginas: só o da página.
+ */
+function infoParts( ctx ) {
+	return {
+		page: ronda.isPageContext( ctx ),
+		user: !!( ronda.userPanel && ctx.targetUser && ronda.userPanel.isAvailable( ctx ) )
+	};
+}
+
+function fillPageInfo( $el, ctx ) {
+	$el.text( ronda.msg( 'patrulha-carregando' ) );
+	loadInfo( ctx ).then( function ( data ) {
+		renderInfo( $el, ctx, data );
+	}, function () {
+		$el.text( ronda.msg( 'paginas-nao-foi-possivel-obter-as-informacoes' ) );
 	} );
+}
+
+function openInfo( ctx ) {
+	var parts = infoParts( ctx ),
+		both = parts.page && parts.user;
+
+	ronda.ui.togglePanel( 'info', function ( $panel ) {
+		if ( parts.page ) {
+			if ( both ) {
+				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-pagina', ctx.page ) ).appendTo( $panel );
+			}
+			fillPageInfo( $( '<div class="ronda-info-part"></div>' ).appendTo( $panel ), ctx );
+		}
+		if ( parts.user ) {
+			if ( both ) {
+				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-usuario', ctx.targetUser ) ).appendTo( $panel );
+			}
+			ronda.userPanel.fill( $( '<div class="ronda-info-part"></div>' ).appendTo( $panel ), ctx );
+		}
+	} );
+}
+
+function prefetchInfo( ctx ) {
+	var parts = infoParts( ctx );
+
+	if ( parts.page ) {
+		loadInfo( ctx );
+	}
+	if ( parts.user ) {
+		ronda.userPanel.load( ctx );
+	}
 }
 
 /* ---------------- Pedido ---------------- */
@@ -3328,7 +3880,7 @@ function openRequest( ctx, options ) {
 				action: 'edit',
 				title: r.page,
 				appendtext: '\n' + buildRequest( model, { request: r, target: target, target2: target2, text: text, hide: hide } ),
-				summary: 'Adicionando novo pedido',
+				summary: 'Pedido: ' + r.label.toLowerCase() + ( target ? ' — [[' + ( r.target === 'user' ? 'Special:Contributions/' + target + '|' + target : ':' + target ) + ']]' : '' ),
 				watchlist: ronda.config.watchlist
 			} );
 		} ).then( function () {
@@ -3379,7 +3931,7 @@ function openUnsigned() {
 			el.value = el.value.slice( 0, start ) + code + el.value.slice( end );
 		}
 		$( '#wpSummary' ).val( function ( i, v ) {
-			return ( v ? v + '; ' : '' ) + 'Adicionando a "[[Predefinição:Não assinou]]"';
+			return ( v ? v + '; ' : '' ) + 'Marcação: ' + ronda.tpl( 'Não assinou' );
 		} );
 		ronda.ui.close( $dlg );
 	}
@@ -3403,7 +3955,7 @@ function isPage( ctx ) {
 
 ronda.registerModule( {
 	id: 'redirecionar',
-	label: '#R',
+	label: ronda.msg( 'paginas-redirecionar-botao' ),
 	title: ronda.msg( 'paginas-redirecionar-para-outro-titulo' ),
 	order: 14,
 	isAvailable: function ( ctx ) {
@@ -3460,13 +4012,15 @@ ronda.registerModule( {
 ronda.registerModule( {
 	id: 'info',
 	label: ronda.msg( 'paginas-informacoes' ),
-	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina' ),
-	order: 42,
+	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina-ou-usuario' ),
+	order: 1,
 	isAvailable: function ( ctx ) {
-		return ronda.isPageContext( ctx );
+		var parts = infoParts( ctx );
+
+		return parts.user || parts.page;
 	},
 	open: openInfo,
-	prefetch: loadInfo
+	prefetch: prefetchInfo
 } );
 
 ronda.registerModule( {
