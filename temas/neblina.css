@@ -1,0 +1,167 @@
+/**
+ * Ronda — tema "Neblina"
+ *
+ * Quase invisível: cinzas sem saturação, bordas que mal aparecem e cantos
+ * suaves; os grupos se separam mais pelo espaço que pelas linhas.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-neblina em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-neblina #ronda-toolbar,
+html.ronda-tema-neblina .ronda-dialog,
+html.ronda-tema-neblina .ronda-tooltip,
+html.ronda-tema-neblina .ronda-menu {
+	--background-color-base: #fafafa;
+	--background-color-neutral-subtle: #f4f5f5;
+	--background-color-neutral: #e9ebec;
+	--background-color-interactive-subtle: #f4f5f5;
+	--background-color-interactive-subtle--hover: #e9ebec;
+	--background-color-interactive-subtle--active: #eef0f0;
+	--background-color-inverted: #5d6266;
+	--color-inverted: #f4f5f5;
+	--color-base: #4d5357;
+	--color-emphasized: #4d5357;
+	--color-subtle: #686f73;
+	--border-color-subtle: #e6e8e9;
+	--border-color-base: #cfd3d5;
+	--border-color-interactive: #cfd3d5;
+	--border-color-muted: #eef0f0;
+	--color-progressive: #5f6e76;
+	--border-color-progressive: #5f6e76;
+	--background-color-progressive: #5f6e76;
+	--background-color-progressive-subtle: #e8ecee;
+	--color-destructive: #a5473f;
+	--background-color-destructive: #a5473f;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-neblina.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-neblina.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-neblina.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-neblina.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #191b1e;
+	--background-color-neutral-subtle: #1d2023;
+	--background-color-neutral: #2a2e32;
+	--background-color-interactive-subtle: #1d2023;
+	--background-color-interactive-subtle--hover: #2a2e32;
+	--background-color-interactive-subtle--active: #23272a;
+	--background-color-inverted: #3a3e42;
+	--color-inverted: #d5d9dc;
+	--color-base: #c9ced1;
+	--color-emphasized: #c9ced1;
+	--color-subtle: #969ca1;
+	--border-color-subtle: #2a2e32;
+	--border-color-base: #3d4247;
+	--border-color-interactive: #3d4247;
+	--border-color-muted: #23272a;
+	--color-progressive: #a9b7bf;
+	--border-color-progressive: #a9b7bf;
+	--background-color-progressive: #5f6e76;
+	--background-color-progressive-subtle: #262d31;
+	--color-destructive: #e3887e;
+	--background-color-destructive: #a5473f;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-neblina.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-neblina.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-neblina.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-neblina.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #191b1e;
+		--background-color-neutral-subtle: #1d2023;
+		--background-color-neutral: #2a2e32;
+		--background-color-interactive-subtle: #1d2023;
+		--background-color-interactive-subtle--hover: #2a2e32;
+		--background-color-interactive-subtle--active: #23272a;
+		--background-color-inverted: #3a3e42;
+		--color-inverted: #d5d9dc;
+		--color-base: #c9ced1;
+		--color-emphasized: #c9ced1;
+		--color-subtle: #969ca1;
+		--border-color-subtle: #2a2e32;
+		--border-color-base: #3d4247;
+		--border-color-interactive: #3d4247;
+		--border-color-muted: #23272a;
+		--color-progressive: #a9b7bf;
+		--border-color-progressive: #a9b7bf;
+		--background-color-progressive: #5f6e76;
+		--background-color-progressive-subtle: #262d31;
+		--color-destructive: #e3887e;
+		--background-color-destructive: #a5473f;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-neblina .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-neblina .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-neblina .ronda-dialog .ronda-form textarea,
+html.ronda-tema-neblina .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 6px;
+}
+
+html.ronda-tema-neblina .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-neblina .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-neblina .ronda-tooltip.ui-tooltip,
+html.ronda-tema-neblina .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-neblina .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-neblina .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-neblina .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-neblina #ronda-toolbar a,
+html.ronda-tema-neblina .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-neblina .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-neblina #ronda-toolbar,
+html.ronda-tema-neblina .ronda-dialog.ui-dialog {
+	border-radius: 6px !important;
+}
+
+html.ronda-tema-neblina .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-neblina .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 6px !important;
+}
+
+/* Bordas quase sumindo: os cartões dos grupos viram áreas de fundo */
+html.ronda-tema-neblina .ronda-dialog .ronda-form fieldset {
+	background: var( --background-color-neutral-subtle ) !important;
+	border-color: transparent !important;
+}
+
+html.ronda-tema-neblina .ronda-dialog.ui-dialog {
+	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.1 ) !important;
+}

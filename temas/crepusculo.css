@@ -1,0 +1,156 @@
+/**
+ * Ronda — tema "Crepúsculo"
+ *
+ * Fim de expediente: violeta de fim de tarde com destaque em coral.
+ *
+ * Tema de humor: só troca as variáveis de cor do Codex nos elementos do Ronda,
+ * então a barra e as janelas seguem o estilo "cartão com título" do CSS
+ * principal. Tem versão clara e escura, que acompanha o modo da wiki.
+ * Só CSS e fontes do sistema: sem imagens, logotipos ou marcas de terceiros.
+ * Aplicado quando o Ronda põe a classe ronda-tema-crepusculo em <html>.
+ */
+
+/* Modo claro */
+html.ronda-tema-crepusculo #ronda-toolbar,
+html.ronda-tema-crepusculo .ronda-dialog,
+html.ronda-tema-crepusculo .ronda-tooltip,
+html.ronda-tema-crepusculo .ronda-menu {
+	--background-color-base: #fcf8fa;
+	--background-color-neutral-subtle: #f6eff3;
+	--background-color-neutral: #ebdfe6;
+	--background-color-interactive-subtle: #f6eff3;
+	--background-color-interactive-subtle--hover: #ebdfe6;
+	--background-color-interactive-subtle--active: #ede2ea;
+	--background-color-inverted: #3d2e52;
+	--color-inverted: #f6eff3;
+	--color-base: #44354f;
+	--color-emphasized: #44354f;
+	--color-subtle: #6a5b75;
+	--border-color-subtle: #dcc8d8;
+	--border-color-base: #b9a2b5;
+	--border-color-interactive: #b9a2b5;
+	--border-color-muted: #ede2ea;
+	--color-progressive: #a65544;
+	--border-color-progressive: #a65544;
+	--background-color-progressive: #a65544;
+	--background-color-progressive-subtle: #f5e1dc;
+	--color-destructive: #9e2a55;
+	--background-color-destructive: #9e2a55;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo escuro da wiki */
+html.ronda-tema-crepusculo.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-crepusculo.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-crepusculo.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-crepusculo.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #1a1424;
+	--background-color-neutral-subtle: #221a2e;
+	--background-color-neutral: #30253f;
+	--background-color-interactive-subtle: #221a2e;
+	--background-color-interactive-subtle--hover: #30253f;
+	--background-color-interactive-subtle--active: #261e33;
+	--background-color-inverted: #1a1226;
+	--color-inverted: #eadff0;
+	--color-base: #e6dcea;
+	--color-emphasized: #e6dcea;
+	--color-subtle: #ab9db6;
+	--border-color-subtle: #3b2f4a;
+	--border-color-base: #5a4a6c;
+	--border-color-interactive: #5a4a6c;
+	--border-color-muted: #261e33;
+	--color-progressive: #eda08f;
+	--border-color-progressive: #eda08f;
+	--background-color-progressive: #a65544;
+	--background-color-progressive-subtle: #3c2228;
+	--color-destructive: #f28ab0;
+	--background-color-destructive: #9e2a55;
+	--color-inverted-fixed: #fff;
+}
+
+/* Modo automático com o sistema escuro */
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-crepusculo.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-crepusculo.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-crepusculo.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-crepusculo.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #1a1424;
+		--background-color-neutral-subtle: #221a2e;
+		--background-color-neutral: #30253f;
+		--background-color-interactive-subtle: #221a2e;
+		--background-color-interactive-subtle--hover: #30253f;
+		--background-color-interactive-subtle--active: #261e33;
+		--background-color-inverted: #1a1226;
+		--color-inverted: #eadff0;
+		--color-base: #e6dcea;
+		--color-emphasized: #e6dcea;
+		--color-subtle: #ab9db6;
+		--border-color-subtle: #3b2f4a;
+		--border-color-base: #5a4a6c;
+		--border-color-interactive: #5a4a6c;
+		--border-color-muted: #261e33;
+		--color-progressive: #eda08f;
+		--border-color-progressive: #eda08f;
+		--background-color-progressive: #a65544;
+		--background-color-progressive-subtle: #3c2228;
+		--color-destructive: #f28ab0;
+		--background-color-destructive: #9e2a55;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+/* Campos, menus e dicas também com as cores do tema (no modo claro o jQuery UI usa as próprias) */
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form textarea,
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 4px;
+}
+
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-crepusculo .ronda-tooltip.ui-tooltip,
+html.ronda-tema-crepusculo .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-crepusculo .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-crepusculo .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-crepusculo .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-crepusculo #ronda-toolbar a,
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-crepusculo .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+/* Cantos do tema */
+html.ronda-tema-crepusculo #ronda-toolbar,
+html.ronda-tema-crepusculo .ronda-dialog.ui-dialog {
+	border-radius: 4px !important;
+}
+
+html.ronda-tema-crepusculo .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-crepusculo .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 4px !important;
+}

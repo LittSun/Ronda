@@ -1,6 +1,9 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.24]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.25]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.25"></span>0.7.25 — 26/11/2026 ==
+* '''Temas de humor''': 12 temas novos, pensados como estados de espírito — '''Madrugada''', '''Café coado''', '''Neblina''', '''Herbário''', '''Brasa''', '''Crepúsculo''', '''Geada''', '''Terra roxa''', '''Biblioteca''', '''Domingo à tarde''', '''Maré baixa''' e '''Silêncio''' (33 temas). Diferentemente dos demais temas próprios, cada um tem versão clara e escura, que acompanha o modo da wiki (inclusive o automático). Eles mantêm o formato do Padrão (cartão com título) e trocam só as cores, os cantos e, em alguns, a letra da aba e dos títulos; campos, menus de sugestão e dicas também passam a usar as cores do tema.
 
 == <span id="0.7.24"></span>0.7.24 — 26/11/2026 ==
 * '''Propor eliminação''': um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.

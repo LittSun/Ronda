@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.24|0.7.24]]
+|versão             = [[/Changelog#0.7.25|0.7.25]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -181,6 +181,7 @@ Em '''Preferências… › Tema''', ou direto no meta-painel (clique em '''Ronda
 * '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.
 * '''Ronda original (jQuery UI)''': a aparência das primeiras versões, com a barra clara e os botões e janelas no tema nativo da wiki; também segue o modo escuro.
 * Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''', '''Web 1.0''', '''Azulejo português''', '''Newton''' e '''Pregão'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
+* Temas de humor, com o formato do Padrão e outra atmosfera: '''Madrugada''', '''Café coado''', '''Neblina''', '''Herbário''', '''Brasa''', '''Crepúsculo''', '''Geada''', '''Terra roxa''', '''Biblioteca''', '''Domingo à tarde''', '''Maré baixa''' e '''Silêncio'''. Cada um tem versão clara e escura, que acompanha o modo da wiki.
 
 Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, logotipos nem marcas de terceiros. O arquivo de um tema só é carregado por quem o escolhe.
 

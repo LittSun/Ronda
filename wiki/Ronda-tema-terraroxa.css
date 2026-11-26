@@ -1,0 +1,144 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Terra roxa" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-terraroxa #ronda-toolbar,
+html.ronda-tema-terraroxa .ronda-dialog,
+html.ronda-tema-terraroxa .ronda-tooltip,
+html.ronda-tema-terraroxa .ronda-menu {
+	--background-color-base: #fcf7f4;
+	--background-color-neutral-subtle: #f6ece6;
+	--background-color-neutral: #ecdcd3;
+	--background-color-interactive-subtle: #f6ece6;
+	--background-color-interactive-subtle--hover: #ecdcd3;
+	--background-color-interactive-subtle--active: #efe0d8;
+	--background-color-inverted: #5a2a22;
+	--color-inverted: #f6ece6;
+	--color-base: #4f2a22;
+	--color-emphasized: #4f2a22;
+	--color-subtle: #74493f;
+	--border-color-subtle: #dcbcb0;
+	--border-color-base: #bb9284;
+	--border-color-interactive: #bb9284;
+	--border-color-muted: #efe0d8;
+	--color-progressive: #8a5310;
+	--border-color-progressive: #8a5310;
+	--background-color-progressive: #8a5310;
+	--background-color-progressive-subtle: #f4e4cc;
+	--color-destructive: #b3261e;
+	--background-color-destructive: #b3261e;
+	--color-inverted-fixed: #fff;
+}
+
+html.ronda-tema-terraroxa.skin-theme-clientpref-night #ronda-toolbar,
+html.ronda-tema-terraroxa.skin-theme-clientpref-night .ronda-dialog,
+html.ronda-tema-terraroxa.skin-theme-clientpref-night .ronda-tooltip,
+html.ronda-tema-terraroxa.skin-theme-clientpref-night .ronda-menu {
+	--background-color-base: #1f100d;
+	--background-color-neutral-subtle: #2a1612;
+	--background-color-neutral: #3b211b;
+	--background-color-interactive-subtle: #2a1612;
+	--background-color-interactive-subtle--hover: #3b211b;
+	--background-color-interactive-subtle--active: #2e1915;
+	--background-color-inverted: #1e0c09;
+	--color-inverted: #f1d8cc;
+	--color-base: #f0ddd4;
+	--color-emphasized: #f0ddd4;
+	--color-subtle: #b9958a;
+	--border-color-subtle: #4a2a23;
+	--border-color-base: #6e4237;
+	--border-color-interactive: #6e4237;
+	--border-color-muted: #2e1915;
+	--color-progressive: #e0a453;
+	--border-color-progressive: #e0a453;
+	--background-color-progressive: #8a5310;
+	--background-color-progressive-subtle: #3a2410;
+	--color-destructive: #ff8a80;
+	--background-color-destructive: #b3261e;
+	--color-inverted-fixed: #fff;
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.ronda-tema-terraroxa.skin-theme-clientpref-os #ronda-toolbar,
+	html.ronda-tema-terraroxa.skin-theme-clientpref-os .ronda-dialog,
+	html.ronda-tema-terraroxa.skin-theme-clientpref-os .ronda-tooltip,
+	html.ronda-tema-terraroxa.skin-theme-clientpref-os .ronda-menu {
+		--background-color-base: #1f100d;
+		--background-color-neutral-subtle: #2a1612;
+		--background-color-neutral: #3b211b;
+		--background-color-interactive-subtle: #2a1612;
+		--background-color-interactive-subtle--hover: #3b211b;
+		--background-color-interactive-subtle--active: #2e1915;
+		--background-color-inverted: #1e0c09;
+		--color-inverted: #f1d8cc;
+		--color-base: #f0ddd4;
+		--color-emphasized: #f0ddd4;
+		--color-subtle: #b9958a;
+		--border-color-subtle: #4a2a23;
+		--border-color-base: #6e4237;
+		--border-color-interactive: #6e4237;
+		--border-color-muted: #2e1915;
+		--color-progressive: #e0a453;
+		--border-color-progressive: #e0a453;
+		--background-color-progressive: #8a5310;
+		--background-color-progressive-subtle: #3a2410;
+		--color-destructive: #ff8a80;
+		--background-color-destructive: #b3261e;
+		--color-inverted-fixed: #fff;
+	}
+}
+
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form input[ type="number" ],
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form textarea,
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form select {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border: 1px solid var( --border-color-interactive );
+	border-radius: 2px;
+}
+
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form input[ type="checkbox" ],
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form input[ type="radio" ] {
+	accent-color: var( --color-progressive );
+}
+
+html.ronda-tema-terraroxa .ronda-tooltip.ui-tooltip,
+html.ronda-tema-terraroxa .ronda-menu.ui-menu {
+	color: var( --color-base );
+	background: var( --background-color-base );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-terraroxa .ronda-menu.ui-menu .ui-menu-item a {
+	color: var( --color-base );
+}
+
+html.ronda-tema-terraroxa .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,
+html.ronda-tema-terraroxa .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {
+	color: var( --color-base );
+	background: var( --background-color-interactive-subtle--hover );
+	border-color: var( --border-color-base );
+}
+
+html.ronda-tema-terraroxa #ronda-toolbar a,
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form a {
+	color: var( --color-progressive );
+}
+
+html.ronda-tema-terraroxa .ronda-dialog .ronda-list.ui-widget-content {
+	color: inherit;
+	background: transparent;
+	border-color: var( --border-color-subtle );
+}
+
+html.ronda-tema-terraroxa #ronda-toolbar,
+html.ronda-tema-terraroxa .ronda-dialog.ui-dialog {
+	border-radius: 2px !important;
+}
+
+html.ronda-tema-terraroxa .ronda-dialog .ronda-form fieldset,
+html.ronda-tema-terraroxa .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	border-radius: 2px !important;
+}
+/* </nowiki> */
