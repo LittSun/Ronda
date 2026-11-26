@@ -45,8 +45,10 @@ const UA = 'RondaPublisher/1.0 (https://github.com/LittSun/ronda; User:Little Su
 
 // Ordem de publicação: o carregador por último, para que ele só peça arquivos já atualizados;
 // depois, o histórico de versões e a documentação (protegidos contra sobrescrever edições feitas na wiki)
+// Temas (Ronda-tema-*.css) entram antes do carregador, junto com os demais arquivos
+const THEMES = fs.existsSync( dir ) ? fs.readdirSync( dir ).filter( ( f ) => /^Ronda-tema-[\w-]+\.css$/.test( f ) ).sort() : [];
 const FILES = [ 'Ronda-mensagens.js', 'Ronda-core.js', 'Ronda-catalogo.js', 'Ronda-patrulha.js', 'Ronda-paginas.js',
-	'Ronda-admin.js', 'Ronda.css', 'Ronda-loader.js' ].map( ( f ) => ( { file: f, title: BASE + f } ) ).concat( [
+	'Ronda-admin.js', 'Ronda.css' ].concat( THEMES, [ 'Ronda-loader.js' ] ).map( ( f ) => ( { file: f, title: BASE + f } ) ).concat( [
 	{ file: 'Ronda-Changelog.wiki', title: DOC + '/Changelog', guard: true, optional: true },
 	{ file: 'Ronda-Documentacao.wiki', title: DOC, guard: true, optional: true }
 ] );

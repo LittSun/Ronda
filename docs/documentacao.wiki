@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.22|0.7.22]]
+|versão             = [[/Changelog#0.7.23|0.7.23]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -174,7 +174,15 @@ Clicar no nome '''Ronda''', no início da barra, abre o '''meta-painel''', com:
 
 Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam essas opções. Depois de cada atualização, uma faixa com as novidades da versão se abre sozinha uma vez, e o nome '''Ronda''' ganha o selo '''novo''' até que o meta-painel seja aberto. Em qualquer uma dessas faixas, '''Não mostrar mais''' impede que elas voltem a se abrir sozinhas; o selo continua avisando das versões novas, e o meta-painel continua no nome '''Ronda'''.
 
-Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. O painel {{Usuário:Little Sunshine/Ronda/Botão|Informações}} é carregado em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
+Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. O painel {{Usuário:Little Sunshine/Ronda/Botão|Informações}} é carregado em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar tema, vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
+
+=== Temas ===
+Em '''Preferências… › Tema''' é possível mudar a aparência da barra, dos painéis e das janelas do Ronda. O funcionamento é o mesmo em todos. Opções:
+* '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.
+* '''Ronda original (jQuery UI)''': a aparência das primeiras versões, com a barra clara e os botões e janelas no tema nativo da wiki; também segue o modo escuro.
+* Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''' e '''Web 1.0'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
+
+Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, logotipos nem marcas de terceiros. O arquivo de um tema só é carregado por quem o escolhe.
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
 

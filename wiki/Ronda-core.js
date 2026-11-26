@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.22',
+		version: '0.7.23',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -25,6 +25,8 @@ var uid = 0,
 			summarySuffix: ' (via [[User:Little Sunshine/Ronda|script]] #Ronda)',
 
 			icon: 'UserScript Ronda Icon.svg',
+			theme: '',
+			themePath: 'Usuário:Little Sunshine/Scripts/',
 			watchlist: 'preferences',
 			prefetch: true,
 			unlink: {
@@ -1032,8 +1034,59 @@ ronda.renderToolbar = function () {
 	return $bar;
 };
 
+ronda.THEMES = [
+	[ '', 'Padrão (cartão com título)' ],
+	[ 'original', 'Ronda original (jQuery UI)' ],
+	[ 'previsao', 'Previsão do tempo' ],
+	[ 'prova', 'Prova (preto e branco)' ],
+	[ 'passaporte', 'Passaporte' ],
+	[ 'volante', 'Volante de aposta' ],
+	[ 'bula', 'Bula' ],
+	[ 'bauhaus', 'Bauhaus' ],
+	[ 'planta', 'Planta baixa' ],
+	[ 'synthwave', 's y n t h w a v e' ],
+	[ 'brutalismo', 'Brutalismo' ],
+	[ 'relevo', 'Clássico em relevo' ],
+	[ 'listrado', 'Retrô listrado' ],
+	[ 'terminal', 'Terminal' ],
+	[ 'metro', 'Metrô' ],
+	[ 'ocorrencia', 'Boletim de ocorrência' ],
+	[ 'onibus', 'Ônibus' ],
+	[ 'web1', 'Web 1.0' ]
+];
+
+ronda.applyTheme = function ( id ) {
+	var known = ronda.THEMES.some( function ( t ) {
+			return t[ 0 ] === id;
+		} ),
+		root = document.documentElement;
+
+	ronda.THEMES.forEach( function ( t ) {
+		if ( t[ 0 ] ) {
+			root.classList.remove( 'ronda-tema-' + t[ 0 ] );
+		}
+	} );
+	if ( !id || !known ) {
+		return null;
+	}
+	root.classList.add( 'ronda-tema-' + id );
+	if ( !ronda.themesLoaded ) {
+		ronda.themesLoaded = {};
+	}
+	if ( !ronda.themesLoaded[ id ] ) {
+		ronda.themesLoaded[ id ] = true;
+		mw.loader.load( mw.config.get( 'wgScript' ) + '?' + $.param( {
+			title: ronda.config.themePath + 'Ronda-tema-' + id + '.css',
+			action: 'raw',
+			ctype: 'text/css'
+		} ), 'text/css' );
+	}
+	return id;
+};
+
 ronda.PREFS = [
 	{ section: 'Geral' },
+	[ 'theme', ronda.msg( 'core-tema' ), 'select', ronda.THEMES ],
 	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
 		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
@@ -1575,7 +1628,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Janelas com a cara da barra: o nome Ronda numa aba escura no título, grupos em cartões e botões planos, com o principal em azul'
+	'Temas: escolha nas preferências a aparência da barra e das janelas, entre 18 opções (do Ronda original ao Terminal, à Bula e ao s y n t h w a v e)'
 ];
 
 function saveOption( name, value ) {
@@ -1950,6 +2003,8 @@ ronda.start = function () {
 		if ( mw.util.getParamValue( 'printable' ) === 'yes' ) {
 			return;
 		}
+
+		ronda.applyTheme( ronda.config.theme );
 
 		$bar = ronda.renderToolbar();
 

@@ -1,0 +1,177 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Volante de aposta" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-volante #ronda-toolbar {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #e2641c;
+	background: #fff7ef;
+	border: 2px solid #e2641c;
+	border-radius: 6px;
+	box-shadow: none;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-brand {
+	color: #fff;
+	background: #e2641c;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 2px solid #e2641c;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-btn.ui-button {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #e2641c !important;
+	background: transparent !important;
+	border: 1px solid #e2641c !important;
+	border-radius: 2px !important;
+	box-shadow: none !important;
+	margin: 0.3em 0.15em !important;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-volante #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #e2641c !important;
+	background: #ffe2cc !important;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #fff !important;
+	background: #1d1d1d !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #b3261e !important;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-userpanel {
+	color: #333;
+	background: #fff;
+	border-top: 2px solid #e2641c;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-up-table th {
+	color: #e2641c;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-up-table td {
+	color: #333;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-volante #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-volante #ronda-toolbar a {
+	color: #c2410c;
+}
+
+html.ronda-tema-volante .ronda-dialog.ui-dialog {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #333 !important;
+	background: #fff7ef !important;
+	border: 2px solid #e2641c !important;
+	border-radius: 6px !important;
+	box-shadow: 0 4px 18px rgba( 0, 0, 0, 0.25 ) !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-titlebar {
+	color: #fff !important;
+	background: #e2641c !important;
+	border-bottom: 0 !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #fff;
+	background: #e2641c;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-titlebar-close {
+	color: #fff !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form fieldset {
+	background: #fff !important;
+	border: 1px solid #f2a46e !important;
+	border-radius: 4px !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form legend {
+	color: #fff !important;
+	background: #e2641c;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-volante .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 5px solid #1d1d1d !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-volante .ronda-dialog .ronda-form textarea,
+html.ronda-tema-volante .ronda-dialog .ronda-form select {
+	color: #333;
+	background: #fff;
+	border: 1px solid #f2a46e;
+	border-radius: 2px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #1d1d1d;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #e2641c;
+}
+
+html.ronda-tema-volante .ronda-dialog .ronda-form a {
+	color: #c2410c;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane {
+	background: #ffe9d9 !important;
+	border-top: 0 !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #e2641c !important;
+	background: #fff !important;
+	border: 1px solid #e2641c !important;
+	border-radius: 2px !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #ffe2cc !important;
+	color: #e2641c !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #fff !important;
+	background: #1d1d1d !important;
+	border-color: #1d1d1d !important;
+}
+
+html.ronda-tema-volante .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #b3261e !important;
+	border-color: #b3261e !important;
+}
+
+html.ronda-tema-volante #ronda-toolbar .ronda-btn .ui-button-text { font-weight: bold; font-size: 0.9em; }
+html.ronda-tema-volante #ronda-toolbar .ronda-brand { text-transform: uppercase; letter-spacing: 0.06em; }
+html.ronda-tema-volante #ronda-toolbar .ronda-brand::after { content: '\00a0· aposta simples'; font-weight: normal; font-size: 0.75em; opacity: 0.85; }
+html.ronda-tema-volante .ronda-dialog .ronda-form legend { padding: 0.1em 0.6em !important; text-transform: uppercase; font-size: 0.78em !important; }
+html.ronda-tema-volante .ronda-dialog .ronda-form .ronda-tag { border: 1px solid #f2a46e; border-radius: 2px; padding: 0.1em 0.4em; margin: 0.15em; background: #fff; }
+html.ronda-tema-volante .ronda-dialog .ronda-form input[ type="checkbox" ] { appearance: none; width: 0.9em; height: 1.2em; border: 1.5px solid #e2641c; vertical-align: -0.25em; }
+html.ronda-tema-volante .ronda-dialog .ronda-form input[ type="checkbox" ]:checked { background: #1d1d1d; border-color: #1d1d1d; border-radius: 40%; }
+/* </nowiki> */

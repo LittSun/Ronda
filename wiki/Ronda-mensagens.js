@@ -11,6 +11,7 @@
 // [[Usuário:Little Sunshine/Scripts/Ronda.css]]
 //<nowiki>
 window.rondaMessages = {
+	'core-tema': 'Tema (aparência da barra e das janelas)',
 	'core-desfazer': 'Desfazer',
 	'core-desfazendo': 'desfazendo…',
 	'core-desfazer-uma': 'O Ronda fez 1 edição: $2.',

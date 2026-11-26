@@ -20,6 +20,7 @@
  */
 window.rondaMessages = {
 	// Núcleo: barra, diálogos comuns, motivos e preferências
+	'core-tema': 'Tema (aparência da barra e das janelas)',
 	'core-desfazer': 'Desfazer',
 	'core-desfazendo': 'desfazendo…',
 	'core-desfazer-uma': 'O Ronda fez 1 edição: $2.',

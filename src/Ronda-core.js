@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.22',
+		version: '0.7.23',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -42,6 +42,10 @@ var uid = 0,
 			summarySuffix: ' (via [[User:Little Sunshine/Ronda|script]] #Ronda)',
 
 			icon: 'UserScript Ronda Icon.svg',
+			// Tema visual (ronda.THEMES); '' = padrão. O CSS do tema vem de
+			// themePath + 'Ronda-tema-<id>.css' e só é carregado quando escolhido.
+			theme: '',
+			themePath: 'Usuário:Little Sunshine/Scripts/',
 			// Vigilância das páginas editadas; 'preferences' segue "Adicionar à lista de
 			// páginas vigiadas as páginas que eu editar" das preferências do MediaWiki
 			watchlist: 'preferences',
@@ -1292,9 +1296,65 @@ ronda.renderToolbar = function () {
  * usuário userjs-ronda (JSON). window.rondaConfig continua valendo por cima.
  * ------------------------------------------------------------------ */
 
+/** Temas visuais: [ id, nome ]; cada um é um CSS próprio (temas/ no repositório) */
+ronda.THEMES = [
+	[ '', 'Padrão (cartão com título)' ],
+	[ 'original', 'Ronda original (jQuery UI)' ],
+	[ 'previsao', 'Previsão do tempo' ],
+	[ 'prova', 'Prova (preto e branco)' ],
+	[ 'passaporte', 'Passaporte' ],
+	[ 'volante', 'Volante de aposta' ],
+	[ 'bula', 'Bula' ],
+	[ 'bauhaus', 'Bauhaus' ],
+	[ 'planta', 'Planta baixa' ],
+	[ 'synthwave', 's y n t h w a v e' ],
+	[ 'brutalismo', 'Brutalismo' ],
+	[ 'relevo', 'Clássico em relevo' ],
+	[ 'listrado', 'Retrô listrado' ],
+	[ 'terminal', 'Terminal' ],
+	[ 'metro', 'Metrô' ],
+	[ 'ocorrencia', 'Boletim de ocorrência' ],
+	[ 'onibus', 'Ônibus' ],
+	[ 'web1', 'Web 1.0' ]
+];
+
+/**
+ * Aplica o tema escolhido: a classe ronda-tema-<id> em <html> e o CSS do tema.
+ * Tema desconhecido ou vazio = padrão (nada é carregado).
+ */
+ronda.applyTheme = function ( id ) {
+	var known = ronda.THEMES.some( function ( t ) {
+			return t[ 0 ] === id;
+		} ),
+		root = document.documentElement;
+
+	ronda.THEMES.forEach( function ( t ) {
+		if ( t[ 0 ] ) {
+			root.classList.remove( 'ronda-tema-' + t[ 0 ] );
+		}
+	} );
+	if ( !id || !known ) {
+		return null;
+	}
+	root.classList.add( 'ronda-tema-' + id );
+	if ( !ronda.themesLoaded ) {
+		ronda.themesLoaded = {};
+	}
+	if ( !ronda.themesLoaded[ id ] ) {
+		ronda.themesLoaded[ id ] = true;
+		mw.loader.load( mw.config.get( 'wgScript' ) + '?' + $.param( {
+			title: ronda.config.themePath + 'Ronda-tema-' + id + '.css',
+			action: 'raw',
+			ctype: 'text/css'
+		} ), 'text/css' );
+	}
+	return id;
+};
+
 /** Campos do diálogo: [ caminho, rótulo, tipo, opções ] */
 ronda.PREFS = [
 	{ section: 'Geral' },
+	[ 'theme', ronda.msg( 'core-tema' ), 'select', ronda.THEMES ],
 	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
 		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
@@ -1903,7 +1963,7 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Janelas com a cara da barra: o nome Ronda numa aba escura no título, grupos em cartões e botões planos, com o principal em azul'
+	'Temas: escolha nas preferências a aparência da barra e das janelas, entre 18 opções (do Ronda original ao Terminal, à Bula e ao s y n t h w a v e)'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
@@ -2313,6 +2373,8 @@ ronda.start = function () {
 		if ( mw.util.getParamValue( 'printable' ) === 'yes' ) {
 			return;
 		}
+
+		ronda.applyTheme( ronda.config.theme );
 
 		$bar = ronda.renderToolbar();
 
