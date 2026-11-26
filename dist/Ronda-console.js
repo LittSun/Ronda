@@ -8,7 +8,7 @@ window.rondaConfig = { dryRun: true };
 mw.loader.using( ["jquery.ui","mediawiki.api","mediawiki.util","mediawiki.user","mediawiki.storage","mediawiki.notification"] ).then( function () {
 // Permite colar de novo sem duplicar a barra
 $( '#ronda-toolbar, #ca-ronda-toggle, #ronda-console-css' ).remove();
-$( '<style id="ronda-console-css"></style>' ).text( "/**\n * Ronda — estilo\n *\n * Os diálogos usam o tema nativo do jQuery UI do skin (cores, botões, barra\n * de título). Aqui ficam só:\n * - a barra de botões da página, com um estilo próprio e discreto;\n * - o mínimo de layout dos formulários (espaçamentos e larguras);\n * - o modo móvel e o modo escuro nativo (o tema do jQuery UI só tem cores claras).\n * Cores vêm das variáveis do MediaWiki (Codex), com valores de reserva.\n */\n\n/* ------------------------------------------------------------------ *\n * Barra de botões da página\n * ------------------------------------------------------------------ */\n\n/*\n * Estilo \"cartão com título\": o nome Ronda numa aba escura à esquerda e os\n * botões planos dentro do cartão. O botão do painel aberto fica marcado com\n * um traço azul embaixo. O tema do jQuery UI usa !important no fundo e na\n * borda dos botões; por isso também aqui. As cores vêm das variáveis do Codex,\n * que já mudam no modo escuro.\n */\nhtml:not( .ronda-tema-original ) #ronda-toolbar {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: stretch;\n\tgap: 0;\n\tmargin: 0.5em 0 0.8em;\n\tpadding: 0;\n\tfont-size: 0.875em;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa );\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tborder-radius: 3px;\n\toverflow: hidden;\n}\n\n#ronda-toolbar .ronda-brand img {\n\tvertical-align: middle;\n\twidth: auto;\n\tmargin: -0.15em 0.3em 0 0;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand {\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0.45em 0.9em;\n\tfont-weight: bold;\n\tletter-spacing: 0.03em;\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-inverted, #202122 );\n\tcursor: default;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-group {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: stretch;\n}\n\n/* Separador entre o grupo de patrulha e o administrativo */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-admin {\n\tmargin-left: auto;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n\tfont-weight: normal;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: transparent !important;\n\tborder: 0 !important;\n\tborder-radius: 0 !important;\n\tbox-shadow: none !important;\n}\n\n/* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn .ui-button-text {\n\tpadding: 0.45em 0.8em;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-focus,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-active {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\n/* Botão do painel aberto */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {\n\tcolor: var( --color-progressive, #36c ) !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tbox-shadow: inset 0 -2px 0 var( --color-progressive, #36c ) !important;\n}\n\n/* Ações administrativas em vermelho */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #d73333 ) !important;\n}\n\n/* Marca do modo de simulação */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-dry {\n\talign-self: center;\n\tmargin: 0 0.5em;\n\tpadding: 0.1em 0.5em;\n\tfont-size: 0.85em;\n}\n\n/* Faixas dentro da barra: Informações (página e usuário), Busca, PetScan, Filas */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-userpanel {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.8em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tbackground: var( --background-color-base, #fff );\n\tline-height: 1.6;\n}\n\n/* Boas-vindas (uma vez por conta) */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.8em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tbackground: var( --background-color-base, #fff );\n\tline-height: 1.5;\n}\n\n#ronda-toolbar .ronda-welcome p {\n\tmargin: 0 0 0.4em;\n}\n\n#ronda-toolbar .ronda-welcome-actions {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.8em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n#ronda-toolbar .ronda-up-line {\n\tmargin: 0.1em 0;\n}\n\n/* Painel Usuário: tabela de informações à esquerda, ações e links à direita */\n#ronda-toolbar .ronda-up-grid {\n\tdisplay: flex;\n\talign-items: flex-start;\n\tgap: 1em;\n}\n\n#ronda-toolbar .ronda-up-table {\n\tflex: 1 1 auto;\n\tborder-collapse: collapse;\n}\n\n#ronda-toolbar .ronda-up-table th,\n#ronda-toolbar .ronda-up-table td {\n\tpadding: 0.15em 0.6em 0.15em 0;\n\tborder-bottom: 1px solid var( --border-color-muted, #eaecf0 );\n\ttext-align: left;\n\tvertical-align: top;\n}\n\n#ronda-toolbar .ronda-up-table th {\n\twidth: 1%;\n\tpadding-right: 1em;\n\tfont-weight: normal;\n\tcolor: var( --color-subtle, #54595d );\n\twhite-space: nowrap;\n}\n\n#ronda-toolbar .ronda-up-table tr:last-child th,\n#ronda-toolbar .ronda-up-table tr:last-child td {\n\tborder-bottom: 0;\n}\n\n#ronda-toolbar .ronda-up-side {\n\tflex: 0 0 19em;\n\tbox-sizing: border-box;\n\tpadding-left: 0.8em;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\n/* Links dentro dos avisos vermelhos (ex.: wikis em que está bloqueado) */\n#ronda-toolbar .ronda-badge a {\n\tcolor: inherit;\n\ttext-decoration: underline;\n}\n\n#ronda-toolbar .ronda-up-group + .ronda-up-group {\n\tmargin-top: 0.4em;\n}\n\n#ronda-toolbar .ronda-up-heading {\n\tfont-size: 0.85em;\n\tfont-weight: bold;\n\tletter-spacing: 0.04em;\n\ttext-transform: uppercase;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n#ronda-toolbar .ronda-up-main {\n\tfont-weight: bold;\n}\n\n/* Tela estreita: a coluna de ações desce para baixo da tabela */\n@media screen and ( max-width: 720px ) {\n\t#ronda-toolbar .ronda-up-grid {\n\t\tflex-direction: column;\n\t}\n\n\t#ronda-toolbar .ronda-up-side {\n\t\tflex-basis: auto;\n\t\tpadding: 0.4em 0 0;\n\t\tborder-left: 0;\n\t\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\t}\n}\n\n/* Informações com os dois painéis (páginas de usuário): título de cada parte */\n#ronda-toolbar .ronda-info-heading {\n\tmargin: 0.4em 0 0.2em;\n\tfont-size: 0.85em;\n\tfont-weight: bold;\n\tletter-spacing: 0.04em;\n\ttext-transform: uppercase;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n#ronda-toolbar .ronda-info-heading + .ronda-info-part {\n\tpadding-top: 0;\n}\n\n/* Manutenção: motivo de cada sugestão */\n.ronda-form .ronda-sug-reason {\n\tmargin-left: 0.4em;\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n.ronda-form .ronda-sug-reason::before {\n\tcontent: '— ';\n}\n\n/* Qualidade automática: janela com os critérios */\n.ronda-qf details {\n\tmargin: 8px 0;\n\tpadding: 2px 10px;\n\tborder: 1px solid var( --border-color-base, #a2a9b1 );\n\tborder-radius: 2px;\n}\n\n.ronda-qf summary {\n\tpadding: 4px 0;\n\tfont-weight: bold;\n\tcursor: pointer;\n}\n\n.ronda-qf table {\n\twidth: 100%;\n\tmargin: 4px 0;\n\tborder-collapse: collapse;\n}\n\n.ronda-qf td:last-child {\n\twhite-space: nowrap;\n}\n\n.ronda-qf td {\n\tpadding: 3px 6px;\n\tvertical-align: top;\n\tborder-top: 1px solid var( --border-color-subtle, #eaecf0 );\n}\n\n.ronda-qf-nivel {\n\tpadding: 0 8px;\n\tborder-radius: 2px;\n\tcolor: #fff;\n\tbackground: var( --background-color-progressive, #36c );\n}\n\n.ronda-qf-nota {\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n/* Ocorrências do filtro de abusos, abertas ao clicar */\n#ronda-toolbar .ronda-up-list {\n\tmargin: 0.2em 0 0.2em 1.6em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-badge {\n\tpadding: 0.1em 0.5em;\n}\n\n#ronda-toolbar .ronda-up-hot {\n\tfont-weight: bold;\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n#ronda-toolbar .ronda-up-action {\n\tfont-weight: bold;\n}\n\n/* Informações e Listar: o que está bem (verde) e o que falta (vermelho) */\n#ronda-toolbar .ronda-ok,\n.ronda-qf .ronda-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n#ronda-toolbar .ronda-bad,\n.ronda-qf .ronda-bad {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Listar: a lista aberta */\n#ronda-toolbar .ronda-up-current {\n\tfont-weight: bold;\n\tcolor: var( --color-base, #202122 );\n\ttext-decoration: none;\n\tcursor: default;\n}\n\n/* Listar: um resultado por linha */\n#ronda-toolbar .ronda-feed {\n\tmargin: 0.2em 0 0;\n\tpadding: 0;\n\tlist-style: none;\n}\n\n#ronda-toolbar .ronda-feed li {\n\tmargin: 0;\n\toverflow: hidden;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\n#ronda-toolbar .ronda-feed-muted,\n#ronda-toolbar .ronda-feed-comment {\n\tcolor: var( --color-subtle, #72777d );\n}\n\n#ronda-toolbar .ronda-feed-comment {\n\tfont-style: italic;\n}\n\n#ronda-toolbar .ronda-feed-big {\n\tfont-weight: bold;\n}\n\n#ronda-toolbar .ronda-up-admin {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* ------------------------------------------------------------------ *\n * Formulários dos diálogos (só layout)\n * ------------------------------------------------------------------ */\n\n.ronda-form .ronda-row {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-row > label {\n\tdisplay: block;\n\tmargin-bottom: 0.2em;\n\tfont-weight: bold;\n}\n\n.ronda-form .ronda-input,\n.ronda-form select {\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n\n.ronda-form table select,\n.ronda-form select.ronda-level {\n\twidth: auto;\n}\n\n/* Proteger: corrente que liga edição e moção, entre as duas linhas */\n.ronda-form .ronda-chain-cell {\n\tvertical-align: middle;\n\ttext-align: center;\n\tpadding: 0 0.3em;\n}\n\n.ronda-form .ronda-chain.ui-button {\n\tmargin: 0;\n}\n\n.ronda-form .ronda-chain .ui-button-text {\n\tpadding: 0.3em 0.4em;\n\tline-height: 0;\n}\n\n/* Mover: domínio e título na mesma linha */\n.ronda-form .ronda-move-title {\n\tdisplay: flex;\n\tgap: 0.4em;\n}\n\n.ronda-form .ronda-move-title .ronda-input {\n\tflex: 1;\n}\n\n.ronda-form .ronda-check {\n\tmargin: 0.3em 0;\n}\n\n.ronda-form fieldset {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-refresh {\n\tmargin-top: 0.3em;\n\ttext-align: right;\n}\n\n.ronda-form .ronda-msg {\n\tmargin: 0 0 0.6em;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-msg .ui-icon {\n\tfloat: left;\n\tmargin: 0.1em 0.4em 0 0;\n}\n\n/* Opções de Manutenção e Avisar: caixas de seleção lado a lado */\n.ronda-form .ronda-tag {\n\tdisplay: inline-block;\n\tvertical-align: top;\n\tmargin: 0.1em 1em 0.1em 0;\n}\n\n.ronda-form .ronda-tag.ronda-tag-open {\n\tdisplay: block;\n}\n\n/* Presente na página e desmarcada = será removida */\n.ronda-form .ronda-tag-present > input:not( :checked ) + label {\n\ttext-decoration: line-through;\n}\n\n.ronda-form .ronda-tag-params {\n\tmargin: 0.3em 0 0.4em 1em;\n}\n\n.ronda-form .ronda-tag-params .ronda-input {\n\tmargin-top: 0.3em;\n}\n\n.ronda-form .ronda-checks .ronda-check {\n\tmargin: 0.1em 0;\n}\n\n.ronda-form .ronda-checks.ui-state-error {\n\tpadding: 0.2em;\n}\n\n.ronda-form fieldset.ronda-batch-filters {\n\tmargin: 0.5em 0;\n}\n\n.ronda-form .ronda-batch-count {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form fieldset.ronda-warn-group {\n\tmargin: 0.5em 0;\n}\n\n/* Avisos favoritos: estrela ao lado do nome */\n.ronda-form .ronda-fav {\n\tmargin-left: 0.3em;\n\ttext-decoration: none;\n\tcolor: var( --color-subtle, #72777d );\n}\n\n.ronda-form .ronda-fav[ aria-pressed='true' ] {\n\tcolor: var( --color-warning, #a66200 );\n}\n\n.ronda-form .ronda-warn-note {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form .ronda-list {\n\tmax-height: 16em;\n\toverflow: auto;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-list label {\n\tdisplay: block;\n}\n\n.ronda-form .ronda-list .ronda-check label {\n\tdisplay: inline;\n}\n\n.ronda-form .ronda-bundle {\n\tmargin: 0.4em 0 0.6em 1.4em;\n}\n\n.ronda-form .ronda-progress {\n\theight: 1em;\n\tmargin-top: 0.6em;\n}\n\n.ronda-form .ronda-log {\n\tmax-height: 10em;\n\toverflow: auto;\n\tmargin: 0.6em 0 0 1.4em;\n}\n\n.ronda-form .ronda-log:empty {\n\tdisplay: none;\n}\n\n/* ------------------------------------------------------------------ *\n * Links rápidos (reverter / restaurar) em diffs, histórico e listas\n * ------------------------------------------------------------------ */\n\n.ronda-quick {\n\twhite-space: nowrap;\n\tfont-size: 0.92em;\n}\n\n.ronda-quick .ronda-quick-vandal {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n.ronda-quick .ronda-quick-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n.ronda-quick .ronda-quick-error {\n\tcolor: var( --color-error, #d73333 );\n}\n\n/* Prévia dos avisos */\n.ronda-preview {\n\tmax-height: 60vh;\n\toverflow: auto;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo móvel (Minerva) e telas estreitas\n * ------------------------------------------------------------------ */\n\n/* Barra recolhida: só o nome (que expande ao toque) */\n#ronda-toolbar.ronda-collapsed > :not( .ronda-brand ) {\n\tdisplay: none !important;\n}\n\n/* Nome \"Ronda\": abre o meta-painel */\n#ronda-toolbar .ronda-brand-toggle {\n\tcursor: pointer;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand-toggle:hover,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand-toggle:focus {\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-progressive, #36c );\n}\n\n#ronda-toolbar .ronda-brand-caret {\n\tfont-weight: normal;\n\tfont-size: 0.85em;\n}\n\n#ronda-toolbar .ronda-meta-news {\n\tmargin: 0 0 0 1.2em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-meta-quick {\n\tdisplay: inline-block;\n\tmargin-right: 1em;\n}\n\n/* Selo \"novo\" no nome, até as novidades serem vistas */\n#ronda-toolbar .ronda-news-badge {\n\tmargin-left: 0.3em;\n\tpadding: 0 0.45em;\n\tborder-radius: 0.8em;\n\tbackground: var( --background-color-progressive, #36c );\n\tcolor: var( --color-inverted-fixed, #fff );\n\tfont-size: 0.75em;\n\tfont-weight: bold;\n\tvertical-align: middle;\n}\n\n/* Faixa de novidades depois de uma atualização */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-userpanel.ronda-news {\n\tpadding: 0.4em 0.8em;\n\tborder-top-width: 1px;\n}\n\n#ronda-toolbar .ronda-news .ronda-meta-news {\n\tmargin: 0.2em 0 0.3em 1.2em;\n}\n\n#ronda-toolbar .ronda-not-again {\n\tfont-size: 0.9em;\n}\n\n.ronda-report-env {\n\tmargin: 0.3em 0 0 1.2em;\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n\tword-break: break-word;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-prefs-link {\n\talign-self: center;\n\tmargin-left: auto;\n\tpadding: 0 0.8em;\n\tfont-size: 0.9em;\n}\n\n#ronda-toolbar.ronda-mobile {\n\tmargin: 0.5em 0;\n\tfont-size: 1em;\n}\n\n/* Alvos de toque maiores */\nhtml:not( .ronda-tema-original ) #ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {\n\tpadding: 0.65em 0.9em;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar.ronda-mobile .ronda-toolbar-admin {\n\tmargin-left: 0;\n\tborder-left: 0;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-input,\n.ronda-dialog-narrow .ronda-form select,\n.ronda-dialog-narrow .ronda-form textarea {\n\tfont-size: 16px; /* evita o zoom automático do iOS */\n}\n\n.ronda-dialog-narrow .ui-dialog-buttonpane .ui-dialog-buttonset {\n\tfloat: none;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tjustify-content: flex-end;\n\tgap: 0.3em;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-tag {\n\tdisplay: block;\n\tmargin: 0.3em 0;\n}\n\n@media ( max-width: 720px ) {\n\thtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-admin {\n\t\tborder-left: 0;\n\t}\n\n\t.ronda-quick {\n\t\twhite-space: normal;\n\t}\n}\n\n/* ------------------------------------------------------------------ *\n * Janelas do Ronda no estilo da barra (\"cartão com título\"): o nome Ronda\n * numa aba escura antes do título, grupos como cartões, rodapé cinza com\n * botões planos e o principal em azul. Continuam sendo diálogos do jQuery UI;\n * o tema dele usa !important no fundo, na borda e na barra de título, por isso\n * também aqui, sempre restrito a .ronda-dialog. As cores vêm das variáveis do\n * Codex, que já mudam no modo escuro.\n * ------------------------------------------------------------------ */\n\nhtml:not( .ronda-tema-original ) .ronda-dialog.ui-dialog {\n\tpadding: 0 !important;\n\toverflow: hidden;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 3px !important;\n\tbox-shadow: 0 4px 18px rgba( 0, 0, 0, 0.18 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar {\n\tdisplay: flex;\n\talign-items: stretch;\n\tmargin: 0 !important;\n\tpadding: 0 !important;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa ) !important;\n\tborder: 0 !important;\n\tborder-bottom: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 0 !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar::before {\n\tcontent: 'Ronda';\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0.55em 0.9em;\n\tfont-weight: bold;\n\tletter-spacing: 0.03em;\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-inverted, #202122 );\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-title {\n\tflex: 1;\n\tfloat: none !important;\n\twidth: auto !important;\n\tmargin: 0 !important;\n\tpadding: 0.55em 0.9em;\n\toverflow: hidden;\n\tfont-weight: bold;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close {\n\tposition: static !important;\n\tdisplay: flex !important;\n\tflex: 0 0 2.8em;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: auto !important;\n\theight: auto !important;\n\tmargin: 0 !important;\n\tpadding: 0 !important;\n\tfont-size: 0 !important;\n\tcolor: var( --color-subtle, #54595d ) !important;\n\tbackground: transparent !important;\n\tborder: 0 !important;\n\tborder-radius: 0 !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close::after {\n\tcontent: '✕';\n\tfont-size: 14px;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close:hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close:focus {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close .ui-icon,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close .ui-button-text {\n\tdisplay: none !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-content {\n\tpadding: 0.8em 1em !important;\n\tcolor: inherit !important;\n\tbackground: transparent !important;\n}\n\n/* Grupos como cartões, com o título pequeno em cima */\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form fieldset {\n\tmargin: 0.7em 0 !important;\n\tpadding: 0.35em 0.8em 0.55em !important;\n\tcolor: inherit !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 2px !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form fieldset fieldset {\n\tborder-color: var( --border-color-muted, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form legend {\n\tpadding: 0 0.35em !important;\n\tfont-size: 0.85em !important;\n\tfont-weight: bold !important;\n\tcolor: var( --color-subtle, #54595d ) !important;\n}\n\n/* Favoritos (Avisar) e Sugeridas (Manutenção): traço azul à esquerda */\n.ronda-dialog .ronda-form fieldset.ronda-warn-fav,\n.ronda-dialog .ronda-form fieldset.ronda-tag-sug {\n\tborder-left: 3px solid var( --color-progressive, #36c ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form input[ type=\"text\" ],\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form input[ type=\"number\" ],\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form textarea,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form select {\n\tborder-radius: 2px;\n}\n\n/* Rodapé: faixa cinza, botões planos, o principal em azul e os perigosos em vermelho */\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane {\n\tmargin: 0 !important;\n\tpadding: 0.5em 0.8em !important;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa ) !important;\n\tborder: 0 !important;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button {\n\tmargin: 0.15em 0 0.15em 0.4em !important;\n\tfont-weight: normal;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: transparent !important;\n\tborder: 1px solid var( --border-color-base, #a2a9b1 ) !important;\n\tborder-radius: 2px !important;\n\tbox-shadow: none !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {\n\tpadding: 0.4em 1em;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-focus {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {\n\tfont-weight: bold;\n\tcolor: var( --color-inverted-fixed, #fff ) !important;\n\tbackground: var( --background-color-progressive, #36c ) !important;\n\tborder-color: var( --background-color-progressive, #36c ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {\n\tcolor: var( --color-inverted-fixed, #fff ) !important;\n\tbackground: var( --background-color-destructive, #d73333 ) !important;\n\tborder-color: var( --background-color-destructive, #d73333 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red.ui-state-hover {\n\tfilter: brightness( 1.1 );\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-disabled {\n\topacity: 0.5;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo escuro nativo (Vector 2022 / Minerva): skin-theme-clientpref-night,\n * ou \"automático\" com o sistema em modo escuro. O tema do jQuery UI do\n * MediaWiki só tem cores claras (e usa !important nos botões e na barra de\n * título); aqui a barra, os diálogos, campos, menus e dicas do Ronda passam a\n * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.\n * ------------------------------------------------------------------ */\n\nhtml.skin-theme-clientpref-night .ronda-tooltip.ui-tooltip,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu {\n\tbackground: var( --background-color-base, #101418 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night:not( .ronda-tema-original ) .ronda-dialog .ronda-list.ui-widget-content {\n\tbackground: transparent;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: inherit;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"text\" ],\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"number\" ],\nhtml.skin-theme-clientpref-night .ronda-form textarea,\nhtml.skin-theme-clientpref-night .ronda-form select {\n\tbackground: var( --background-color-base, #101418 );\n\tborder: 1px solid var( --border-color-interactive, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form input.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form select.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form textarea.ui-state-error {\n\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\tborder-color: var( --color-error, #fd7865 );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-state-highlight {\n\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight a,\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error a {\n\tcolor: var( --color-progressive, #88a3e8 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-highlight {\n\tbackground: transparent;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error {\n\tcolor: var( --color-error, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar {\n\tbackground: var( --background-color-neutral, #27292d );\n\tborder-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar-value {\n\tbackground: var( --background-color-progressive, #36c );\n\tborder-color: var( --background-color-progressive, #36c );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-icon,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-icon {\n\tfilter: invert( 1 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-blue .ui-icon,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-red .ui-icon {\n\tfilter: none;\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a {\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\n@media screen and ( prefers-color-scheme: dark ) {\n\n\thtml.skin-theme-clientpref-os .ronda-tooltip.ui-tooltip,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os:not( .ronda-tema-original ) .ronda-dialog .ronda-list.ui-widget-content {\n\t\tbackground: transparent;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: inherit;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"text\" ],\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"number\" ],\n\thtml.skin-theme-clientpref-os .ronda-form textarea,\n\thtml.skin-theme-clientpref-os .ronda-form select {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder: 1px solid var( --border-color-interactive, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form input.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form select.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form textarea.ui-state-error {\n\t\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\t\tborder-color: var( --color-error, #fd7865 );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-state-highlight {\n\t\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight a,\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error a {\n\t\tcolor: var( --color-progressive, #88a3e8 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-highlight {\n\t\tbackground: transparent;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error {\n\t\tcolor: var( --color-error, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar {\n\t\tbackground: var( --background-color-neutral, #27292d );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar-value {\n\t\tbackground: var( --background-color-progressive, #36c );\n\t\tborder-color: var( --background-color-progressive, #36c );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-icon,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-icon {\n\t\tfilter: invert( 1 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-blue .ui-icon,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-red .ui-icon {\n\t\tfilter: none;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a {\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n}\n" ).appendTo( 'head' );
+$( '<style id="ronda-console-css"></style>' ).text( "/**\n * Ronda — estilo\n *\n * Os diálogos usam o tema nativo do jQuery UI do skin (cores, botões, barra\n * de título). Aqui ficam só:\n * - a barra de botões da página, com um estilo próprio e discreto;\n * - o mínimo de layout dos formulários (espaçamentos e larguras);\n * - o modo móvel e o modo escuro nativo (o tema do jQuery UI só tem cores claras).\n * Cores vêm das variáveis do MediaWiki (Codex), com valores de reserva.\n */\n\n/* ------------------------------------------------------------------ *\n * Barra de botões da página\n * ------------------------------------------------------------------ */\n\n/*\n * Estilo \"cartão com título\": o nome Ronda numa aba escura à esquerda e os\n * botões planos dentro do cartão. O botão do painel aberto fica marcado com\n * um traço azul embaixo. O tema do jQuery UI usa !important no fundo e na\n * borda dos botões; por isso também aqui. As cores vêm das variáveis do Codex,\n * que já mudam no modo escuro.\n */\nhtml:not( .ronda-tema-original ) #ronda-toolbar {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: stretch;\n\tgap: 0;\n\tmargin: 0.5em 0 0.8em;\n\tpadding: 0;\n\tfont-size: 0.875em;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa );\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tborder-radius: 3px;\n\toverflow: hidden;\n}\n\n#ronda-toolbar .ronda-brand img {\n\tvertical-align: middle;\n\twidth: auto;\n\tmargin: -0.15em 0.3em 0 0;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand {\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0.45em 0.9em;\n\tfont-weight: bold;\n\tletter-spacing: 0.03em;\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-inverted, #202122 );\n\tcursor: default;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-group {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: stretch;\n}\n\n/* Separador entre o grupo de patrulha e o administrativo */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-admin {\n\tmargin-left: auto;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n\tfont-weight: normal;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: transparent !important;\n\tborder: 0 !important;\n\tborder-radius: 0 !important;\n\tbox-shadow: none !important;\n}\n\n/* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn .ui-button-text {\n\tpadding: 0.45em 0.8em;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-focus,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ui-button.ui-state-active {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\n/* Botão do painel aberto */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {\n\tcolor: var( --color-progressive, #36c ) !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tbox-shadow: inset 0 -2px 0 var( --color-progressive, #36c ) !important;\n}\n\n/* Ações administrativas em vermelho */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-btn-admin.ui-button {\n\tcolor: var( --color-destructive, #d73333 ) !important;\n}\n\n/* Marca do modo de simulação */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-dry {\n\talign-self: center;\n\tmargin: 0 0.5em;\n\tpadding: 0.1em 0.5em;\n\tfont-size: 0.85em;\n}\n\n/* Faixas dentro da barra: Informações (página e usuário), Busca, PetScan, Filas */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-userpanel {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.8em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tbackground: var( --background-color-base, #fff );\n\tline-height: 1.6;\n}\n\n/* Boas-vindas (uma vez por conta) */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {\n\tflex-basis: 100%;\n\tpadding: 0.4em 0.8em;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tbackground: var( --background-color-base, #fff );\n\tline-height: 1.5;\n}\n\n#ronda-toolbar .ronda-welcome p {\n\tmargin: 0 0 0.4em;\n}\n\n#ronda-toolbar .ronda-welcome-actions {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tgap: 0.4em 0.8em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button {\n\tmargin: 0;\n\tfont-size: 1em;\n}\n\n#ronda-toolbar .ronda-welcome-actions .ui-button-text {\n\tpadding: 0.2em 0.7em;\n}\n\n#ronda-toolbar .ronda-up-line {\n\tmargin: 0.1em 0;\n}\n\n/* Painel Usuário: tabela de informações à esquerda, ações e links à direita */\n#ronda-toolbar .ronda-up-grid {\n\tdisplay: flex;\n\talign-items: flex-start;\n\tgap: 1em;\n}\n\n#ronda-toolbar .ronda-up-table {\n\tflex: 1 1 auto;\n\tborder-collapse: collapse;\n}\n\n#ronda-toolbar .ronda-up-table th,\n#ronda-toolbar .ronda-up-table td {\n\tpadding: 0.15em 0.6em 0.15em 0;\n\tborder-bottom: 1px solid var( --border-color-muted, #eaecf0 );\n\ttext-align: left;\n\tvertical-align: top;\n}\n\n#ronda-toolbar .ronda-up-table th {\n\twidth: 1%;\n\tpadding-right: 1em;\n\tfont-weight: normal;\n\tcolor: var( --color-subtle, #54595d );\n\twhite-space: nowrap;\n}\n\n#ronda-toolbar .ronda-up-table tr:last-child th,\n#ronda-toolbar .ronda-up-table tr:last-child td {\n\tborder-bottom: 0;\n}\n\n#ronda-toolbar .ronda-up-side {\n\tflex: 0 0 19em;\n\tbox-sizing: border-box;\n\tpadding-left: 0.8em;\n\tborder-left: 1px solid var( --border-color-subtle, #c8ccd1 );\n}\n\n/* Links dentro dos avisos vermelhos (ex.: wikis em que está bloqueado) */\n#ronda-toolbar .ronda-badge a {\n\tcolor: inherit;\n\ttext-decoration: underline;\n}\n\n#ronda-toolbar .ronda-up-group + .ronda-up-group {\n\tmargin-top: 0.4em;\n}\n\n#ronda-toolbar .ronda-up-heading {\n\tfont-size: 0.85em;\n\tfont-weight: bold;\n\tletter-spacing: 0.04em;\n\ttext-transform: uppercase;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n#ronda-toolbar .ronda-up-main {\n\tfont-weight: bold;\n}\n\n/* Tela estreita: a coluna de ações desce para baixo da tabela */\n@media screen and ( max-width: 720px ) {\n\t#ronda-toolbar .ronda-up-grid {\n\t\tflex-direction: column;\n\t}\n\n\t#ronda-toolbar .ronda-up-side {\n\t\tflex-basis: auto;\n\t\tpadding: 0.4em 0 0;\n\t\tborder-left: 0;\n\t\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 );\n\t}\n}\n\n/* Informações com os dois painéis (páginas de usuário): título de cada parte */\n#ronda-toolbar .ronda-info-heading {\n\tmargin: 0.4em 0 0.2em;\n\tfont-size: 0.85em;\n\tfont-weight: bold;\n\tletter-spacing: 0.04em;\n\ttext-transform: uppercase;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n#ronda-toolbar .ronda-info-heading + .ronda-info-part {\n\tpadding-top: 0;\n}\n\n/* Manutenção: motivo de cada sugestão */\n.ronda-form .ronda-sug-reason {\n\tmargin-left: 0.4em;\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n.ronda-form .ronda-sug-reason::before {\n\tcontent: '— ';\n}\n\n/* Filas: prévia ao passar o mouse */\n.ronda-hover-preview {\n\tposition: absolute;\n\tz-index: 1000;\n\twidth: 660px;\n\tmax-width: calc( 100vw - 16px );\n\tmax-height: 340px;\n\toverflow: hidden;\n\tpadding: 0.5em 0.7em;\n\tfont-size: 0.82em;\n\tcolor: var( --color-base, #202122 );\n\tbackground: var( --background-color-base, #fff );\n\tborder: 1px solid var( --border-color-base, #a2a9b1 );\n\tborder-radius: 2px;\n\tbox-shadow: 0 4px 16px rgba( 0, 0, 0, 0.2 );\n\tpointer-events: none;\n}\n\n.ronda-hover-preview table.diff {\n\twidth: 100%;\n\ttable-layout: fixed;\n}\n\n.ronda-hover-preview p {\n\tmargin: 0;\n}\n\n/* Informações: alerta de recriação no botão */\n#ronda-toolbar .ronda-btn-alert.ui-button .ui-button-text::after {\n\tcontent: '!';\n\tdisplay: inline-block;\n\tmargin-left: 0.35em;\n\tpadding: 0 0.4em;\n\tfont-size: 0.8em;\n\tfont-weight: bold;\n\tline-height: 1.3;\n\tcolor: var( --color-inverted-fixed, #fff );\n\tbackground: var( --background-color-error, #d73333 );\n\tborder-radius: 999px;\n}\n\n/* Propor eliminação: escolha do tipo */\n.ronda-elim-type {\n\tdisplay: block;\n\tmargin: 0 0 0.5em;\n\tpadding: 0.5em 0.7em;\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 );\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n\n.ronda-elim-type:has( input:checked ) {\n\tborder-color: var( --border-color-progressive, #36c );\n\tbackground: var( --background-color-progressive-subtle, #eaf3ff );\n}\n\n.ronda-elim-sug {\n\tmargin-left: 0.5em;\n\tpadding: 0 0.4em;\n\tfont-size: 0.8em;\n\tcolor: var( --color-inverted-fixed, #fff );\n\tbackground: var( --background-color-progressive, #36c );\n\tborder-radius: 2px;\n}\n\n.ronda-elim-desc {\n\tdisplay: block;\n\tmargin: 0.2em 0 0 1.6em;\n\tfont-size: 0.9em;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n.ronda-elim-why,\n.ronda-elim-vda {\n\tmargin: 0.4em 0 0;\n\tfont-size: 0.9em;\n}\n\n/* Qualidade automática: janela com os critérios */\n.ronda-qf details {\n\tmargin: 8px 0;\n\tpadding: 2px 10px;\n\tborder: 1px solid var( --border-color-base, #a2a9b1 );\n\tborder-radius: 2px;\n}\n\n.ronda-qf summary {\n\tpadding: 4px 0;\n\tfont-weight: bold;\n\tcursor: pointer;\n}\n\n.ronda-qf table {\n\twidth: 100%;\n\tmargin: 4px 0;\n\tborder-collapse: collapse;\n}\n\n.ronda-qf td:last-child {\n\twhite-space: nowrap;\n}\n\n.ronda-qf td {\n\tpadding: 3px 6px;\n\tvertical-align: top;\n\tborder-top: 1px solid var( --border-color-subtle, #eaecf0 );\n}\n\n.ronda-qf-nivel {\n\tpadding: 0 8px;\n\tborder-radius: 2px;\n\tcolor: #fff;\n\tbackground: var( --background-color-progressive, #36c );\n}\n\n.ronda-qf-nota {\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n}\n\n/* Ocorrências do filtro de abusos, abertas ao clicar */\n#ronda-toolbar .ronda-up-list {\n\tmargin: 0.2em 0 0.2em 1.6em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-badge {\n\tpadding: 0.1em 0.5em;\n}\n\n#ronda-toolbar .ronda-up-hot {\n\tfont-weight: bold;\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n#ronda-toolbar .ronda-up-action {\n\tfont-weight: bold;\n}\n\n/* Informações e Listar: o que está bem (verde) e o que falta (vermelho) */\n#ronda-toolbar .ronda-ok,\n.ronda-qf .ronda-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n#ronda-toolbar .ronda-bad,\n.ronda-qf .ronda-bad {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* Listar: a lista aberta */\n#ronda-toolbar .ronda-up-current {\n\tfont-weight: bold;\n\tcolor: var( --color-base, #202122 );\n\ttext-decoration: none;\n\tcursor: default;\n}\n\n/* Listar: um resultado por linha */\n#ronda-toolbar .ronda-feed {\n\tmargin: 0.2em 0 0;\n\tpadding: 0;\n\tlist-style: none;\n}\n\n#ronda-toolbar .ronda-feed li {\n\tmargin: 0;\n\toverflow: hidden;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\n#ronda-toolbar .ronda-feed-muted,\n#ronda-toolbar .ronda-feed-comment {\n\tcolor: var( --color-subtle, #72777d );\n}\n\n#ronda-toolbar .ronda-feed-comment {\n\tfont-style: italic;\n}\n\n#ronda-toolbar .ronda-feed-big {\n\tfont-weight: bold;\n}\n\n#ronda-toolbar .ronda-up-admin {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n/* ------------------------------------------------------------------ *\n * Formulários dos diálogos (só layout)\n * ------------------------------------------------------------------ */\n\n.ronda-form .ronda-row {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-row > label {\n\tdisplay: block;\n\tmargin-bottom: 0.2em;\n\tfont-weight: bold;\n}\n\n.ronda-form .ronda-input,\n.ronda-form select {\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n\n.ronda-form table select,\n.ronda-form select.ronda-level {\n\twidth: auto;\n}\n\n/* Proteger: corrente que liga edição e moção, entre as duas linhas */\n.ronda-form .ronda-chain-cell {\n\tvertical-align: middle;\n\ttext-align: center;\n\tpadding: 0 0.3em;\n}\n\n.ronda-form .ronda-chain.ui-button {\n\tmargin: 0;\n}\n\n.ronda-form .ronda-chain .ui-button-text {\n\tpadding: 0.3em 0.4em;\n\tline-height: 0;\n}\n\n/* Mover: domínio e título na mesma linha */\n.ronda-form .ronda-move-title {\n\tdisplay: flex;\n\tgap: 0.4em;\n}\n\n.ronda-form .ronda-move-title .ronda-input {\n\tflex: 1;\n}\n\n.ronda-form .ronda-check {\n\tmargin: 0.3em 0;\n}\n\n.ronda-form fieldset {\n\tmargin: 0.6em 0;\n}\n\n.ronda-form .ronda-refresh {\n\tmargin-top: 0.3em;\n\ttext-align: right;\n}\n\n.ronda-form .ronda-msg {\n\tmargin: 0 0 0.6em;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-msg .ui-icon {\n\tfloat: left;\n\tmargin: 0.1em 0.4em 0 0;\n}\n\n/* Opções de Manutenção e Avisar: caixas de seleção lado a lado */\n.ronda-form .ronda-tag {\n\tdisplay: inline-block;\n\tvertical-align: top;\n\tmargin: 0.1em 1em 0.1em 0;\n}\n\n.ronda-form .ronda-tag.ronda-tag-open {\n\tdisplay: block;\n}\n\n/* Presente na página e desmarcada = será removida */\n.ronda-form .ronda-tag-present > input:not( :checked ) + label {\n\ttext-decoration: line-through;\n}\n\n.ronda-form .ronda-tag-params {\n\tmargin: 0.3em 0 0.4em 1em;\n}\n\n.ronda-form .ronda-tag-params .ronda-input {\n\tmargin-top: 0.3em;\n}\n\n.ronda-form .ronda-checks .ronda-check {\n\tmargin: 0.1em 0;\n}\n\n.ronda-form .ronda-checks.ui-state-error {\n\tpadding: 0.2em;\n}\n\n.ronda-form fieldset.ronda-batch-filters {\n\tmargin: 0.5em 0;\n}\n\n.ronda-form .ronda-batch-count {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form fieldset.ronda-warn-group {\n\tmargin: 0.5em 0;\n}\n\n/* Avisos favoritos: estrela ao lado do nome */\n.ronda-form .ronda-fav {\n\tmargin-left: 0.3em;\n\ttext-decoration: none;\n\tcolor: var( --color-subtle, #72777d );\n}\n\n.ronda-form .ronda-fav[ aria-pressed='true' ] {\n\tcolor: var( --color-warning, #a66200 );\n}\n\n.ronda-form .ronda-warn-note {\n\tmargin-top: 0.3em;\n\tfont-size: 0.9em;\n}\n\n.ronda-form .ronda-list {\n\tmax-height: 16em;\n\toverflow: auto;\n\tpadding: 0.4em 0.6em;\n}\n\n.ronda-form .ronda-list label {\n\tdisplay: block;\n}\n\n.ronda-form .ronda-list .ronda-check label {\n\tdisplay: inline;\n}\n\n.ronda-form .ronda-bundle {\n\tmargin: 0.4em 0 0.6em 1.4em;\n}\n\n.ronda-form .ronda-progress {\n\theight: 1em;\n\tmargin-top: 0.6em;\n}\n\n.ronda-form .ronda-log {\n\tmax-height: 10em;\n\toverflow: auto;\n\tmargin: 0.6em 0 0 1.4em;\n}\n\n.ronda-form .ronda-log:empty {\n\tdisplay: none;\n}\n\n/* ------------------------------------------------------------------ *\n * Links rápidos (reverter / restaurar) em diffs, histórico e listas\n * ------------------------------------------------------------------ */\n\n.ronda-quick {\n\twhite-space: nowrap;\n\tfont-size: 0.92em;\n}\n\n.ronda-quick .ronda-quick-vandal {\n\tcolor: var( --color-destructive, #d73333 );\n}\n\n.ronda-quick .ronda-quick-ok {\n\tcolor: var( --color-success, #14866d );\n}\n\n.ronda-quick .ronda-quick-error {\n\tcolor: var( --color-error, #d73333 );\n}\n\n/* Prévia dos avisos */\n.ronda-preview {\n\tmax-height: 60vh;\n\toverflow: auto;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo móvel (Minerva) e telas estreitas\n * ------------------------------------------------------------------ */\n\n/* Barra recolhida: só o nome (que expande ao toque) */\n#ronda-toolbar.ronda-collapsed > :not( .ronda-brand ) {\n\tdisplay: none !important;\n}\n\n/* Nome \"Ronda\": abre o meta-painel */\n#ronda-toolbar .ronda-brand-toggle {\n\tcursor: pointer;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand-toggle:hover,\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-brand-toggle:focus {\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-progressive, #36c );\n}\n\n#ronda-toolbar .ronda-brand-caret {\n\tfont-weight: normal;\n\tfont-size: 0.85em;\n}\n\n#ronda-toolbar .ronda-meta-news {\n\tmargin: 0 0 0 1.2em;\n\tpadding: 0;\n}\n\n#ronda-toolbar .ronda-meta-quick {\n\tdisplay: inline-block;\n\tmargin-right: 1em;\n}\n\n/* Selo \"novo\" no nome, até as novidades serem vistas */\n#ronda-toolbar .ronda-news-badge {\n\tmargin-left: 0.3em;\n\tpadding: 0 0.45em;\n\tborder-radius: 0.8em;\n\tbackground: var( --background-color-progressive, #36c );\n\tcolor: var( --color-inverted-fixed, #fff );\n\tfont-size: 0.75em;\n\tfont-weight: bold;\n\tvertical-align: middle;\n}\n\n/* Faixa de novidades depois de uma atualização */\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-userpanel.ronda-news {\n\tpadding: 0.4em 0.8em;\n\tborder-top-width: 1px;\n}\n\n#ronda-toolbar .ronda-news .ronda-meta-news {\n\tmargin: 0.2em 0 0.3em 1.2em;\n}\n\n#ronda-toolbar .ronda-not-again {\n\tfont-size: 0.9em;\n}\n\n.ronda-report-env {\n\tmargin: 0.3em 0 0 1.2em;\n\tfont-size: 0.85em;\n\tcolor: var( --color-subtle, #54595d );\n\tword-break: break-word;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-prefs-link {\n\talign-self: center;\n\tmargin-left: auto;\n\tpadding: 0 0.8em;\n\tfont-size: 0.9em;\n}\n\n#ronda-toolbar.ronda-mobile {\n\tmargin: 0.5em 0;\n\tfont-size: 1em;\n}\n\n/* Alvos de toque maiores */\nhtml:not( .ronda-tema-original ) #ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {\n\tpadding: 0.65em 0.9em;\n}\n\nhtml:not( .ronda-tema-original ) #ronda-toolbar.ronda-mobile .ronda-toolbar-admin {\n\tmargin-left: 0;\n\tborder-left: 0;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-input,\n.ronda-dialog-narrow .ronda-form select,\n.ronda-dialog-narrow .ronda-form textarea {\n\tfont-size: 16px; /* evita o zoom automático do iOS */\n}\n\n.ronda-dialog-narrow .ui-dialog-buttonpane .ui-dialog-buttonset {\n\tfloat: none;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tjustify-content: flex-end;\n\tgap: 0.3em;\n}\n\n.ronda-dialog-narrow .ronda-form .ronda-tag {\n\tdisplay: block;\n\tmargin: 0.3em 0;\n}\n\n@media ( max-width: 720px ) {\n\thtml:not( .ronda-tema-original ) #ronda-toolbar .ronda-toolbar-admin {\n\t\tborder-left: 0;\n\t}\n\n\t.ronda-quick {\n\t\twhite-space: normal;\n\t}\n}\n\n/* ------------------------------------------------------------------ *\n * Janelas do Ronda no estilo da barra (\"cartão com título\"): o nome Ronda\n * numa aba escura antes do título, grupos como cartões, rodapé cinza com\n * botões planos e o principal em azul. Continuam sendo diálogos do jQuery UI;\n * o tema dele usa !important no fundo, na borda e na barra de título, por isso\n * também aqui, sempre restrito a .ronda-dialog. As cores vêm das variáveis do\n * Codex, que já mudam no modo escuro.\n * ------------------------------------------------------------------ */\n\nhtml:not( .ronda-tema-original ) .ronda-dialog.ui-dialog {\n\tpadding: 0 !important;\n\toverflow: hidden;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 3px !important;\n\tbox-shadow: 0 4px 18px rgba( 0, 0, 0, 0.18 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar {\n\tdisplay: flex;\n\talign-items: stretch;\n\tmargin: 0 !important;\n\tpadding: 0 !important;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa ) !important;\n\tborder: 0 !important;\n\tborder-bottom: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 0 !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar::before {\n\tcontent: 'Ronda';\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0.55em 0.9em;\n\tfont-weight: bold;\n\tletter-spacing: 0.03em;\n\tcolor: var( --color-inverted, #fff );\n\tbackground: var( --background-color-inverted, #202122 );\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-title {\n\tflex: 1;\n\tfloat: none !important;\n\twidth: auto !important;\n\tmargin: 0 !important;\n\tpadding: 0.55em 0.9em;\n\toverflow: hidden;\n\tfont-weight: bold;\n\twhite-space: nowrap;\n\ttext-overflow: ellipsis;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close {\n\tposition: static !important;\n\tdisplay: flex !important;\n\tflex: 0 0 2.8em;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: auto !important;\n\theight: auto !important;\n\tmargin: 0 !important;\n\tpadding: 0 !important;\n\tfont-size: 0 !important;\n\tcolor: var( --color-subtle, #54595d ) !important;\n\tbackground: transparent !important;\n\tborder: 0 !important;\n\tborder-radius: 0 !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close::after {\n\tcontent: '✕';\n\tfont-size: 14px;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close:hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close:focus {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close .ui-icon,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-titlebar-close .ui-button-text {\n\tdisplay: none !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-content {\n\tpadding: 0.8em 1em !important;\n\tcolor: inherit !important;\n\tbackground: transparent !important;\n}\n\n/* Grupos como cartões, com o título pequeno em cima */\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form fieldset {\n\tmargin: 0.7em 0 !important;\n\tpadding: 0.35em 0.8em 0.55em !important;\n\tcolor: inherit !important;\n\tbackground: var( --background-color-base, #fff ) !important;\n\tborder: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n\tborder-radius: 2px !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form fieldset fieldset {\n\tborder-color: var( --border-color-muted, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form legend {\n\tpadding: 0 0.35em !important;\n\tfont-size: 0.85em !important;\n\tfont-weight: bold !important;\n\tcolor: var( --color-subtle, #54595d ) !important;\n}\n\n/* Favoritos (Avisar) e Sugeridas (Manutenção): traço azul à esquerda */\n.ronda-dialog .ronda-form fieldset.ronda-warn-fav,\n.ronda-dialog .ronda-form fieldset.ronda-tag-sug {\n\tborder-left: 3px solid var( --color-progressive, #36c ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form input[ type=\"text\" ],\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form input[ type=\"number\" ],\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form textarea,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ronda-form select {\n\tborder-radius: 2px;\n}\n\n/* Rodapé: faixa cinza, botões planos, o principal em azul e os perigosos em vermelho */\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane {\n\tmargin: 0 !important;\n\tpadding: 0.5em 0.8em !important;\n\tbackground: var( --background-color-neutral-subtle, #f8f9fa ) !important;\n\tborder: 0 !important;\n\tborder-top: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button {\n\tmargin: 0.15em 0 0.15em 0.4em !important;\n\tfont-weight: normal;\n\tcolor: var( --color-base, #202122 ) !important;\n\tbackground: transparent !important;\n\tborder: 1px solid var( --border-color-base, #a2a9b1 ) !important;\n\tborder-radius: 2px !important;\n\tbox-shadow: none !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {\n\tpadding: 0.4em 1em;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-focus {\n\tbackground: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {\n\tfont-weight: bold;\n\tcolor: var( --color-inverted-fixed, #fff ) !important;\n\tbackground: var( --background-color-progressive, #36c ) !important;\n\tborder-color: var( --background-color-progressive, #36c ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {\n\tcolor: var( --color-inverted-fixed, #fff ) !important;\n\tbackground: var( --background-color-destructive, #d73333 ) !important;\n\tborder-color: var( --background-color-destructive, #d73333 ) !important;\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary.ui-state-hover,\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red.ui-state-hover {\n\tfilter: brightness( 1.1 );\n}\n\nhtml:not( .ronda-tema-original ) .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-disabled {\n\topacity: 0.5;\n}\n\n/* ------------------------------------------------------------------ *\n * Modo escuro nativo (Vector 2022 / Minerva): skin-theme-clientpref-night,\n * ou \"automático\" com o sistema em modo escuro. O tema do jQuery UI do\n * MediaWiki só tem cores claras (e usa !important nos botões e na barra de\n * título); aqui a barra, os diálogos, campos, menus e dicas do Ronda passam a\n * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.\n * ------------------------------------------------------------------ */\n\nhtml.skin-theme-clientpref-night .ronda-tooltip.ui-tooltip,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu {\n\tbackground: var( --background-color-base, #101418 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night:not( .ronda-tema-original ) .ronda-dialog .ronda-list.ui-widget-content {\n\tbackground: transparent;\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: inherit;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"text\" ],\nhtml.skin-theme-clientpref-night .ronda-form input[ type=\"number\" ],\nhtml.skin-theme-clientpref-night .ronda-form textarea,\nhtml.skin-theme-clientpref-night .ronda-form select {\n\tbackground: var( --background-color-base, #101418 );\n\tborder: 1px solid var( --border-color-interactive, #72777d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form input.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form select.ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form textarea.ui-state-error {\n\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\tborder-color: var( --color-error, #fd7865 );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-state-highlight {\n\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\tborder-color: var( --border-color-subtle, #54595d );\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-highlight a,\nhtml.skin-theme-clientpref-night .ronda-form .ui-state-error a {\n\tcolor: var( --color-progressive, #88a3e8 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error,\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-highlight {\n\tbackground: transparent;\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ronda-log .ui-state-error {\n\tcolor: var( --color-error, #fd7865 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar {\n\tbackground: var( --background-color-neutral, #27292d );\n\tborder-color: var( --border-color-subtle, #54595d );\n}\n\nhtml.skin-theme-clientpref-night .ronda-form .ui-progressbar-value {\n\tbackground: var( --background-color-progressive, #36c );\n\tborder-color: var( --background-color-progressive, #36c );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-icon,\nhtml.skin-theme-clientpref-night #ronda-toolbar .ui-icon {\n\tfilter: invert( 1 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-blue .ui-icon,\nhtml.skin-theme-clientpref-night .ronda-dialog .ui-button-red .ui-icon {\n\tfilter: none;\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a {\n\tcolor: var( --color-base, #eaecf0 );\n}\n\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\nhtml.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\tborder-color: var( --border-color-base, #72777d );\n\tcolor: var( --color-emphasized, #f8f9fa );\n}\n\n@media screen and ( prefers-color-scheme: dark ) {\n\n\thtml.skin-theme-clientpref-os .ronda-tooltip.ui-tooltip,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os:not( .ronda-tema-original ) .ronda-dialog .ronda-list.ui-widget-content {\n\t\tbackground: transparent;\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: inherit;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"text\" ],\n\thtml.skin-theme-clientpref-os .ronda-form input[ type=\"number\" ],\n\thtml.skin-theme-clientpref-os .ronda-form textarea,\n\thtml.skin-theme-clientpref-os .ronda-form select {\n\t\tbackground: var( --background-color-base, #101418 );\n\t\tborder: 1px solid var( --border-color-interactive, #72777d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form input.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form select.ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form textarea.ui-state-error {\n\t\tbackground: var( --background-color-error-subtle, #3c1a19 );\n\t\tborder-color: var( --color-error, #fd7865 );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-state-highlight {\n\t\tbackground: var( --background-color-warning-subtle, #2f2610 );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-highlight a,\n\thtml.skin-theme-clientpref-os .ronda-form .ui-state-error a {\n\t\tcolor: var( --color-progressive, #88a3e8 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error,\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-highlight {\n\t\tbackground: transparent;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ronda-log .ui-state-error {\n\t\tcolor: var( --color-error, #fd7865 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar {\n\t\tbackground: var( --background-color-neutral, #27292d );\n\t\tborder-color: var( --border-color-subtle, #54595d );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-form .ui-progressbar-value {\n\t\tbackground: var( --background-color-progressive, #36c );\n\t\tborder-color: var( --background-color-progressive, #36c );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-icon,\n\thtml.skin-theme-clientpref-os #ronda-toolbar .ui-icon {\n\t\tfilter: invert( 1 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-blue .ui-icon,\n\thtml.skin-theme-clientpref-os .ronda-dialog .ui-button-red .ui-icon {\n\t\tfilter: none;\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a {\n\t\tcolor: var( --color-base, #eaecf0 );\n\t}\n\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-focus,\n\thtml.skin-theme-clientpref-os .ronda-menu.ui-menu .ui-menu-item a.ui-state-hover {\n\t\tbackground: var( --background-color-interactive-subtle--hover, #3a3d42 );\n\t\tborder-color: var( --border-color-base, #72777d );\n\t\tcolor: var( --color-emphasized, #f8f9fa );\n\t}\n}\n" ).appendTo( 'head' );
 ( function () {
 	var v = $.ui.version.split( '.' ).map( Number ), ok = v[ 0 ] > 1 || ( v[ 0 ] === 1 && v[ 1 ] >= 9 );
 	console.log( '[Ronda] jQuery UI ' + $.ui.version + ( ok ? ' (ok)' : ' — precisa da 1.9 ou mais nova' ) );
@@ -37,6 +37,9 @@ $( '<style id="ronda-console-css"></style>' ).text( "/**\n * Ronda — estilo\n 
  */
 window.rondaMessages = {
 	// Núcleo: barra, diálogos comuns, motivos e preferências
+	'core-previa-titulo': 'Prévia da edição em $1',
+	'core-previa-sem-mudancas': 'Nenhuma mudança em relação à versão atual.',
+	'core-previa-botao': 'Prévia',
 	'core-tema-aplicado': 'Tema aplicado.',
 	'core-meta-tema': 'Tema:',
 	'core-tema': 'Tema (aparência da barra e das janelas)',
@@ -140,6 +143,8 @@ window.rondaMessages = {
 	'core-boasvindas-entendi': 'Entendi',
 
 	// Patrulha: Reverter, Avisar, Usuário, Listar e reversão rápida
+	'patrulha-previa-sem-diff': 'Sem diferença para mostrar.',
+	'patrulha-previa-sem-texto': 'Sem texto para mostrar.',
 	'patrulha-o-aviso-ja-foi-deixado-nas': 'O aviso "$1" já foi deixado nas últimas 24 horas.',
 	'patrulha-a-discussao-do-usuario-foi-editada': 'A discussão do usuário foi editada há menos de um minuto$1.',
 	'patrulha-nome-oculto': '(nome oculto)',
@@ -339,6 +344,30 @@ window.rondaMessages = {
 	'patrulha-restaurar-esta-versao': 'Restaurar esta versão',
 
 	// Páginas: Manutenção, ER, ESR, Consenso, Mover, #R, Esboço, Fusão, Busca, PetScan, Informações, Pedido e Não assinou
+	'paginas-info-recriacao': 'Recriação',
+	'paginas-info-recriada': 'recriada: já foi eliminada em $1',
+	'paginas-info-recriada-curto': 'Recriação de página eliminada',
+	'paginas-info-recriada-proteger': 'se for eliminada de novo, considere proteger contra criação',
+	'paginas-info-parecidas': 'Parecidas',
+	'paginas-info-fundir': 'fundir',
+	'paginas-info-redirecionar-para': 'redirecionar para',
+	'paginas-elim-botao': 'Propor eliminação',
+	'paginas-elim-dica': 'Propor a eliminação desta página: rápida, semirrápida ou por consenso',
+	'paginas-elim-titulo': 'Propor eliminação: $1',
+	'paginas-elim-rapida': 'Rápida',
+	'paginas-elim-semirrapida': 'Semirrápida',
+	'paginas-elim-consenso': 'Por consenso',
+	'paginas-elim-rapida-desc': 'Para casos evidentes, enquadrados numa regra. Um administrador avalia em pouco tempo.',
+	'paginas-elim-semirrapida-desc': 'Para problemas que podem ser corrigidos: a página fica marcada por alguns dias antes da decisão.',
+	'paginas-elim-consenso-desc': 'Abre uma discussão com a comunidade, em Wikipédia:Páginas para eliminar.',
+	'paginas-elim-sugerida': 'sugerida',
+	'paginas-elim-por-que': 'Por que sugerida: $1.',
+	'paginas-elim-sug-curta': 'a página tem só $1 bytes',
+	'paginas-elim-sug-nova': 'artigo criado há $1 dia(s)',
+	'paginas-elim-sug-antiga': 'página com mais tempo de existência, que pede uma discussão',
+	'paginas-elim-continuar': 'Continuar',
+	'paginas-detectar-vda': 'Detectar VDA',
+	'paginas-detectar-vda-dica': 'compara o texto com a web no detector de cópia (abre numa aba nova)',
 	'paginas-sugeridas': 'Sugeridas para esta página',
 	'paginas-usadas-recentemente': 'Usadas recentemente',
 	'paginas-sug-sem-fontes': 'nenhuma referência no texto',
@@ -772,7 +801,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.23',
+		version: '0.7.24',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1545,6 +1574,39 @@ ronda.ui.dialog = function ( opts ) {
 	return $dlg;
 };
 
+/**
+ * Prévia de uma edição: o diff entre a versão atual da página e o texto novo,
+ * numa janela à parte (como a prévia dos avisos). Nada é gravado.
+ * @param {string} title
+ * @param {string} text Texto novo da página
+ */
+ronda.ui.previewEdit = function ( title, text ) {
+	return $.when( mw.loader.using( 'mediawiki.diff.styles' ).then( null, function () {
+		return null;
+	} ), ronda.api.post( {
+		action: 'compare',
+		fromtitle: title,
+		toslots: 'main',
+		'totext-main': text,
+		'tocontentmodel-main': 'wikitext',
+		topst: true,
+		prop: 'diff',
+		formatversion: 2
+	} ) ).then( function ( dummy, res ) {
+		var data = res && res.compare ? res : res && res[ 0 ],
+			body = data && data.compare && data.compare.body;
+
+		ronda.ui.dialog( {
+			title: ronda.msg( 'core-previa-titulo', title ),
+			width: 860,
+			content: body
+				? $( '<table class="diff ronda-preview-diff"></table>' ).append(
+					'<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>', body )
+				: $( '<p></p>' ).text( ronda.msg( 'core-previa-sem-mudancas' ) )
+		} );
+	}, ronda.fail );
+};
+
 ronda.ui.close = function ( $dlg ) {
 	$dlg.dialog( 'close' );
 };
@@ -2037,6 +2099,10 @@ ronda.renderToolbar = function () {
 	var $group, $adminGroup, $bar,
 		ctx = ronda.ctx,
 		available = ronda.modules.filter( function ( m ) {
+			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação)
+			if ( m.hidden ) {
+				return false;
+			}
 			// Um módulo com erro fica fora da barra, sem derrubar os demais
 			try {
 				return m.isAvailable( ctx );
@@ -2118,7 +2184,8 @@ ronda.THEMES = [
 	[ 'onibus', 'Ônibus' ],
 	[ 'web1', 'Web 1.0' ],
 	[ 'azulejo', 'Azulejo português' ],
-	[ 'newton', 'Newton' ]
+	[ 'newton', 'Newton' ],
+	[ 'pregao', 'Pregão' ]
 ];
 
 /**
@@ -2797,7 +2864,10 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Temas: escolha nas preferências ou no meta-painel a aparência da barra e das janelas, entre 20 opções (do Ronda original ao Terminal, à Bula, ao Azulejo português e ao s y n t h w a v e); a troca vale na hora'
+	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com uma sugestão de qual usar e o atalho Detectar VDA',
+	'Prévia opcional em Manutenção, Esboço, Redirecionar e nas propostas de eliminação',
+	'Informações avisa quando a página é recriação de uma já eliminada e mostra artigos de título parecido',
+	'Filas: prévia da edição ao deixar o mouse sobre ela; novo tema Pregão'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
@@ -6193,6 +6263,70 @@ function pct( p ) {
 	return Math.round( p * 100 ) + '%';
 }
 
+/* ---------------- Prévia ao passar o mouse ---------------- */
+
+var hoverCache = {},
+	$hoverBox = null,
+	hoverTimer = null;
+
+/** Conteúdo da prévia: o diff da edição ou, para páginas, o começo do texto */
+function hoverContent( item, def ) {
+	var key = def.link + ':' + ( item.revid || item.title );
+
+	if ( !hoverCache[ key ] ) {
+		hoverCache[ key ] = item.revid && def.link !== 'rcid' && def.link !== 'page'
+			? $.when( mw.loader.using( 'mediawiki.diff.styles' ).then( null, function () {
+				return null;
+			} ), ronda.api.get( { action: 'compare', torev: item.revid, torelative: 'prev', prop: 'diff', formatversion: 2 } ) )
+				.then( function ( dummy, res ) {
+					var data = res && res.compare ? res : res && res[ 0 ],
+						body = data && data.compare && data.compare.body;
+
+					return body ? $( '<table class="diff"></table>' ).append(
+						'<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>', body )
+						: $( '<i></i>' ).text( ronda.msg( 'patrulha-previa-sem-diff' ) );
+				} )
+			: ronda.api.get( { action: 'query', titles: item.title, prop: 'extracts', exchars: 600, explaintext: 1, redirects: 1 } )
+				.then( function ( data ) {
+					var p = ( ( data.query || {} ).pages || [] )[ 0 ] || {};
+
+					return $( '<p></p>' ).text( p.extract || ronda.msg( 'patrulha-previa-sem-texto' ) );
+				} );
+	}
+	return hoverCache[ key ];
+}
+
+function hideHover() {
+	clearTimeout( hoverTimer );
+	if ( $hoverBox ) {
+		$hoverBox.remove();
+		$hoverBox = null;
+	}
+}
+
+/** Mostra a prévia perto do link, depois de um instante com o mouse parado em cima */
+function attachHover( $link, item, def ) {
+	if ( ronda.isMobile() ) {
+		return;
+	}
+	$link.on( 'mouseenter', function () {
+		var el = this;
+
+		hideHover();
+		hoverTimer = setTimeout( function () {
+			hoverContent( item, def ).then( function ( $c ) {
+				var r = el.getBoundingClientRect();
+
+				hideHover();
+				$hoverBox = $( '<div class="ronda-hover-preview"></div>' ).append( $c.clone() ).appendTo( document.body ).css( {
+					top: r.bottom + window.pageYOffset + 6,
+					left: Math.max( 8, Math.min( r.left + window.pageXOffset, window.pageXOffset + document.documentElement.clientWidth - 680 ) )
+				} );
+			} );
+		}, 450 );
+	} ).on( 'mouseleave click', hideHover );
+}
+
 /** Um resultado por linha: título, diferença de tamanho, autor, resumo (e pontuações, se houver) */
 function render( $out, def, list ) {
 	var $ul = $( '<ul class="ronda-feed"></ul>' );
@@ -6208,10 +6342,13 @@ function render( $out, def, list ) {
 		var params = def.link === 'diff' ? { diff: 'cur', oldid: item.old_revid || 'prev' }
 				: def.link === 'rcid' ? { redirect: 'no', rcid: item.rcid }
 					: def.link === 'revid' ? { diff: item.revid } : null,
-			$li = $( '<li></li>' ).append( $( '<a></a>' ).attr( 'href', mw.util.getUrl( item.title, params ) ).text( item.title ) ),
+			$link = $( '<a></a>' ).attr( 'href', mw.util.getUrl( item.title, params ) ).text( item.title ),
+			$li = $( '<li></li>' ).append( $link ),
 			dano = def.scores ? prob( item, 'damaging' ) : null,
 			fe = def.scores ? prob( item, 'goodfaith' ) : null,
 			d, n, comment;
+
+		attachHover( $link, item, def );
 
 		if ( def.link !== 'page' ) {
 			d = sizeDiff( item );
@@ -7432,9 +7569,9 @@ function showForm( ctx, text, aliases, info ) {
 		} );
 	} );
 
-	function submit() {
-		var opts, preview, result,
-			checked = {},
+	/** Opções escolhidas no diálogo; null se falta um campo obrigatório */
+	function gather() {
+		var checked = {},
 			values = {},
 			ok = true;
 
@@ -7459,11 +7596,27 @@ function showForm( ctx, text, aliases, info ) {
 			}
 		} );
 
-		if ( !ok ) {
+		return ok ? { opts: $.extend( {}, base, { checked: checked, values: values, useMP: cbMP.isChecked() } ), values: values } : null;
+	}
+
+	/** Prévia das marcações na página (opcional, como a dos avisos) */
+	function previewTags() {
+		var g = gather();
+
+		if ( g ) {
+			ronda.ui.previewEdit( ctx.page, apply( text, g.opts ).text );
+		}
+	}
+
+	function submit() {
+		var g = gather(),
+			opts, values, preview, result;
+
+		if ( !g ) {
 			return;
 		}
-
-		opts = $.extend( {}, base, { checked: checked, values: values, useMP: cbMP.isChecked() } );
+		opts = g.opts;
+		values = g.values;
 		preview = apply( text, opts );
 
 		if ( preview.text === text ) {
@@ -7529,6 +7682,9 @@ function showForm( ctx, text, aliases, info ) {
 			text: ronda.msg( 'paginas-aplicar' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: previewTags
 		}, {
 			text: ronda.msg( 'paginas-atualizar-nomes-alternativos' ),
 			click: function () {
@@ -7995,6 +8151,17 @@ function showSpeedy( ctx, page ) {
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-rapida' ) );
 	}
 
+	/** Prévia da marcação na página (opcional, como a dos avisos) */
+	function preview() {
+		var r = selected();
+
+		if ( !ronda.ui.require( $rule, !!r ) ) {
+			return;
+		}
+		ronda.ui.previewEdit( page.title, place( page.content, buildER( r.rule, $obs.val() ),
+			{ noinclude: ronda.useNoinclude( page ), hatnotes: false } ) );
+	}
+
 	$warnRow.hide();
 	$dlg = ronda.ui.dialog( {
 		title: ronda.msg( 'paginas-eliminacao-rapida', page.title ),
@@ -8004,6 +8171,9 @@ function showSpeedy( ctx, page ) {
 			text: ronda.msg( 'paginas-propor' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: preview
 		}, {
 			text: ronda.msg( 'core-cancelar' ),
 			click: function () {
@@ -8097,6 +8267,19 @@ function showSemi( ctx, page ) {
 		runTasks( $dlg, $progress, $log, tasks, ronda.msg( 'paginas-pagina-proposta-para-eliminacao-semirrapida' ) );
 	}
 
+	/** Prévia da marcação na página (opcional, como a dos avisos) */
+	function preview() {
+		var matrad = !isFile && cbMatrad.isChecked();
+
+		ronda.ui.previewEdit( page.title, place( page.content, buildESR( {
+			ns: page.ns,
+			subject: matrad ? null : subjects[ $subject.val() ] || null,
+			text: $text.val().trim(),
+			matrad: matrad,
+			language: $lang.val().trim()
+		} ), { noinclude: ronda.useNoinclude( page ), hatnotes: true } ) );
+	}
+
 	$dlg = ronda.ui.dialog( {
 		title: ronda.msg( 'paginas-eliminacao-semirrapida', page.title ),
 		width: 640,
@@ -8105,6 +8288,9 @@ function showSemi( ctx, page ) {
 			text: ronda.msg( 'paginas-propor' ),
 			'class': 'ui-priority-primary ui-button-blue',
 			click: submit
+		}, {
+			text: ronda.msg( 'core-previa-botao' ),
+			click: preview
 		}, {
 			text: ronda.msg( 'core-cancelar' ),
 			click: function () {
@@ -8137,6 +8323,7 @@ if ( !ronda.catalog.speedy || !ronda.catalog.esrSubjects ) {
 
 ronda.registerModule( {
 	id: 'rapida',
+	hidden: true,
 	label: ronda.msg( 'paginas-er' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-rapida-desta-pagina' ),
 	order: 26,
@@ -8152,6 +8339,7 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'semirrapida',
+	hidden: true,
 	label: ronda.msg( 'paginas-esr' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-semirrapida-desta-pagina' ),
 	order: 27,
@@ -8779,6 +8967,7 @@ function open( ctx ) {
 
 ronda.registerModule( {
 	id: 'consenso',
+	hidden: true,
 	label: ronda.msg( 'paginas-consenso' ),
 	title: ronda.msg( 'paginas-propor-a-eliminacao-por-consenso-desta' ),
 	order: 28,
@@ -8787,6 +8976,156 @@ ronda.registerModule( {
 			&& ctx.exists
 			&& FORBIDDEN_NS.indexOf( ctx.ns ) === -1
 			&& ronda.can( 'edit' );
+	},
+	open: open
+} );
+
+}( window.ronda ) );
+
+/**
+ * Ronda — Propor eliminação
+ *
+ * Um botão só para as três propostas (rápida, semirrápida e por consenso):
+ * o diálogo mostra as que valem para a página, sugere uma (com o motivo) e
+ * abre o formulário de sempre da escolhida. Tem também o atalho Detectar VDA.
+ */
+( function ( ronda ) {
+'use strict';
+
+var TYPES = [ 'rapida', 'semirrapida', 'consenso' ],
+	DAY = 24 * 60 * 60 * 1000,
+	NAMES = {
+		rapida: [ ronda.msg( 'paginas-elim-rapida' ), ronda.msg( 'paginas-elim-rapida-desc' ) ],
+		semirrapida: [ ronda.msg( 'paginas-elim-semirrapida' ), ronda.msg( 'paginas-elim-semirrapida-desc' ) ],
+		consenso: [ ronda.msg( 'paginas-elim-consenso' ), ronda.msg( 'paginas-elim-consenso-desc' ) ]
+	};
+
+/** Detector de cópia (Earwig's Copyvio Detector), numa aba nova */
+ronda.copyvioUrl = function ( title ) {
+	return 'https://copyvios.toolforge.org/?' + $.param( {
+		lang: mw.config.get( 'wgContentLanguage' ) || 'pt',
+		project: 'wikipedia',
+		title: title,
+		use_engine: 1,
+		use_links: 1,
+		turnitin: 0,
+		action: 'search'
+	} );
+};
+
+/**
+ * Tipo sugerido pelo tamanho e pela idade da página.
+ * @param {Object} o { length, created (ms), now (ms), ns }
+ * @param {Array} available ids disponíveis, na ordem de TYPES
+ * @return {Object} { id, reason }
+ */
+function suggestType( o, available ) {
+	var days = o.created ? ( o.now - o.created ) / DAY : Infinity,
+		want;
+
+	if ( o.length !== undefined && o.length < 500 ) {
+		want = { id: 'rapida', reason: ronda.msg( 'paginas-elim-sug-curta', o.length ) };
+	} else if ( o.ns === 0 && days < 7 ) {
+		want = { id: 'semirrapida', reason: ronda.msg( 'paginas-elim-sug-nova', Math.max( 1, Math.round( days ) ) ) };
+	} else {
+		want = { id: 'consenso', reason: ronda.msg( 'paginas-elim-sug-antiga' ) };
+	}
+	if ( available.indexOf( want.id ) === -1 ) {
+		want = { id: available[ 0 ], reason: '' };
+	}
+	return want;
+}
+
+ronda.elimination = { suggest: suggestType };
+
+function open( ctx ) {
+	var available = TYPES.filter( function ( id ) {
+		var m = ronda.getModule( id );
+
+		return m && m.isAvailable( ctx );
+	} );
+
+	ronda.api.get( {
+		action: 'query',
+		titles: ctx.page,
+		prop: 'info|revisions',
+		rvdir: 'newer',
+		rvlimit: 1,
+		rvprop: 'timestamp'
+	} ).then( function ( data ) {
+		var p = ( data.query.pages || [] )[ 0 ] || {};
+
+		return { length: p.length, created: p.revisions ? Date.parse( p.revisions[ 0 ].timestamp ) : null };
+	}, function () {
+		return $.Deferred().resolve( {} ).promise();
+	} ).then( function ( info ) {
+		var sug = suggestType( { length: info.length, created: info.created, now: Date.now(), ns: ctx.ns }, available ),
+			name = 'ronda-elim-' + ( ++open.n ),
+			$list = $( '<div class="ronda-elim-types"></div>' ),
+			$content = $( '<div></div>' ),
+			$dlg;
+
+		available.forEach( function ( id ) {
+			var $radio = $( '<input type="radio">' ).attr( { name: name, value: id, id: name + '-' + id } ).prop( 'checked', id === sug.id ),
+				$opt = $( '<label class="ronda-elim-type"></label>' ).attr( 'for', name + '-' + id ).append(
+					$radio,
+					$( '<b></b>' ).text( ' ' + NAMES[ id ][ 0 ] ),
+					id === sug.id ? $( '<span class="ronda-elim-sug"></span>' ).text( ronda.msg( 'paginas-elim-sugerida' ) ) : null,
+					$( '<span class="ronda-elim-desc"></span>' ).text( NAMES[ id ][ 1 ] )
+				);
+
+			$list.append( $opt );
+		} );
+		$content.append( $list );
+		if ( sug.reason ) {
+			$content.append( $( '<p class="ronda-elim-why"></p>' ).text( ronda.msg( 'paginas-elim-por-que', sug.reason ) ) );
+		}
+		if ( ctx.ns === 0 ) {
+			$content.append( $( '<p class="ronda-elim-vda"></p>' ).append(
+				$( '<a target="_blank" rel="noopener"></a>' ).attr( 'href', ronda.copyvioUrl( ctx.page ) ).text( ronda.msg( 'paginas-detectar-vda' ) ),
+				document.createTextNode( ' — ' + ronda.msg( 'paginas-detectar-vda-dica' ) )
+			) );
+		}
+
+		$dlg = ronda.ui.dialog( {
+			title: ronda.msg( 'paginas-elim-titulo', ctx.page ),
+			width: 560,
+			content: $content,
+			buttons: [ {
+				text: ronda.msg( 'paginas-elim-continuar' ),
+				'class': 'ui-priority-primary ui-button-blue',
+				click: function () {
+					var id = $list.find( 'input:checked' ).val();
+
+					ronda.ui.close( $dlg );
+					ronda.getModule( id ).open( ctx );
+				}
+			}, {
+				text: ronda.msg( 'core-cancelar' ),
+				click: function () {
+					ronda.ui.close( $dlg );
+				}
+			} ]
+		} );
+	} );
+}
+open.n = 0;
+
+ronda.registerModule( {
+	id: 'eliminacao',
+	label: ronda.msg( 'paginas-elim-botao' ),
+	title: ronda.msg( 'paginas-elim-dica' ),
+	order: 26,
+	isAvailable: function ( ctx ) {
+		return TYPES.some( function ( id ) {
+			var m = ronda.getModule( id );
+
+			try {
+				return m && m.isAvailable( ctx );
+			} catch ( e ) {
+				return false;
+			}
+		} );
 	},
 	open: open
 } );
@@ -9484,7 +9823,7 @@ function done( $dlg, message, url ) {
 
 function openRedirect( ctx ) {
 	var isCat = ctx.ns === 14,
-		$target = prefixSearch( ronda.ui.text( '', ronda.msg( 'paginas-pagina-de-destino' ) ), ctx.ns ),
+		$target = prefixSearch( ronda.ui.text( ctx.prefill || '', ronda.msg( 'paginas-pagina-de-destino' ) ), ctx.ns ),
 		$reason = ronda.ui.text( '', isCat ? ronda.msg( 'paginas-motivo-obrigatorio-em-categorias' ) : ronda.msg( 'paginas-motivo-opcional' ) ),
 		$dlg;
 
@@ -9529,6 +9868,13 @@ function openRedirect( ctx ) {
 			ronda.ui.row( ronda.msg( 'core-motivo' ), $reason )
 		),
 		buttons: [ { text: ronda.msg( 'paginas-redirecionar' ), 'class': 'ui-priority-primary ui-button-blue', click: submit },
+			{ text: ronda.msg( 'core-previa-botao' ), click: function () {
+				var target = $target.val().trim();
+
+				if ( ronda.ui.require( $target, !!target && target !== ctx.page ) ) {
+					ronda.ui.previewEdit( ctx.page, redirectText( ctx.ns, target, $reason.val().trim() ) );
+				}
+			} },
 			{ text: ronda.msg( 'core-cancelar' ), click: function () {
 				ronda.ui.close( $dlg );
 			} } ]
@@ -9605,6 +9951,11 @@ function openStub( ctx ) {
 			width: 480,
 			content: ronda.ui.row( 'Esboço-', $theme ),
 			buttons: [ { text: ronda.msg( 'paginas-marcar' ), 'class': 'ui-priority-primary ui-button-blue', click: submit },
+				{ text: ronda.msg( 'core-previa-botao' ), click: function () {
+					var theme = $theme.val().trim();
+
+					ronda.ui.previewEdit( ctx.page, addStub( text, theme ? 'Esboço-' + theme : 'Esboço' ) );
+				} },
 				{ text: ronda.msg( 'core-cancelar' ), click: function () {
 					ronda.ui.close( $dlg );
 				} } ]
@@ -9616,7 +9967,7 @@ function openStub( ctx ) {
 
 function openMerge( ctx ) {
 	var $page1 = prefixSearch( ronda.ui.text( ctx.page, ronda.msg( 'paginas-pagina-que-permanecera' ) ), ctx.ns ),
-		$page2 = prefixSearch( ronda.ui.text( '', ronda.msg( 'paginas-pagina-que-sera-fundida-com-a' ) ), ctx.ns ),
+		$page2 = prefixSearch( ronda.ui.text( ctx.prefill || '', ronda.msg( 'paginas-pagina-que-sera-fundida-com-a' ) ), ctx.ns ),
 		$progress = $( '<div class="ronda-progress"></div>' ).hide(),
 		$log = $( '<ul class="ronda-log"></ul>' ),
 		$dlg, run;
@@ -10148,6 +10499,69 @@ function soft( promise ) {
 	} );
 }
 
+/** Título sem o qualificador entre parênteses, em minúsculas e sem acentos */
+function titleKey( t ) {
+	return String( t ).replace( /\s*\([^)]*\)\s*$/, '' ).normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+		.toLowerCase().replace( /[^a-z0-9]+/g, ' ' ).trim();
+}
+
+/** Semelhança de Dice entre os pares de letras de dois títulos (0 a 1) */
+function titleSimilarity( a, b ) {
+	var pa = {}, n = 0, hits = 0, i, k;
+
+	a = titleKey( a );
+	b = titleKey( b );
+	if ( !a || !b ) {
+		return 0;
+	}
+	if ( a === b ) {
+		return 1;
+	}
+	for ( i = 0; i < a.length - 1; i++ ) {
+		k = a.substr( i, 2 );
+		pa[ k ] = ( pa[ k ] || 0 ) + 1;
+		n++;
+	}
+	for ( i = 0; i < b.length - 1; i++ ) {
+		k = b.substr( i, 2 );
+		if ( pa[ k ] ) {
+			pa[ k ]--;
+			hits++;
+		}
+	}
+	return ( 2 * hits ) / ( n + b.length - 1 );
+}
+
+/** Até 3 resultados da busca com título parecido (sem a própria página) */
+function similarTitles( title, results ) {
+	return results.map( function ( r ) {
+		return { title: r.title, score: titleSimilarity( title, r.title ) };
+	} ).filter( function ( r ) {
+		return r.title !== title && r.score >= 0.72;
+	} ).sort( function ( x, y ) {
+		return y.score - x.score;
+	} ).slice( 0, 3 ).map( function ( r ) {
+		return r.title;
+	} );
+}
+
+/** A página existe e já foi eliminada antes da criação atual? Devolve o registro ou null */
+function recreation( data, title ) {
+	var q = data.main.query,
+		log = ( q.logevents || [] )[ 0 ],
+		first = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ],
+		page = ( q.pages || [] ).filter( function ( p ) {
+			return p.title === title && !p.missing;
+		} )[ 0 ];
+
+	if ( !log || !page || !first ) {
+		return null;
+	}
+	return Date.parse( log.timestamp ) <= Date.parse( first.timestamp ) ? log : null;
+}
+
+ronda.infoTools = { titleSimilarity: titleSimilarity, similarTitles: similarTitles, recreation: recreation };
+
 /**
  * Dados do painel Informações, buscados uma vez por página (também em segundo plano).
  * @return {jQuery.Promise} { main, first, revisions, deleted, patrol, views, autoQuality }
@@ -10201,9 +10615,13 @@ function loadInfo( ctx ) {
 				} )[ 0 ];
 
 				return ctx.ns === 0 && p && p.lastrevid && !ctx.isMainPage ? autoQuality( ctx, p.lastrevid ) : null;
-			} )
-		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
-			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk };
+			} ),
+			// Títulos parecidos (artigos): uma busca pelo título
+			ctx.ns === 0 && ctx.exists && !ctx.isMainPage ? soft( ronda.api.get( { action: 'query', list: 'search',
+				srsearch: ctx.title, srnamespace: 0, srlimit: 10, srinfo: '', srprop: '' } ) ) : null
+		).then( function ( m, first, revs, deleted, patrol, views, lw, search ) {
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk,
+				similar: similarTitles( ctx.title, ( ( search && search.query ) || {} ).search || [] ) };
 		} );
 	} );
 }
@@ -10215,7 +10633,7 @@ function renderInfo( $panel, ctx, data ) {
 		addTo = ronda.ui.addTo,
 		page, peExists, talkPage, quality, firstRev, contributors, anon, total, unpatrolled, newRc,
 		maintenance, wikidata, langs, refs, $catLinks = $( '#mw-normal-catlinks a' ).not( ':first' ),
-		$status, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view;
+		$status, $recreated, $similar, $protect, $creation, $edits, $content, $maint, $links, $patrol, $audience, $actions, $view, rec;
 
 	function flag( ok, what, href ) {
 		var $c = ok && href ? $( '<a></a>' ).attr( 'href', href ) : $( '<span></span>' );
@@ -10235,6 +10653,8 @@ function renderInfo( $panel, ctx, data ) {
 	talkPage = data.talk && byTitle[ data.talk ];
 
 	$status = L.row( ronda.msg( 'paginas-info-situacao' ) );
+	$recreated = L.row( ronda.msg( 'paginas-info-recriacao' ) );
+	$similar = L.row( ronda.msg( 'paginas-info-parecidas' ) );
 	$protect = L.row( ronda.msg( 'paginas-info-protecao' ) );
 	$creation = L.row( ronda.msg( 'paginas-info-criacao' ) );
 	$edits = L.row( ronda.msg( 'paginas-info-edicoes' ) );
@@ -10262,6 +10682,34 @@ function renderInfo( $panel, ctx, data ) {
 				a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), formatDateTime( q.logevents[ 0 ].timestamp ) ) ) );
 		}
 	}
+
+	// Recriação: já foi eliminada antes da criação atual
+	rec = !page.missing && recreation( data, ctx.page );
+	if ( rec ) {
+		$recreated.append( $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-recriada', formatDateTime( rec.timestamp ) ) ) );
+		if ( rec.comment ) {
+			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( rec.comment.replace( /<[^>]+>/g, '' ) ) );
+		}
+		addTo( $recreated, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
+		if ( ronda.can( 'protect' ) ) {
+			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'paginas-info-recriada-proteger' ) ) );
+		}
+	}
+
+	// Títulos parecidos: fusão ou redirecionamento
+	( data.similar || [] ).forEach( function ( t ) {
+		addTo( $similar, [ a( mw.util.getUrl( t ), t ), document.createTextNode( ' (' ),
+			ronda.getModule( 'fusao' ) ? $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-fundir' ) ).on( 'click', function ( e ) {
+				e.preventDefault();
+				ronda.getModule( 'fusao' ).open( $.extend( {}, ctx, { prefill: t } ) );
+			} ) : null,
+			ronda.getModule( 'fusao' ) && ronda.getModule( 'redirecionar' ) ? document.createTextNode( ' · ' ) : null,
+			ronda.getModule( 'redirecionar' ) ? $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-redirecionar-para' ) ).on( 'click', function ( e ) {
+				e.preventDefault();
+				ronda.getModule( 'redirecionar' ).open( $.extend( {}, ctx, { prefill: t } ) );
+			} ) : null,
+			document.createTextNode( ')' ) ] );
+	} );
 
 	// Proteção
 	if ( !page.missing || ( page.protection || [] ).length ) {
@@ -10402,6 +10850,11 @@ function renderInfo( $panel, ctx, data ) {
 			( page.watchers ? String( page.watchers ) : ronda.msg( 'paginas-poucos-ou-nenhum' ) ) ) );
 	}
 
+	// Detector de cópia (VDA), para artigos
+	if ( ctx.ns === 0 && !page.missing ) {
+		addTo( $actions, a( ronda.copyvioUrl( ctx.page ), ronda.msg( 'paginas-detectar-vda' ), true ).attr( 'title', ronda.msg( 'paginas-detectar-vda-dica' ) ) );
+	}
+
 	// Ver
 	addTo( $view, a( mw.util.getUrl( ctx.page, { action: 'history' } ), ronda.msg( 'paginas-info-historico' ) ) );
 	addTo( $view, a( mw.util.getUrl( 'Special:Log', { page: ctx.page } ), ronda.msg( 'paginas-registros' ).toLowerCase() ) );
@@ -10454,11 +10907,24 @@ function openInfo( ctx ) {
 	} );
 }
 
+/** Selo de alerta no botão Informações quando a página é uma recriação */
+function markRecreation( ctx ) {
+	if ( !ronda.isPageContext( ctx ) || !ctx.exists ) {
+		return;
+	}
+	loadInfo( ctx ).then( function ( data ) {
+		var rec = recreation( data, ctx.page );
+
+		$( '#ronda-toolbar .ronda-btn-info' ).toggleClass( 'ronda-btn-alert', !!rec )
+			.attr( 'data-alerta', rec ? ronda.msg( 'paginas-info-recriada-curto' ) : null );
+	} );
+}
+
 function prefetchInfo( ctx ) {
 	var parts = infoParts( ctx );
 
 	if ( parts.page ) {
-		loadInfo( ctx );
+		markRecreation( ctx );
 	}
 	if ( parts.user ) {
 		ronda.userPanel.load( ctx );

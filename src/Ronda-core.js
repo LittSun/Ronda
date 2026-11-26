@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.23',
+		version: '0.7.24',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -803,6 +803,39 @@ ronda.ui.dialog = function ( opts ) {
 	return $dlg;
 };
 
+/**
+ * Prévia de uma edição: o diff entre a versão atual da página e o texto novo,
+ * numa janela à parte (como a prévia dos avisos). Nada é gravado.
+ * @param {string} title
+ * @param {string} text Texto novo da página
+ */
+ronda.ui.previewEdit = function ( title, text ) {
+	return $.when( mw.loader.using( 'mediawiki.diff.styles' ).then( null, function () {
+		return null;
+	} ), ronda.api.post( {
+		action: 'compare',
+		fromtitle: title,
+		toslots: 'main',
+		'totext-main': text,
+		'tocontentmodel-main': 'wikitext',
+		topst: true,
+		prop: 'diff',
+		formatversion: 2
+	} ) ).then( function ( dummy, res ) {
+		var data = res && res.compare ? res : res && res[ 0 ],
+			body = data && data.compare && data.compare.body;
+
+		ronda.ui.dialog( {
+			title: ronda.msg( 'core-previa-titulo', title ),
+			width: 860,
+			content: body
+				? $( '<table class="diff ronda-preview-diff"></table>' ).append(
+					'<colgroup><col class="diff-marker"><col class="diff-content"><col class="diff-marker"><col class="diff-content"></colgroup>', body )
+				: $( '<p></p>' ).text( ronda.msg( 'core-previa-sem-mudancas' ) )
+		} );
+	}, ronda.fail );
+};
+
 ronda.ui.close = function ( $dlg ) {
 	$dlg.dialog( 'close' );
 };
@@ -1295,6 +1328,10 @@ ronda.renderToolbar = function () {
 	var $group, $adminGroup, $bar,
 		ctx = ronda.ctx,
 		available = ronda.modules.filter( function ( m ) {
+			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação)
+			if ( m.hidden ) {
+				return false;
+			}
 			// Um módulo com erro fica fora da barra, sem derrubar os demais
 			try {
 				return m.isAvailable( ctx );
@@ -1376,7 +1413,8 @@ ronda.THEMES = [
 	[ 'onibus', 'Ônibus' ],
 	[ 'web1', 'Web 1.0' ],
 	[ 'azulejo', 'Azulejo português' ],
-	[ 'newton', 'Newton' ]
+	[ 'newton', 'Newton' ],
+	[ 'pregao', 'Pregão' ]
 ];
 
 /**
@@ -2055,7 +2093,10 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Temas: escolha nas preferências ou no meta-painel a aparência da barra e das janelas, entre 20 opções (do Ronda original ao Terminal, à Bula, ao Azulejo português e ao s y n t h w a v e); a troca vale na hora'
+	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com uma sugestão de qual usar e o atalho Detectar VDA',
+	'Prévia opcional em Manutenção, Esboço, Redirecionar e nas propostas de eliminação',
+	'Informações avisa quando a página é recriação de uma já eliminada e mostra artigos de título parecido',
+	'Filas: prévia da edição ao deixar o mouse sobre ela; novo tema Pregão'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

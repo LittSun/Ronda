@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.23|0.7.23]]
+|versão             = [[/Changelog#0.7.24|0.7.24]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -58,11 +58,7 @@ A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; 
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Mover}} || Altera o título de uma página.
 |-
-| {{Usuário:Little Sunshine/Ronda/Botão|ER}} || Propõe [[WP:ER|eliminação rápida]].
-|-
-| {{Usuário:Little Sunshine/Ronda/Botão|ESR}} || Propõe [[WP:ESR|eliminação semirrápida]].
-|-
-| {{Usuário:Little Sunshine/Ronda/Botão|Consenso}} || Abre uma discussão de eliminação por consenso.
+| {{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} || Propõe a eliminação da página: [[WP:ER|rápida]], [[WP:ESR|semirrápida]] ou por consenso, com uma sugestão de qual usar.
 |-
 | {{Usuário:Little Sunshine/Ronda/Botão|Busca}} || Procura fontes sobre o assunto da página.
 |-
@@ -99,7 +95,7 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 
 {{Usuário:Little Sunshine/Ronda/Botão|Reverter}} permite voltar à versão da esquerda de uma diferença, partindo da versão atual. Se houver edições posteriores de outras pessoas, o diálogo as identifica e exige a opção '''Reverter mesmo assim'''. Quando o resultado é equivalente, reversores utilizam a reversão rápida. É possível acrescentar um comentário, marcar a edição como patrulhada quando essa opção existir e selecionar avisos para o autor; estes só são enviados após uma reversão bem-sucedida. O botão {{Usuário:Little Sunshine/Ronda/Botão|Reverter agora}} faz a reversão na hora, enquanto os avisos ainda estão sendo escolhidos; depois, basta clicar em {{Usuário:Little Sunshine/Ronda/Botão|Enviar aviso|tipo=azul}}.
 
-{{Usuário:Little Sunshine/Ronda/Botão|Filas}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar que a própria wiki aponta como provavelmente danosas, com as de provável má-fé primeiro (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
+{{Usuário:Little Sunshine/Ronda/Botão|Filas}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Ao deixar o mouse sobre uma entrada, aparece uma prévia: o diff da edição ou, para páginas novas e marcadas, o começo do texto. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar que a própria wiki aponta como provavelmente danosas, com as de provável má-fé primeiro (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
 
 === Avisos e informações de usuários ===
 {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe.
@@ -125,16 +121,20 @@ Nos artigos, o diálogo abre com dois painéis no topo:
 * {{Usuário:Little Sunshine/Ronda/Botão|Fusão}}: insere {{tl|f-de}} na página que permanece e {{tl|f-com}} na outra.
 * {{Usuário:Little Sunshine/Ronda/Botão|Não assinou}}: insere {{tl|Não assinou}} na posição do cursor ao editar discussões ou páginas do domínio Wikipédia.
 
-No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}}, {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}, {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}}, {{Usuário:Little Sunshine/Ronda/Botão|ER}} e {{Usuário:Little Sunshine/Ronda/Botão|ESR}} modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
+No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção}}, {{Usuário:Little Sunshine/Ronda/Botão|Esboço}}, {{Usuário:Little Sunshine/Ronda/Botão|Redirecionar}} e {{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} (rápida e semirrápida) modificam apenas a caixa de texto e o resumo, sem publicar automaticamente. Os avisos ao criador são enviados quando a edição é publicada.
 
 === Movimentação e eliminação ===
 {{Usuário:Little Sunshine/Ronda/Botão|Mover}} verifica a disponibilidade do novo título durante o preenchimento e antes de executar a ação. Se o destino existir, usuários com permissão de eliminação podem eliminá-lo pela regra R2, incluindo a discussão quando aplicável. Essa eliminação nunca vem marcada: é preciso marcar a opção e, se o destino não for um redirecionamento simples para a página, marcar também uma segunda caixa de confirmação. Com o destino ocupado, Enter não move nada. A opção de suprimir o redirecionamento da discussão é oferecida a quem tem esse direito. Ao mover a página raiz de um usuário, a discussão nunca é movida junto.
 
-* {{Usuário:Little Sunshine/Ronda/Botão|ER}}: apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
-* {{Usuário:Little Sunshine/Ronda/Botão|ESR}}: sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
-* {{Usuário:Little Sunshine/Ronda/Botão|Consenso}}: se já houver uma discussão de eliminação ainda não encerrada, não abre outra; se a anterior estiver encerrada (com {{tl|Nomeação concluída}}), pede confirmação para arquivá-la. Depois, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
+{{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} mostra os tipos de proposta que valem para a página, cada um com uma frase de explicação, e sugere um deles com o motivo: rápida para páginas muito curtas, semirrápida para artigos criados há poucos dias, por consenso para as demais. A escolha continua sendo de quem patrulha; ao continuar, abre o formulário do tipo escolhido. Em artigos, o diálogo traz também o link '''Detectar VDA''', que abre o [https://copyvios.toolforge.org/ detector de cópia] numa aba nova, já com a página preenchida.
 
-Uma página já marcada para outro processo de eliminação não pode receber ER, ESR ou consenso pelo Ronda.
+* '''Rápida''': apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
+* '''Semirrápida''': sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
+* '''Por consenso''': se já houver uma discussão de eliminação ainda não encerrada, não abre outra; se a anterior estiver encerrada (com {{tl|Nomeação concluída}}), pede confirmação para arquivá-la. Depois, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
+
+Uma página já marcada para outro processo de eliminação não pode receber outra proposta pelo Ronda.
+
+'''Prévia:''' Manutenção, Esboço, Redirecionar e as propostas rápida e semirrápida têm o botão '''Prévia''', que mostra o diff do que vai mudar na página antes de gravar, como a prévia dos avisos. Usá-la é opcional.
 
 === Ferramentas administrativas ===
 Estas ferramentas aparecem apenas para usuários com os direitos necessários. {{Usuário:Little Sunshine/Ronda/Botão|Eliminar|tipo=admin}} e {{Usuário:Little Sunshine/Ronda/Botão|Desligar|tipo=admin}} estão disponíveis a eliminadores e administradores; {{Usuário:Little Sunshine/Ronda/Botão|Restaurar|tipo=admin}} e {{Usuário:Little Sunshine/Ronda/Botão|Proteger|tipo=admin}}, a administradores. {{Usuário:Little Sunshine/Ronda/Botão|Lote|tipo=admin}} está disponível a eliminadores e administradores, conforme as ações permitidas. {{Usuário:Little Sunshine/Ronda/Botão|Bloquear|tipo=admin}} também pode ser usado por reversores, com limites específicos.
@@ -158,7 +158,7 @@ Cada edição é desfeita como no histórico (da última para a primeira). Se al
 === Buscas, informações e pedidos ===
 * {{Usuário:Little Sunshine/Ronda/Botão|Busca}}: pesquisa o título no Google, Google Notícias, Livros, Acadêmico, Google Brasil e Portugal e Bing.
 * {{Usuário:Little Sunshine/Ronda/Botão|PetScan}}: localiza páginas de uma categoria sem fontes, que precisam de revisão ou wikificação ou que são muito pequenas.
-* {{Usuário:Little Sunshine/Ronda/Botão|Informações}}: mostra, numa tabela, a situação da página (propostas e eliminações anteriores), a proteção atual, quem a criou e quando, o número de edições e de editores, tamanho e qualidade (inclusive a qualidade estimada automaticamente pelos critérios do quadro de parâmetros de qualidade, com o que falta para o nível seguinte e um link para ver todos os critérios, e a contagem de referências), as marcações de manutenção presentes, as ligações (categorias, afluentes do domínio principal, outras línguas e item no Wikidata), o que falta patrulhar e as visualizações dos últimos 30 dias. Páginas novas não patrulhadas podem ser marcadas como patrulhadas pelo próprio painel. Para páginas inexistentes, informa a data da eliminação, quando disponível.
+* {{Usuário:Little Sunshine/Ronda/Botão|Informações}}: mostra, numa tabela, a situação da página (propostas e eliminações anteriores; se a página é a recriação de uma já eliminada, avisa com o motivo da eliminação e um selo '''!''' no botão), títulos parecidos de outros artigos (com atalhos para propor fusão ou redirecionar), o link '''Detectar VDA''', a proteção atual, quem a criou e quando, o número de edições e de editores, tamanho e qualidade (inclusive a qualidade estimada automaticamente pelos critérios do quadro de parâmetros de qualidade, com o que falta para o nível seguinte e um link para ver todos os critérios, e a contagem de referências), as marcações de manutenção presentes, as ligações (categorias, afluentes do domínio principal, outras línguas e item no Wikidata), o que falta patrulhar e as visualizações dos últimos 30 dias. Páginas novas não patrulhadas podem ser marcadas como patrulhadas pelo próprio painel. Para páginas inexistentes, informa a data da eliminação, quando disponível.
 * {{Usuário:Little Sunshine/Ronda/Botão|Pedido}}: prepara solicitações de vandalismo, desproteção, edição, histórico, proteção, restauro, ocultação, nome impróprio, incidente e outros casos, com o alvo e o modelo da página de pedidos preenchidos.
 
 === Uso no celular ===
@@ -180,7 +180,7 @@ Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações
 Em '''Preferências… › Tema''', ou direto no meta-painel (clique em '''Ronda'''), é possível mudar a aparência da barra, dos painéis e das janelas do Ronda. A troca vale na hora, sem recarregar a página; nas preferências, a escolha aparece como prévia e só fica salva ao clicar em '''Salvar'''. O funcionamento é o mesmo em todos. Opções:
 * '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.
 * '''Ronda original (jQuery UI)''': a aparência das primeiras versões, com a barra clara e os botões e janelas no tema nativo da wiki; também segue o modo escuro.
-* Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''', '''Web 1.0''', '''Azulejo português''' e '''Newton'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
+* Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''', '''Web 1.0''', '''Azulejo português''', '''Newton''' e '''Pregão'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
 
 Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, logotipos nem marcas de terceiros. O arquivo de um tema só é carregado por quem o escolhe.
 

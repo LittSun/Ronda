@@ -32,3 +32,4 @@ O Ronda original funciona de outro jeito: o CSS principal só aplica o estilo no
 | web1.css | Web 1.0 |
 | azulejo.css | Azulejo português |
 | newton.css | Newton |
+| pregao.css | Pregão |

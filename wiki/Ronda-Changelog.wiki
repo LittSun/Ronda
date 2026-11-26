@@ -1,6 +1,15 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.23]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.24]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.24"></span>0.7.24 — 26/11/2026 ==
+* '''Propor eliminação''': um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação, e sugere um deles com o motivo (rápida para páginas com menos de 500 bytes, semirrápida para artigos criados há menos de 7 dias, por consenso para as demais); ao continuar, abre o formulário de sempre do tipo escolhido.
+* '''Prévia''' opcional, como a dos avisos, em Manutenção, Esboço, Redirecionar e nas propostas rápida e semirrápida: mostra o diff do que vai mudar na página, sem gravar nada.
+* '''Detectar VDA''': link para o detector de cópia (copyvios.toolforge.org) já com a página preenchida, no diálogo Propor eliminação e no painel Informações dos artigos.
+* '''Informações › Recriação''': quando a página foi eliminada antes da criação atual, o painel avisa com a data e o motivo, e o botão Informações ganha um selo '''!''' (também no carregamento em segundo plano). Para administradores, lembra de considerar a proteção contra criação se ela for eliminada de novo.
+* '''Informações › Parecidas''': até três artigos com título parecido, com atalhos para propor fusão ou redirecionar para eles (os diálogos já abrem preenchidos).
+* '''Filas''': prévia ao deixar o mouse sobre uma entrada — o diff da edição ou, para páginas novas e marcadas, o começo do texto.
+* Tema '''Pregão''': mesa de operações, com fita de cotações, setas de alta e baixa nos botões e gráfico no título das janelas (21 temas).
 
 == <span id="0.7.23"></span>0.7.23 — 26/11/2026 ==
 * '''Temas''': novo campo '''Tema''' nas preferências, que muda a aparência da barra, dos painéis e das janelas. São 20 opções: '''Padrão''' (cartão com título), '''Ronda original''' (a aparência até a 0.7.20, com a barra clara e o jQuery UI puro) e 18 temas próprios — Previsão do tempo, Prova (preto e branco), Passaporte, Volante de aposta, Bula, Bauhaus, Planta baixa, s y n t h w a v e, Brutalismo, Clássico em relevo, Retrô listrado, Terminal, Metrô, Boletim de ocorrência, Ônibus, Web 1.0, Azulejo português e Newton. Só CSS e fontes do sistema, sem imagens, logotipos ou marcas de terceiros; cada tema é um arquivo à parte (<code><nowiki>Ronda-tema-<nome>.css</nowiki></code>), carregado só por quem o escolhe.
