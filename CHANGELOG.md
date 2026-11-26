@@ -6,7 +6,6 @@ Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada
 ## 0.7.21 — 26/11/2026
 - **Informações** e **Usuário** viram um só botão, **Informações**, o primeiro da barra, com os dois painéis inteiros: nas contribuições, mostra o do usuário; nas páginas e discussões de usuário, o da página e, abaixo, o do usuário; nas demais páginas, só o da página. O carregamento em segundo plano vale para os dois.
 - Novos nomes: **Listar** passa a se chamar **Filas**, e **#R**, **Redirecionar**.
-- Barra no estilo do FastButtons: sem moldura, só a linha embaixo; botões com contorno fino, sem fundo nem sombra, em Tahoma. Ao passar o mouse, ficam verdes os que abrem um painel (Informações, Busca, PetScan, Filas), que também ficam verdes enquanto o painel está aberto, e vermelhos os que executam uma ação. As ações administrativas têm contorno tracejado. Os diálogos continuam como estavam.
 
 ## 0.7.20 — 25/11/2026
 - **Informar erro**: as informações técnicas fazem parte da mensagem; a assinatura vem no fim, depois delas.

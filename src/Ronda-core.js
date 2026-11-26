@@ -983,15 +983,11 @@ ronda.ui.togglePanel = function ( id, build ) {
 
 	if ( $panel ) {
 		$panel.toggle();
-	} else {
-		$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
-		build( $panel );
+		return $panel;
 	}
-	// Botão do painel aberto fica marcado
-	$( '#ronda-toolbar .ronda-btn' ).removeClass( 'ronda-btn-on' );
-	if ( $panel.is( ':visible' ) ) {
-		$( '#ronda-toolbar .ronda-btn-' + id ).addClass( 'ronda-btn-on' );
-	}
+
+	$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
+	build( $panel );
 	return $panel;
 };
 
@@ -1245,7 +1241,7 @@ ronda.renderToolbar = function () {
 
 	available.forEach( function ( mod ) {
 		$( '<button type="button"></button>' )
-			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) + ( mod.panel ? ' ronda-btn-panel' : '' ) )
+			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) )
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
@@ -1677,8 +1673,7 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  */
 ronda.news = [
 	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações, o primeiro da barra; em páginas de usuário ele mostra a página e o usuário',
-	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
-	'Botões da barra no estilo do FastButtons: verde abre painéis, vermelho executa ações'
+	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

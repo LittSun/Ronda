@@ -19,10 +19,11 @@
 	align-items: center;
 	gap: 0.4em 0.6em;
 	margin: 0.5em 0 0.8em;
-	padding: 0.3em 0 0.4em;
+	padding: 0.3em 0.5em;
 	font-size: 0.875em;
-	background-color: inherit;
-	border-bottom: 1px solid var( --border-color-base, #aaa );
+	background: var( --background-color-neutral-subtle, #f8f9fa );
+	border: 1px solid var( --border-color-subtle, #c8ccd1 );
+	border-radius: 2px;
 }
 
 #ronda-toolbar .ronda-brand img {
@@ -43,54 +44,19 @@
 	border-left: 1px solid var( --border-color-subtle, #c8ccd1 );
 }
 
-/*
- * Botões da barra no estilo do FastButtons: contorno fino na cor do texto, sem
- * fundo nem sombra. Ao passar o mouse, verde nos que abrem um painel (e no painel
- * aberto) e vermelho nos que executam uma ação. O tema do jQuery UI usa !important
- * no fundo e na borda; por isso também aqui.
- */
 #ronda-toolbar .ronda-btn.ui-button {
-	margin: 0 0.15em;
-	font-family: Tahoma, Geneva, sans-serif;
+	margin: 0;
 	font-size: 1em;
-	font-weight: normal;
-	color: inherit !important;
-	background: transparent !important;
-	border: 1px solid var( --color-base, #202122 ) !important;
-	border-radius: 0.2em !important;
-	box-shadow: none !important;
-	cursor: pointer;
 }
 
 /* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */
 #ronda-toolbar .ronda-btn .ui-button-text {
-	padding: 0.1em 0.6em;
+	padding: 0.2em 0.7em;
 }
 
-#ronda-toolbar .ronda-btn-panel.ui-button.ui-state-hover,
-#ronda-toolbar .ronda-btn-panel.ui-button.ui-state-focus,
-#ronda-toolbar .ronda-btn-on.ui-button {
-	color: #fff !important;
-	background: #038d64 !important;
-	border-color: #038d64 !important;
-}
-
-#ronda-toolbar .ronda-btn.ui-button:not( .ronda-btn-panel ).ui-state-hover,
-#ronda-toolbar .ronda-btn.ui-button:not( .ronda-btn-panel ).ui-state-focus {
-	color: #fff !important;
-	background: #b60000 !important;
-	border-color: #b60000 !important;
-}
-
-/* Ações administrativas: texto vermelho e contorno tracejado */
+/* Ações administrativas em vermelho */
 #ronda-toolbar .ronda-btn-admin.ui-button {
-	color: var( --color-destructive, #b60000 ) !important;
-	border-style: dashed !important;
-}
-
-#ronda-toolbar .ronda-btn-admin.ui-button.ui-state-hover,
-#ronda-toolbar .ronda-btn-admin.ui-button.ui-state-focus {
-	border-style: solid !important;
+	color: var( --color-destructive, #d73333 );
 }
 
 /* Marca do modo de simulação */
@@ -619,6 +585,7 @@
  * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.
  * ------------------------------------------------------------------ */
 
+html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-default,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle, #27292d ) !important;
 	border-color: var( --border-color-base, #72777d ) !important;
@@ -626,16 +593,22 @@ html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( 
 	box-shadow: none;
 }
 
+html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-hover,
+html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-focus,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
 	color: var( --color-emphasized, #f8f9fa );
 }
 
+html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-active,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
 }
 
+html.skin-theme-clientpref-night #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: var( --color-destructive, #fd7865 );
+}
 
 html.skin-theme-clientpref-night .ronda-dialog.ui-dialog,
 html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-content,
@@ -735,6 +708,7 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 }
 
 @media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-default,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle, #27292d ) !important;
 		border-color: var( --border-color-base, #72777d ) !important;
@@ -742,16 +716,22 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 		box-shadow: none;
 	}
 
+	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-hover,
+	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-focus,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
 		color: var( --color-emphasized, #f8f9fa );
 	}
 
+	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-active,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
 	}
 
+	html.skin-theme-clientpref-os #ronda-toolbar .ronda-btn-admin.ui-button {
+		color: var( --color-destructive, #fd7865 );
+	}
 
 	html.skin-theme-clientpref-os .ronda-dialog.ui-dialog,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-content,

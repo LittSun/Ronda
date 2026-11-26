@@ -3166,7 +3166,6 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'busca',
-	panel: true,
 	label: ronda.msg( 'paginas-busca' ),
 	title: ronda.msg( 'paginas-opcoes-para-a-busca-de-fontes' ),
 	order: 40,
@@ -3178,7 +3177,6 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'petscan',
-	panel: true,
 	label: ronda.msg( 'paginas-petscan' ),
 	title: ronda.msg( 'paginas-procurar-paginas-nesta-categoria-com-o' ),
 	order: 40,
@@ -3190,7 +3188,6 @@ ronda.registerModule( {
 
 ronda.registerModule( {
 	id: 'info',
-	panel: true,
 	label: ronda.msg( 'paginas-informacoes' ),
 	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina-ou-usuario' ),
 	order: 1,

@@ -2549,7 +2549,6 @@ function open() {
 
 ronda.registerModule( {
 	id: 'listar',
-	panel: true,
 	label: ronda.msg( 'patrulha-listar-botao' ),
 	title: ronda.msg( 'patrulha-paginas-vigiadas-mudancas-recentes-paginas-novas' ),
 	order: 48,
