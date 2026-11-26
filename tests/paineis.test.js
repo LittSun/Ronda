@@ -108,7 +108,7 @@ test( 'Informações nas contribuições: só o usuário, com pré-carregamento'
 	assert.match( a.$( '#ronda-toolbar' ).text(), /Edições: 5/ );
 } );
 
-test( 'Informações numa página de usuário existente: usuário e página juntos', async () => {
+test( 'Informações numa página de usuário: página e usuário juntos, a página primeiro', async () => {
 	const a = criar( {
 		rights: [ 'edit' ],
 		ctx: { type: 'view', ns: 2, page: 'Usuário(a):Fulano', title: 'Fulano', exists: true, targetUser: 'Fulano' },
@@ -133,6 +133,7 @@ test( 'Informações numa página de usuário existente: usuário e página junt
 	assert.match( t, /Edições: 5/ );
 	assert.match( t, /Página: Usuário\(a\):Fulano/ );
 	assert.match( t, /321 bytes/ );
+	assert.ok( t.indexOf( 'Página:' ) < t.indexOf( 'Usuário: Fulano' ), 'página antes do usuário' );
 } );
 
 test( 'Informações num artigo: só a página', async () => {

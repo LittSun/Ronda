@@ -1676,7 +1676,7 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações; em páginas de usuário ele mostra o usuário e a página',
+	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações, o primeiro da barra; em páginas de usuário ele mostra a página e o usuário',
 	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
 	'Botões da barra no estilo do FastButtons: verde abre painéis, vermelho executa ações'
 ];

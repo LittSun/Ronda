@@ -3232,16 +3232,16 @@ function renderInfo( $panel, ctx, data ) {
 }
 
 /*
- * Informações reúne os painéis da página e do usuário:
- * - contribuições (e páginas de usuário inexistentes): só o do usuário;
- * - páginas de usuário existentes: os dois, o do usuário primeiro;
+ * Informações reúne, inteiros, os painéis da página e do usuário:
+ * - contribuições: só o do usuário;
+ * - páginas e discussões de usuário: os dois, o da página primeiro;
  * - demais páginas: só o da página.
  */
 function infoParts( ctx ) {
-	var user = !!( ronda.userPanel && ctx.targetUser && ronda.userPanel.isAvailable( ctx ) ),
-		page = ronda.isPageContext( ctx ) && ( !user || ctx.exists );
-
-	return { user: user, page: page };
+	return {
+		page: ronda.isPageContext( ctx ),
+		user: !!( ronda.userPanel && ctx.targetUser && ronda.userPanel.isAvailable( ctx ) )
+	};
 }
 
 function fillPageInfo( $el, ctx ) {
@@ -3254,24 +3254,21 @@ function fillPageInfo( $el, ctx ) {
 }
 
 function openInfo( ctx ) {
-	var parts = infoParts( ctx );
+	var parts = infoParts( ctx ),
+		both = parts.page && parts.user;
 
 	ronda.ui.togglePanel( 'info', function ( $panel ) {
-		var $user, $page;
-
-		if ( parts.user ) {
-			$user = $( '<div class="ronda-info-part"></div>' ).appendTo( $panel );
-			if ( parts.page ) {
-				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-usuario', ctx.targetUser ) ).insertBefore( $user );
-			}
-			ronda.userPanel.fill( $user, ctx );
-		}
 		if ( parts.page ) {
-			if ( parts.user ) {
+			if ( both ) {
 				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-pagina', ctx.page ) ).appendTo( $panel );
 			}
-			$page = $( '<div class="ronda-info-part"></div>' ).appendTo( $panel );
-			fillPageInfo( $page, ctx );
+			fillPageInfo( $( '<div class="ronda-info-part"></div>' ).appendTo( $panel ), ctx );
+		}
+		if ( parts.user ) {
+			if ( both ) {
+				$( '<div class="ronda-info-heading"></div>' ).text( ronda.msg( 'paginas-info-usuario', ctx.targetUser ) ).appendTo( $panel );
+			}
+			ronda.userPanel.fill( $( '<div class="ronda-info-part"></div>' ).appendTo( $panel ), ctx );
 		}
 	} );
 }
@@ -3279,11 +3276,11 @@ function openInfo( ctx ) {
 function prefetchInfo( ctx ) {
 	var parts = infoParts( ctx );
 
-	if ( parts.user ) {
-		ronda.userPanel.load( ctx );
-	}
 	if ( parts.page ) {
 		loadInfo( ctx );
+	}
+	if ( parts.user ) {
+		ronda.userPanel.load( ctx );
 	}
 }
 
@@ -3509,7 +3506,7 @@ ronda.registerModule( {
 	panel: true,
 	label: ronda.msg( 'paginas-informacoes' ),
 	title: ronda.msg( 'paginas-informacoes-sobre-a-pagina-ou-usuario' ),
-	order: 2,
+	order: 1,
 	isAvailable: function ( ctx ) {
 		var parts = infoParts( ctx );
 
