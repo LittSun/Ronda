@@ -131,6 +131,9 @@ Object.keys( FILES ).forEach( ( f ) => {
 	if ( !fs.existsSync( tdir ) ) {
 		return;
 	}
+	// Tira temas que deixaram de existir (renomeados ou removidos)
+	fs.readdirSync( out ).filter( ( f ) => /^Ronda-tema-.+\.css$/.test( f ) && !fs.existsSync( path.join( tdir, f.replace( /^Ronda-tema-/, '' ) ) ) )
+		.forEach( ( f ) => fs.unlinkSync( path.join( out, f ) ) );
 	fs.readdirSync( tdir ).filter( ( f ) => f.endsWith( '.css' ) ).sort().forEach( ( f ) => {
 		const code = fs.readFileSync( path.join( tdir, f ), 'utf8' ),
 			name = ( /tema "([^"]+)"/.exec( code ) || [ '', f ] )[ 1 ],

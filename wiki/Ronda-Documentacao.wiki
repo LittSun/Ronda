@@ -180,7 +180,7 @@ Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações
 Em '''Preferências… › Tema''' é possível mudar a aparência da barra, dos painéis e das janelas do Ronda. O funcionamento é o mesmo em todos. Opções:
 * '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.
 * '''Ronda original (jQuery UI)''': a aparência das primeiras versões, com a barra clara e os botões e janelas no tema nativo da wiki; também segue o modo escuro.
-* Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''', '''Web 1.0''', '''Azulejo português''' e '''Moderno (janelas arredondadas)'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
+* Temas de época e de objetos do dia a dia: '''Previsão do tempo''', '''Prova (preto e branco)''', '''Passaporte''', '''Volante de aposta''', '''Bula''', '''Bauhaus''', '''Planta baixa''', '''s y n t h w a v e''', '''Brutalismo''', '''Clássico em relevo''', '''Retrô listrado''', '''Terminal''', '''Metrô''', '''Boletim de ocorrência''', '''Ônibus''', '''Web 1.0''', '''Azulejo português''' e '''Newton'''. Cada um tem paleta própria e fixa, que não muda com o modo claro ou escuro.
 
 Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, logotipos nem marcas de terceiros. O arquivo de um tema só é carregado por quem o escolhe.
 

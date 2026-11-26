@@ -1054,7 +1054,7 @@ ronda.THEMES = [
 	[ 'onibus', 'Ônibus' ],
 	[ 'web1', 'Web 1.0' ],
 	[ 'azulejo', 'Azulejo português' ],
-	[ 'moderno', 'Moderno (janelas arredondadas)' ]
+	[ 'newton', 'Newton' ]
 ];
 
 ronda.applyTheme = function ( id ) {
