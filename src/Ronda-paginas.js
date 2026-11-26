@@ -3738,7 +3738,8 @@ function loadInfo( ctx ) {
 				list: 'logevents',
 				letype: 'delete',
 				letitle: ctx.page,
-				lelimit: 1
+				leprop: 'ids|title|type|user|timestamp|comment|parsedcomment|details',
+				lelimit: 20
 			}, ctx.ns % 2 === 0 ? {
 				// Afluentes vindos do domínio principal (sem nenhum, a página é órfã)
 				list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blnamespace: 0, blfilterredir: 'nonredirects'
@@ -3754,7 +3755,7 @@ function loadInfo( ctx ) {
 			// Total de edições (até 500)
 			soft( ronda.api.get( { action: 'query', titles: ctx.page, prop: 'revisions', rvprop: 'ids', rvlimit: 'max' } ) ),
 			ronda.can( 'deletedhistory' ) ? soft( ronda.api.get( { action: 'query', titles: ctx.page,
-				prop: 'deletedrevisions', drvprop: 'ids', drvlimit: 'max' } ) ) : null,
+				prop: 'deletedrevisions', drvprop: 'ids|user|timestamp', drvlimit: 'max' } ) ) : null,
 			// Patrulha: só quem pode patrulhar vê o que falta patrulhar
 			ronda.can( 'patrol' ) ? soft( ronda.api.get( { action: 'query', list: 'recentchanges', rctitle: ctx.page,
 				rcshow: '!patrolled', rcprop: 'ids|timestamp|user', rctype: 'new|edit', rclimit: 50 } ) ) : null,
@@ -3798,6 +3799,72 @@ function renderInfo( $panel, ctx, data ) {
 	( q.pages || [] ).forEach( function ( p ) {
 		byTitle[ p.title ] = p;
 	} );
+
+	/** Página inexistente: quem eliminou, por quê, quantas vezes, o que havia nela e o que ainda aponta para cá */
+	function renderMissing() {
+		var events = q.logevents || [],
+			deletions = events.filter( function ( e ) {
+				return e.action === 'delete';
+			} ),
+			last = deletions[ 0 ],
+			drevs, oldest, newest, editors = {};
+
+		if ( !last ) {
+			$status.append( $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
+			return;
+		}
+		$status.append( $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( last.timestamp ) ),
+			last.user ? [ document.createTextNode( ronda.msg( 'paginas-info-por' ) ), a( mw.util.getUrl( 'Special:Contributions/' + last.user ), last.user ) ] : null ) );
+		// Motivo com as ligações clicáveis (parsedcomment já vem saneado pelo MediaWiki)
+		if ( last.parsedcomment || last.comment ) {
+			addTo( $status, last.parsedcomment
+				? $( '<span class="ronda-feed-muted"></span>' ).html( last.parsedcomment )
+				: $( '<span class="ronda-feed-muted"></span>' ).text( last.comment ) );
+		}
+		addTo( $status, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), deletions.length > 1
+			? ronda.msg( 'paginas-info-eliminada-vezes', deletions.length + ( events.length >= 20 ? '+' : '' ) )
+			: ronda.msg( 'paginas-info-registro' ) ) );
+		if ( peExists ) {
+			addTo( $status, a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-info-discussao-pe' ) ) );
+		}
+
+		// O que havia: autor, período e editores das edições eliminadas (quem pode vê-las)
+		drevs = data.deleted && ( ( ( data.deleted.query.pages || [] )[ 0 ] || {} ).deletedrevisions || [] );
+		if ( drevs && drevs.length ) {
+			newest = drevs[ 0 ];
+			oldest = drevs[ drevs.length - 1 ];
+			drevs.forEach( function ( r ) {
+				editors[ r.user || '' ] = true;
+			} );
+			if ( !data.deleted[ 'continue' ] && oldest.user ) {
+				$creation.append( document.createTextNode( ronda.msg( 'paginas-info-criada-por' ) ),
+					a( mw.util.getUrl( 'Special:Contributions/' + oldest.user ), oldest.user ),
+					document.createTextNode( ronda.msg( 'paginas-info-em', formatDateTime( oldest.timestamp ) ) ) );
+			}
+			addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-edicoes-eliminadas' ) + ': ' ),
+				a( mw.util.getUrl( 'Special:Undelete/' + ctx.page ), drevs.length + ( data.deleted[ 'continue' ] ? '+' : '' ) ) ] );
+			addTo( $edits, document.createTextNode( ronda.msg( 'paginas-info-editores', Object.keys( editors ).length, '' ) ) );
+			if ( newest.user ) {
+				addTo( $edits, [ document.createTextNode( ronda.msg( 'paginas-ultima-edicao' ) + ': ' ),
+					document.createTextNode( formatDateTime( newest.timestamp ) + ' (' + newest.user + ')' ) ] );
+			}
+		}
+
+		// Ligações que ficaram vermelhas
+		if ( ctx.ns % 2 === 0 ) {
+			addTo( $links, ( q.backlinks || [] ).length
+				? a( mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ), ronda.msg( 'paginas-info-ainda-ligada' ) ).addClass( 'ronda-bad' )
+				: $( '<span></span>' ).text( ronda.msg( 'paginas-info-sem-ligacoes' ) ) );
+		}
+
+		// Restaurar (administradores)
+		if ( ronda.getModule( 'restaurar' ) && ronda.can( 'undelete' ) ) {
+			addTo( $actions, $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'admin-restaurar-botao' ).toLowerCase() ).on( 'click', function ( e ) {
+				e.preventDefault();
+				ronda.getModule( 'restaurar' ).open( ctx );
+			} ) );
+		}
+	}
 	page = byTitle[ ctx.page ] || ( q.pages || [] )[ 0 ] || {};
 	peExists = byTitle[ data.pe ] && !byTitle[ data.pe ].missing;
 	talkPage = data.talk && byTitle[ data.talk ];
@@ -3820,9 +3887,7 @@ function renderInfo( $panel, ctx, data ) {
 
 	// Situação
 	if ( page.missing ) {
-		$status.append( ( q.logevents || [] ).length
-			? $( '<span></span>' ).append( ronda.msg( 'paginas-eliminada-em' ), $( '<b></b>' ).text( formatDateTime( q.logevents[ 0 ].timestamp ) ) )
-			: $( '<span></span>' ).text( ronda.msg( 'paginas-info-nao-existe' ) ) );
+		renderMissing();
 	} else {
 		addTo( $status, peExists
 			? a( mw.util.getUrl( data.pe ), ronda.msg( 'paginas-ja-proposta-para-eliminacao' ) )

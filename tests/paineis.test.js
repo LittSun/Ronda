@@ -152,3 +152,42 @@ test( 'Informações num artigo: só a página', async () => {
 	await a.esperar( 60 );
 	assert.doesNotMatch( a.$( '#ronda-toolbar' ).text(), /Usuário:/ );
 } );
+
+test( 'Informações numa página eliminada: quem, por quê, quantas vezes, o que havia e o que ainda aponta', async () => {
+	const a = criar( {
+		rights: [ 'edit', 'deletedhistory' ],
+		ctx: { type: 'view', ns: 0, page: 'Apagada', title: 'Apagada', exists: false },
+		responder: ( p ) => {
+			if ( p.prop === 'deletedrevisions' ) {
+				return { query: { pages: [ { title: 'Apagada', deletedrevisions: [
+					{ user: 'Fulano', timestamp: '2026-11-26T12:00:00Z' },
+					{ user: 'Beltrano', timestamp: '2026-11-25T12:00:00Z' },
+					{ user: 'Fulano', timestamp: '2026-11-24T12:00:00Z' } ] } ] } };
+			}
+			if ( /info\|revisions\|categories/.test( p.prop || '' ) ) {
+				return { query: {
+					pages: [ { title: 'Apagada', ns: 0, missing: true }, { title: 'Wikipédia:Páginas para eliminar/Apagada', pageid: 5 } ],
+					logevents: [
+						{ action: 'delete', user: 'Admin', timestamp: '2026-11-26T17:44:00Z', comment: 'ER: [[WP:ER#A1|A1]]', parsedcomment: 'ER: <a href="/wiki/WP:ER#A1">A1</a>' },
+						{ action: 'restore', user: 'Admin', timestamp: '2026-11-20T10:00:00Z' },
+						{ action: 'delete', user: 'Outro', timestamp: '2026-11-10T10:00:00Z' } ],
+					backlinks: [ { title: 'X' } ] } };
+			}
+		}
+	} );
+
+	a.$( 'body' ).append( '<div id="ronda-toolbar"></div>' );
+	a.ronda.getModule( 'info' ).open( a.ronda.ctx );
+	await a.ate( () => /Eliminada em/.test( a.$( '#ronda-toolbar' ).text() ) );
+	const t = a.$( '#ronda-toolbar' ).text();
+
+	assert.match( t, /Eliminada em .* por Admin/ );
+	assert.match( t, /ER: A1/ );
+	assert.strictEqual( a.$( '#ronda-toolbar a[href="/wiki/WP:ER#A1"]' ).length, 1 );
+	assert.match( t, /eliminada 2 vezes/ );
+	assert.match( t, /discussão de eliminação/ );
+	assert.match( t, /por Beltrano|por Fulano em/ );
+	assert.match( t, /Edições eliminadas: 3/ );
+	assert.match( t, /Editores: 2/ );
+	assert.match( t, /ainda há ligações para cá/ );
+} );

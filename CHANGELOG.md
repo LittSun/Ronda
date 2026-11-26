@@ -9,6 +9,7 @@ Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada
 - **Detectar VDA**: link para o detector de cópia (copyvios.toolforge.org) já com a página preenchida, no diálogo Propor eliminação e no painel Informações dos artigos.
 - **Informações › Recriação**: quando a página foi eliminada antes da criação atual, o painel avisa com a data e o motivo, e o botão Informações ganha um selo **!** (também no carregamento em segundo plano). Para administradores, lembra de considerar a proteção contra criação se ela for eliminada de novo.
 - **Informações › Parecidas**: até três artigos com título parecido, com atalhos para propor fusão ou redirecionar para eles (os diálogos já abrem preenchidos).
+- **Informações numa página eliminada**: quem eliminou e quando, o motivo (com as ligações clicáveis), quantas vezes já foi eliminada, link para a discussão de eliminação, se houver, e se ainda há ligações do domínio principal para ela. Para quem vê edições eliminadas: autor original, número de edições e de editores e a última edição; administradores têm o atalho **restaurar**.
 - **Filas**: prévia ao deixar o mouse sobre uma entrada — o diff da edição ou, para páginas novas e marcadas, o começo do texto.
 - Tema **Pregão**: mesa de operações, com fita de cotações, setas de alta e baixa nos botões e gráfico no título das janelas (21 temas).
 
