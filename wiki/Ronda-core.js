@@ -775,11 +775,14 @@ ronda.ui.togglePanel = function ( id, build ) {
 
 	if ( $panel ) {
 		$panel.toggle();
-		return $panel;
+	} else {
+		$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
+		build( $panel );
 	}
-
-	$panel = panels[ id ] = $( '<div class="ronda-userpanel"></div>' ).appendTo( '#ronda-toolbar' );
-	build( $panel );
+	$( '#ronda-toolbar .ronda-btn' ).removeClass( 'ronda-btn-on' );
+	if ( $panel.is( ':visible' ) ) {
+		$( '#ronda-toolbar .ronda-btn-' + id ).addClass( 'ronda-btn-on' );
+	}
 	return $panel;
 };
 
@@ -1368,7 +1371,8 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
 	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações, o primeiro da barra; em páginas de usuário ele mostra a página e o usuário',
-	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar'
+	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
+	'Barra com cara nova: o nome Ronda numa aba escura, botões planos e o painel aberto marcado em azul'
 ];
 
 function saveOption( name, value ) {

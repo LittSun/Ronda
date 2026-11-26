@@ -13,17 +13,25 @@
  * Barra de botões da página
  * ------------------------------------------------------------------ */
 
+/*
+ * Estilo "cartão com título": o nome Ronda numa aba escura à esquerda e os
+ * botões planos dentro do cartão. O botão do painel aberto fica marcado com
+ * um traço azul embaixo. O tema do jQuery UI usa !important no fundo e na
+ * borda dos botões; por isso também aqui. As cores vêm das variáveis do Codex,
+ * que já mudam no modo escuro.
+ */
 #ronda-toolbar {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.4em 0.6em;
+	align-items: stretch;
+	gap: 0;
 	margin: 0.5em 0 0.8em;
-	padding: 0.3em 0.5em;
+	padding: 0;
 	font-size: 0.875em;
 	background: var( --background-color-neutral-subtle, #f8f9fa );
 	border: 1px solid var( --border-color-subtle, #c8ccd1 );
-	border-radius: 2px;
+	border-radius: 3px;
+	overflow: hidden;
 }
 
 #ronda-toolbar .ronda-brand img {
@@ -33,34 +41,66 @@
 }
 
 #ronda-toolbar .ronda-brand {
+	display: flex;
+	align-items: center;
+	padding: 0.45em 0.9em;
 	font-weight: bold;
-	color: var( --color-subtle, #54595d );
+	letter-spacing: 0.03em;
+	color: var( --color-inverted, #fff );
+	background: var( --background-color-inverted, #202122 );
 	cursor: default;
+}
+
+#ronda-toolbar .ronda-toolbar-group {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
 }
 
 /* Separador entre o grupo de patrulha e o administrativo */
 #ronda-toolbar .ronda-toolbar-admin {
-	padding-left: 0.6em;
+	margin-left: auto;
 	border-left: 1px solid var( --border-color-subtle, #c8ccd1 );
 }
 
 #ronda-toolbar .ronda-btn.ui-button {
 	margin: 0;
 	font-size: 1em;
+	font-weight: normal;
+	color: var( --color-base, #202122 ) !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
 }
 
 /* No jQuery UI 1.9 o espaçamento do botão fica em .ui-button-text */
 #ronda-toolbar .ronda-btn .ui-button-text {
-	padding: 0.2em 0.7em;
+	padding: 0.45em 0.8em;
+}
+
+#ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+#ronda-toolbar .ronda-btn.ui-button.ui-state-focus,
+#ronda-toolbar .ronda-btn.ui-button.ui-state-active {
+	background: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;
+}
+
+/* Botão do painel aberto */
+#ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: var( --color-progressive, #36c ) !important;
+	background: var( --background-color-base, #fff ) !important;
+	box-shadow: inset 0 -2px 0 var( --color-progressive, #36c ) !important;
 }
 
 /* Ações administrativas em vermelho */
 #ronda-toolbar .ronda-btn-admin.ui-button {
-	color: var( --color-destructive, #d73333 );
+	color: var( --color-destructive, #d73333 ) !important;
 }
 
 /* Marca do modo de simulação */
 #ronda-toolbar .ronda-dry {
+	align-self: center;
+	margin: 0 0.5em;
 	padding: 0.1em 0.5em;
 	font-size: 0.85em;
 }
@@ -68,15 +108,18 @@
 /* Faixas dentro da barra: Informações (página e usuário), Busca, PetScan, Filas */
 #ronda-toolbar .ronda-userpanel {
 	flex-basis: 100%;
-	padding-top: 0.3em;
+	padding: 0.4em 0.8em;
 	border-top: 1px solid var( --border-color-subtle, #c8ccd1 );
+	background: var( --background-color-base, #fff );
 	line-height: 1.6;
 }
 
 /* Boas-vindas (uma vez por conta) */
 #ronda-toolbar .ronda-welcome {
 	flex-basis: 100%;
-	padding: 0.4em 0.6em;
+	padding: 0.4em 0.8em;
+	border-top: 1px solid var( --border-color-subtle, #c8ccd1 );
+	background: var( --background-color-base, #fff );
 	line-height: 1.5;
 }
 
@@ -515,7 +558,8 @@
 
 #ronda-toolbar .ronda-brand-toggle:hover,
 #ronda-toolbar .ronda-brand-toggle:focus {
-	color: var( --color-progressive, #36c );
+	color: var( --color-inverted, #fff );
+	background: var( --background-color-progressive, #36c );
 }
 
 #ronda-toolbar .ronda-brand-caret {
@@ -547,7 +591,7 @@
 
 /* Faixa de novidades depois de uma atualização */
 #ronda-toolbar .ronda-userpanel.ronda-news {
-	padding: 0.4em 0.6em;
+	padding: 0.4em 0.8em;
 	border-top-width: 1px;
 }
 
@@ -567,7 +611,9 @@
 }
 
 #ronda-toolbar .ronda-prefs-link {
+	align-self: center;
 	margin-left: auto;
+	padding: 0 0.8em;
 	font-size: 0.9em;
 }
 
@@ -578,17 +624,11 @@
 
 /* Alvos de toque maiores */
 #ronda-toolbar.ronda-mobile .ronda-btn .ui-button-text {
-	padding: 0.45em 0.8em;
-}
-
-#ronda-toolbar.ronda-mobile .ronda-toolbar-group {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.3em;
+	padding: 0.65em 0.9em;
 }
 
 #ronda-toolbar.ronda-mobile .ronda-toolbar-admin {
-	padding-left: 0;
+	margin-left: 0;
 	border-left: 0;
 }
 
@@ -612,8 +652,8 @@
 }
 
 @media ( max-width: 720px ) {
-	#ronda-toolbar {
-		gap: 0.3em;
+	#ronda-toolbar .ronda-toolbar-admin {
+		border-left: 0;
 	}
 
 	.ronda-quick {
@@ -629,7 +669,6 @@
  * usar as variáveis do Codex. Os botões azul e vermelho ficam como estão.
  * ------------------------------------------------------------------ */
 
-html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-default,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle, #27292d ) !important;
 	border-color: var( --border-color-base, #72777d ) !important;
@@ -637,22 +676,16 @@ html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( 
 	box-shadow: none;
 }
 
-html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-hover,
-html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-focus,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
 	color: var( --color-emphasized, #f8f9fa );
 }
 
-html.skin-theme-clientpref-night #ronda-toolbar .ui-button.ui-state-active,
 html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
 	background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
 }
 
-html.skin-theme-clientpref-night #ronda-toolbar .ronda-btn-admin.ui-button {
-	color: var( --color-destructive, #fd7865 );
-}
 
 html.skin-theme-clientpref-night .ronda-dialog.ui-dialog,
 html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-content,
@@ -752,7 +785,6 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 }
 
 @media screen and ( prefers-color-scheme: dark ) {
-	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-default,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle, #27292d ) !important;
 		border-color: var( --border-color-base, #72777d ) !important;
@@ -760,22 +792,16 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 		box-shadow: none;
 	}
 
-	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-hover,
-	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-focus,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
 		color: var( --color-emphasized, #f8f9fa );
 	}
 
-	html.skin-theme-clientpref-os #ronda-toolbar .ui-button.ui-state-active,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
 		background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
 	}
 
-	html.skin-theme-clientpref-os #ronda-toolbar .ronda-btn-admin.ui-button {
-		color: var( --color-destructive, #fd7865 );
-	}
 
 	html.skin-theme-clientpref-os .ronda-dialog.ui-dialog,
 	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-content,
