@@ -87,7 +87,7 @@ test( 'SEC-01: destino com conteúdo só é eliminado com as duas caixas marcada
 
 	$d.find( '.ronda-move-confirm input' ).prop( 'checked', true );
 	mover();
-	await a.esperar( 60 );
+	await a.ate( () => a.escritas().length >= 2 );
 	assert.deepStrictEqual( a.escritas().map( ( c ) => c.action ), [ 'delete', 'move' ] );
 } );
 
@@ -98,7 +98,7 @@ test( 'SEC-01: destino livre, Enter move direto', async () => {
 
 	$t.val( 'Livre' ).trigger( 'input' );
 	tecla( $t, 'Enter' );
-	await a.esperar( 80 );
+	await a.ate( () => a.escritas().length > 0 );
 
 	assert.deepStrictEqual( a.escritas().map( ( c ) => c.action ), [ 'move' ] );
 } );
@@ -117,12 +117,13 @@ test( 'SEC-02: Lote › Proteger começa sem nível escolhido; "Remover proteç�
 	} );
 
 	a.ronda.getModule( 'lote' ).open( a.ronda.ctx, {} );
-	await a.esperar();
+	await a.ate( () => a.$( '.ronda-dialog .ronda-form select option[value=protect]' ).length > 0 );
 	const $d = a.$( '.ronda-dialog' ).last().find( '.ronda-form' );
-	const $selects = $d.find( 'select' );
-	const $acao = $selects.filter( ( i, el ) => a.$( el ).find( 'option[value=protect]' ).length );
+	const $acao = $d.find( 'select' ).filter( ( i, el ) => a.$( el ).find( 'option[value=protect]' ).length );
 
 	$acao.val( 'protect' ).trigger( 'change' );
+	await a.ate( () => $d.find( 'select option[value=all]' ).length >= 2 );
+	const $selects = $d.find( 'select' );
 	const $nivel = $selects.filter( ( i, el ) => a.$( el ).find( 'option[value=all]' ).length );
 	assert.strictEqual( $nivel.length, 2, 'edição e moção' );
 	$nivel.each( ( i, el ) => assert.strictEqual( a.$( el ).val(), '', 'sem nível pré-escolhido' ) );

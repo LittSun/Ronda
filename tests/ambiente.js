@@ -10,15 +10,29 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { JSDOM } = require( 'jsdom' );
+const { JSDOM, VirtualConsole } = require( 'jsdom' );
 
 const SRC = process.env.RONDA_SRC || path.join( __dirname, '..', 'src' );
 const ARQUIVOS = [ 'Ronda-mensagens.js', 'Ronda-core.js', 'Ronda-catalogo.js', 'Ronda-patrulha.js', 'Ronda-paginas.js', 'Ronda-admin.js' ];
 
+/** Console do jsdom sem o aviso de location.reload() ("navigation not implemented"), que não é erro do Ronda */
+function silencioso() {
+	const vc = new VirtualConsole();
+
+	vc.sendTo( console, { omitJSDOMErrors: true } );
+	vc.on( 'jsdomError', ( e ) => {
+		if ( !/navigation \(except hash changes\)/.test( e.message ) ) {
+			console.error( e );
+		}
+	} );
+	return vc;
+}
+
 function criar( opts ) {
 	opts = opts || {};
 	const dom = new JSDOM( '<!doctype html><html><body><div id="bodyContent"><div id="mw-content-text"></div></div></body></html>', {
-		runScripts: 'outside-only', pretendToBeVisual: true, url: 'https://pt.wikipedia.org/wiki/Teste'
+		runScripts: 'outside-only', pretendToBeVisual: true, url: 'https://pt.wikipedia.org/wiki/Teste',
+		virtualConsole: silencioso()
 	} );
 	const w = dom.window;
 	const calls = [];
@@ -152,6 +166,13 @@ function criar( opts ) {
 		consultas: consultas,
 		/** Espera as promessas pendentes (jQuery 3 resolve de forma assíncrona) */
 		esperar: ( ms ) => new Promise( ( ok ) => setTimeout( ok, ms || 30 ) ),
+		/** Espera até a condição valer (ou o prazo acabar): para testes que dependem de vários passos assíncronos */
+		ate: async ( cond, prazo ) => {
+			const fim = Date.now() + ( prazo || 3000 );
+			while ( !cond() && Date.now() < fim ) {
+				await new Promise( ( ok ) => setTimeout( ok, 20 ) );
+			}
+		},
 		escritas: ( acao ) => calls.filter( ( c ) => !acao || c.action === acao )
 	};
 }
