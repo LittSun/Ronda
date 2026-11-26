@@ -9,8 +9,15 @@ function ambienteInfo() {
 	return criar( {
 		rights: [ 'edit', 'patrol', 'deletedhistory' ],
 		ctx: { type: 'view', ns: 0, page: 'Teste', title: 'Teste', exists: true },
-		ajax: ( o ) => ( /pageviews/.test( o.url ) ? { items: [ { views: 100 }, { views: 23 } ] } : /articlequality/.test( o.url ) ? { score: 0.42 } : undefined ),
+		ajax: ( o ) => ( /pageviews/.test( o.url ) ? { items: [ { views: 100 }, { views: 23 } ] } : undefined ),
 		responder: ( p ) => {
+			if ( p.prop === 'revisions|templates' ) {
+				return { query: { pages: [ { title: 'Teste', revisions: [ { size: 1234, slots: { main: { content: 'Texto curto sobre [[Algo]].' } } } ],
+					templates: [ { title: 'Predefinição:Sem-fontes' } ] } ] } };
+			}
+			if ( p.list === 'categorymembers' ) {
+				return { query: { categorymembers: p.cmtype === 'page' ? [ { title: 'Predefinição:Sem-fontes' } ] : [] } };
+			}
 			if ( p.list === 'recentchanges' ) {
 				return { query: { recentchanges: [ { type: 'new', rcid: 99 }, { type: 'edit', rcid: 100 } ] } };
 			}
@@ -57,7 +64,8 @@ test( 'Informações: proteção, criação, editores, manutenção, ligações,
 	assert.match( t, /página nova não patrulhada/ );
 	assert.match( t, /1 edição não patrulhada/ );
 	assert.match( t, /123 visualizações/ );
-	assert.match( t, /estimada pelo LiftWing: 42%/ );
+	assert.match( t, /estimada automaticamente: 1/ );
+	assert.match( t, /para a 2 falta: .*ligações internas \(1; ≥ 10\)/ );
 	assert.match( t, /marcar como patrulhada/ );
 } );
 

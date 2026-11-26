@@ -2678,20 +2678,348 @@ function pageviews( title ) {
 	} );
 }
 
-function liftwingQuality( revid ) {
-	return $.ajax( {
-		url: 'https://api.wikimedia.org/service/lw/inference/v1/models/articlequality:predict',
-		method: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify( { rev_id: revid, lang: 'pt' } ),
-		dataType: 'json'
-	} ).then( function ( r ) {
-		var score = r && ( r.score !== undefined ? r.score : r.prediction !== undefined ? r.prediction : null );
+var QF = {
+	categoriaAvisos: 'Categoria:!Avisos para artigos com problemas',
+	profundidade: 3,
+	cacheAvisos: 24 * 60 * 60,
+	cacheResultado: 30 * 24 * 60 * 60,
+	larguraMinImagem: 60,
+	bytesMinParagrafo: 100,
+	bytesMaxParagrafo: 2500,
+	predQ2: [ 'Contexto', 'Reciclagem', 'Reciclar-sobre' ],
+	predQ3Extra: [ 'Esboço', 'Wikificação', 'Revisão' ],
+	predBom: [ 'Artigo bom' ],
+	predDestacado: [ 'Artigo destacado' ],
+	regexRef: /<ref[\s>\/]|\{\{\s*(?:sfn|sfnp|harvnb|harv|efn)\s*[|}]/i
+};
 
-		return typeof score === 'number' ? score : null;
-	}, function () {
+function qfBytes( s ) {
+	return unescape( encodeURIComponent( s ) ).length;
+}
+
+function qfFmt( n ) {
+	return Number( n ).toLocaleString( 'pt-BR' );
+}
+
+function qfRemoverRepetido( texto, re ) {
+	var anterior, i = 0;
+
+	do {
+		anterior = texto;
+		texto = texto.replace( re, '' );
+	} while ( texto !== anterior && ++i < 30 );
+	return texto;
+}
+
+function qfProsa( texto ) {
+	texto = qfRemoverRepetido( texto, /\{\{[^{}]*\}\}/g );
+	texto = texto.replace( /^\{\|[\s\S]*?^\|\}/gm, '' );
+	return texto.replace( /<ref[^>]*\/>/gi, '' ).replace( /<ref[^>]*>[\s\S]*?<\/ref>/gi, '' );
+}
+
+function qfTexto( wt ) {
+	var limpo = wt.replace( /<!--[\s\S]*?-->/g, '' )
+			.replace( /<(gallery|pre|syntaxhighlight|source|math|timeline|imagemap|score)\b[^>]*>[\s\S]*?<\/\1>/gi, '' ),
+		secoes = [ { nivel: 0, titulo: 'introdução', linhas: [] } ],
+		r = { n2: 0, n3: 0, paragrafos: 0, maxPar: 0, secaoMaiorPar: '', semRef: [] };
+
+	limpo.split( '\n' ).forEach( function ( linha ) {
+		var m = linha.match( /^(={1,6})\s*(.+?)\s*\1\s*$/ );
+
+		if ( m ) {
+			secoes.push( { nivel: m[ 1 ].length, titulo: m[ 2 ], linhas: [] } );
+		} else {
+			secoes[ secoes.length - 1 ].linhas.push( linha );
+		}
+	} );
+
+	secoes.forEach( function ( sec ) {
+		var bruto = sec.linhas.join( '\n' ),
+			validos = 0;
+
+		if ( sec.nivel === 2 ) {
+			r.n2++;
+		}
+		if ( sec.nivel === 3 ) {
+			r.n3++;
+		}
+		qfProsa( bruto ).split( /\n\s*\n/ ).map( function ( b ) {
+			return b.trim();
+		} ).filter( function ( b ) {
+			return b && !/^[*#:;|!]/.test( b ) && !/^\{\|/.test( b ) &&
+				!/^\[\[\s*(Categoria|Category|Ficheiro|File|Imagem|Image|Arquivo)\s*:[^\n]*\]\]$/i.test( b );
+		} ).forEach( function ( b ) {
+			var tam = qfBytes( b );
+
+			if ( tam > r.maxPar ) {
+				r.maxPar = tam;
+				r.secaoMaiorPar = sec.titulo;
+			}
+			if ( tam >= QF.bytesMinParagrafo ) {
+				validos++;
+			}
+		} );
+		r.paragrafos += validos;
+		if ( sec.nivel > 0 && validos > 1 && !QF.regexRef.test( bruto ) ) {
+			r.semRef.push( sec.titulo );
+		}
+	} );
+	r.secoes = r.n2 + Math.floor( r.n3 / 5 );
+	return r;
+}
+
+function qfLigacoes( wt ) {
+	var t = wt.replace( /<!--[\s\S]*?-->/g, '' ),
+		re = /\[\[([^\[\]|\n]+)/g,
+		ignorar = /^(Ficheiro|File|Imagem|Image|Arquivo|Categoria|Category)\s*:/i,
+		interwiki = /^(?:[a-z]{2,3}|[a-z]{2,3}-[a-z]+|commons|wikt|wikisource|wikidata|d|w|c|s|b|q|v|n)\s*:/i,
+		m, alvo, n = 0;
+
+	while ( ( m = re.exec( t ) ) !== null ) {
+		alvo = m[ 1 ].trim();
+		if ( alvo && alvo.charAt( 0 ) !== '#' && !ignorar.test( alvo ) && !interwiki.test( alvo ) ) {
+			n++;
+		}
+	}
+	return n;
+}
+
+function qfContagemTexto( wt ) {
+	var t = wt.replace( /<!--[\s\S]*?-->/g, '' ),
+		refs = ( t.match( /<ref(?:\s[^>]*[^\/])?>|\{\{\s*(?:sfn|sfnp|efn)\s*\|/gi ) || [] ).length,
+		imgs = ( t.match( /\[\[\s*(?:Ficheiro|File|Imagem|Image|Arquivo)\s*:/gi ) || [] ).length +
+			( t.match( /\|\s*(?:imagem|image|foto)\s*=\s*[^|\n{}]+\.(?:jpe?g|png|svg|gif|tiff?|webp)/gi ) || [] ).length;
+
+	return { refs: refs, imagens: imgs };
+}
+
+function qfContagemPagina() {
+	var n = 0;
+
+	$( '#mw-content-text .mw-parser-output img' ).each( function () {
+		var $i = $( this );
+
+		if ( !$i.closest( '.navbox,.navbar,.ambox,.metadata,.mbox-small,.noprint,.reference,.hatnote,.mw-editsection,.sistersitebox' ).length &&
+			( parseInt( $i.attr( 'width' ), 10 ) || 0 ) >= QF.larguraMinImagem ) {
+			n++;
+		}
+	} );
+	return { refs: $( '#mw-content-text ol.references > li' ).length, imagens: n };
+}
+
+function avaliarQualidade( art, avisos, cont ) {
+	var P = ( mw.config.get( 'wgFormattedNamespaces' ) || {} )[ 10 ] + ':',
+		tem = {},
+		t = qfTexto( art.content ),
+		links = qfLigacoes( art.content ),
+		niveis, estimado, alvo, maior, secoes;
+
+	art.templates.forEach( function ( x ) {
+		tem[ x ] = true;
+	} );
+
+	function presentes( nomes ) {
+		return nomes.filter( function ( n ) {
+			return tem[ P + n ];
+		} );
+	}
+	function item( nome, atual, meta, ok ) {
+		return { nome: nome, atual: String( atual ), meta: meta, ok: !!ok };
+	}
+	function lista( l ) {
+		return l.length ? 'presentes: ' + l.join( ', ' ) : 'nenhuma';
+	}
+	function todos( l ) {
+		return l.every( function ( i ) {
+			return i.ok;
+		} );
+	}
+
+	var q2Tpl = presentes( QF.predQ2 ),
+		q3Tpl = presentes( QF.predQ2.concat( QF.predQ3Extra ) ),
+		avisoTpl = art.templates.filter( function ( x ) {
+			return avisos[ x ];
+		} ).map( function ( x ) {
+			return x.slice( P.length );
+		} ),
+		bom = presentes( QF.predBom ).length > 0,
+		dest = presentes( QF.predDestacado ).length > 0;
+
+	maior = item( 'Parágrafo mais longo', qfFmt( t.maxPar ) + ' B' + ( t.maxPar > QF.bytesMaxParagrafo ? ' (em: ' + t.secaoMaiorPar + ')' : '' ),
+		'≤ ' + qfFmt( QF.bytesMaxParagrafo ) + ' B', t.maxPar <= QF.bytesMaxParagrafo );
+	secoes = t.secoes + ' (' + t.n2 + ' de nível 2, ' + t.n3 + ' de nível 3)';
+
+	niveis = [
+		{ n: 2, itens: [
+			item( 'Tamanho e referências', qfFmt( art.size ) + ' B, ' + cont.refs + ' ref.', '≥ 2 000 B com ≥ 1 ref., ou ≥ 8 000 B',
+				art.size >= 8000 || ( art.size >= 2000 && cont.refs >= 1 ) ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 10', links >= 10 ),
+			item( 'Parágrafos (≥ 100 B)', t.paragrafos, '≥ 5', t.paragrafos >= 5 ),
+			maior,
+			item( 'Predefinições proibidas (contexto, reciclagem, reciclar-sobre)', lista( q2Tpl ), 'nenhuma', !q2Tpl.length )
+		] },
+		{ n: 3, itens: [
+			item( 'Tamanho', qfFmt( art.size ) + ' B', '≥ 12 000 B', art.size >= 12000 ),
+			item( 'Referências', cont.refs, '≥ 5', cont.refs >= 5 ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 30', links >= 30 ),
+			item( 'Seções (nível 2 + 1 a cada 5 de nível 3)', secoes, '≥ 3', t.secoes >= 3 ),
+			item( 'Imagens', cont.imagens, '≥ 1', cont.imagens >= 1 ),
+			maior,
+			item( 'Predefinições proibidas (nível 2 + esboço, wikificação, revisão)', lista( q3Tpl ), 'nenhuma', !q3Tpl.length )
+		] },
+		{ n: 4, itens: [
+			item( 'Tamanho', qfFmt( art.size ) + ' B', '≥ 20 000 B', art.size >= 20000 ),
+			item( 'Referências', cont.refs, '≥ 10', cont.refs >= 10 ),
+			item( 'Ligações internas', qfFmt( links ), '≥ 50', links >= 50 ),
+			item( 'Seções (nível 2 + 1 a cada 5 de nível 3)', secoes, '≥ 5', t.secoes >= 5 ),
+			item( 'Imagens', cont.imagens, '≥ 2', cont.imagens >= 2 ),
+			maior,
+			item( 'Predefinições de aviso de "artigo com problemas"', lista( avisoTpl ), 'nenhuma', !avisoTpl.length ),
+			item( 'Referências em todas as seções com mais de um parágrafo',
+				t.semRef.length ? 'sem referência em: ' + t.semRef.join( '; ' ) : 'todas com referência', 'todas', !t.semRef.length )
+		] },
+		{ n: 5, itens: [ item( 'Predefinição "Artigo bom" (aprovado na EAD)', bom ? 'presente' : 'ausente', 'presente', bom ) ] },
+		{ n: 6, itens: [ item( 'Predefinição "Artigo destacado" (aprovado na EAD)', dest ? 'presente' : 'ausente', 'presente', dest ) ] }
+	];
+	niveis.forEach( function ( nv ) {
+		nv.ok = todos( nv.itens );
+	} );
+
+	estimado = 1;
+	if ( dest ) {
+		estimado = 6;
+	} else if ( bom ) {
+		estimado = 5;
+	} else {
+		[ 2, 3, 4 ].forEach( function ( n ) {
+			if ( niveis[ n - 2 ].ok ) {
+				estimado = n;
+			}
+		} );
+	}
+	alvo = estimado < 4 ? estimado + 1 : null;
+	return { estimado: estimado, alvo: alvo, niveis: niveis, aproximado: !!cont.aproximado };
+}
+
+function qfFaltam( res ) {
+	return res.alvo ? res.niveis[ res.alvo - 2 ].itens.filter( function ( i ) {
+		return !i.ok;
+	} ) : [];
+}
+
+ronda.quality = { avaliar: avaliarQualidade, texto: qfTexto, ligacoes: qfLigacoes, contagemTexto: qfContagemTexto, faltam: qfFaltam };
+
+function qfAvisos() {
+	var KEY = 'ronda-qualidade-avisos',
+		cache = mw.storage.getObject( KEY ),
+		titulos = {},
+		visitadas = {};
+
+	if ( cache && cache.length ) {
+		cache.forEach( function ( x ) {
+			titulos[ x ] = true;
+		} );
+		return $.Deferred().resolve( titulos ).promise();
+	}
+
+	function listar( cat, tipo, cont, out ) {
+		return ronda.api.get( $.extend( { action: 'query', list: 'categorymembers', cmtitle: cat, cmtype: tipo, cmlimit: 'max' }, cont ) )
+			.then( function ( r ) {
+				( r.query.categorymembers || [] ).forEach( function ( x ) {
+					out.push( x.title );
+				} );
+				return r[ 'continue' ] ? listar( cat, tipo, r[ 'continue' ], out ) : out;
+			} );
+	}
+	function percorrer( cat, prof ) {
+		if ( visitadas[ cat ] ) {
+			return $.Deferred().resolve().promise();
+		}
+		visitadas[ cat ] = true;
+		return listar( cat, 'page', {}, [] ).then( function ( pags ) {
+			pags.forEach( function ( x ) {
+				titulos[ x ] = true;
+			} );
+			return prof > 0 ? listar( cat, 'subcat', {}, [] ).then( function ( subs ) {
+				return subs.reduce( function ( p, sub ) {
+					return p.then( function () {
+						return percorrer( sub, prof - 1 );
+					} );
+				}, $.Deferred().resolve().promise() );
+			} ) : null;
+		} );
+	}
+
+	return percorrer( QF.categoriaAvisos, QF.profundidade ).then( function () {
+		mw.storage.setObject( KEY, Object.keys( titulos ), QF.cacheAvisos );
+		return titulos;
+	} );
+}
+
+function qfArtigo( page, cont, out ) {
+	out = out || { content: '', size: 0, templates: [] };
+	return ronda.api.get( $.extend( { action: 'query', titles: page, prop: 'revisions|templates',
+		rvprop: 'content|size', rvslots: 'main', tllimit: 'max' }, cont ) ).then( function ( r ) {
+		var p = ( r.query.pages || [] )[ 0 ] || {};
+
+		if ( p.revisions && p.revisions[ 0 ] ) {
+			out.content = p.revisions[ 0 ].slots.main.content;
+			out.size = p.revisions[ 0 ].size;
+		}
+		( p.templates || [] ).forEach( function ( t ) {
+			out.templates.push( t.title );
+		} );
+		return r[ 'continue' ] ? qfArtigo( page, r[ 'continue' ], out ) : out;
+	} );
+}
+
+function autoQuality( ctx, revid ) {
+	var key = 'ronda-qualidade:' + ctx.page,
+		naPagina = ctx.type === 'view' && mw.config.get( 'wgRevisionId' ) === revid,
+		cache = mw.storage.getObject( key );
+
+	if ( cache && cache.rev === revid && cache.res && ( !cache.res.aproximado || !naPagina ) ) {
+		return $.Deferred().resolve( cache.res ).promise();
+	}
+	return $.when( qfArtigo( ctx.page ), qfAvisos() ).then( function ( art, avisos ) {
+		var cont = naPagina ? qfContagemPagina() : $.extend( { aproximado: true }, qfContagemTexto( art.content ) ),
+			res = avaliarQualidade( art, avisos, cont );
+
+		mw.storage.setObject( key, { rev: revid, res: res }, QF.cacheResultado );
+		return res;
+	} ).then( null, function () {
 		return $.Deferred().resolve( null ).promise();
 	} );
+}
+
+function showQuality( res ) {
+	var $box = $( '<div class="ronda-qf"></div>' );
+
+	$box.append( $( '<p></p>' ).append( ronda.msg( 'paginas-qualidade-estimada' ) + ': ', $( '<b class="ronda-qf-nivel"></b>' ).text( res.estimado ) ) );
+	res.niveis.forEach( function ( nv ) {
+		var $t = $( '<table></table>' ),
+			$d = $( '<details></details>' ).append( $( '<summary></summary>' ).append(
+				$( '<span></span>' ).addClass( nv.ok ? 'ronda-ok' : 'ronda-bad' ).text( nv.ok ? '✔ ' : '✖ ' ),
+				ronda.msg( 'paginas-qualidade-nivel', nv.n ) ) );
+
+		if ( nv.n === res.alvo ) {
+			$d.attr( 'open', 'open' );
+		}
+		nv.itens.forEach( function ( i ) {
+			$t.append( $( '<tr></tr>' ).append(
+				$( '<td></td>' ).append( $( '<span></span>' ).addClass( i.ok ? 'ronda-ok' : 'ronda-bad' ).text( i.ok ? '✔' : '✖' ) ),
+				$( '<td></td>' ).text( i.nome ),
+				$( '<td></td>' ).text( i.atual ),
+				$( '<td></td>' ).text( ronda.msg( 'paginas-qualidade-meta', i.meta ) )
+			) );
+		} );
+		$box.append( $d.append( $t ) );
+	} );
+	$box.append( $( '<p class="ronda-qf-nota"></p>' ).append(
+		document.createTextNode( ronda.msg( res.aproximado ? 'paginas-qualidade-nota-aproximada' : 'paginas-qualidade-nota' ) + ' ' ),
+		$( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Wikipédia:Avaliação automática' ) ).text( 'Wikipédia:Avaliação automática' ) ) );
+
+	ronda.ui.dialog( { title: ronda.msg( 'paginas-qualidade-titulo' ), width: 760, content: $box } );
 }
 
 function soft( promise ) {
@@ -2746,10 +3074,10 @@ function loadInfo( ctx ) {
 					return x.title === ctx.page;
 				} )[ 0 ];
 
-				return ctx.ns === 0 && p && p.lastrevid ? liftwingQuality( p.lastrevid ) : null;
+				return ctx.ns === 0 && p && p.lastrevid && !ctx.isMainPage ? autoQuality( ctx, p.lastrevid ) : null;
 			} )
 		).then( function ( m, first, revs, deleted, patrol, views, lw ) {
-			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, lwQuality: lw, pe: pe, talk: talk };
+			return { main: m, first: first, revisions: revs, deleted: deleted, patrol: patrol, views: views, autoQuality: lw, pe: pe, talk: talk };
 		} );
 	} );
 }
@@ -2851,9 +3179,22 @@ function renderInfo( $panel, ctx, data ) {
 					: qualityFromCategories( talkPage && talkPage.categories );
 			addTo( $content, [ document.createTextNode( ronda.msg( 'paginas-qualidade' ) + ': ' ), $( '<b></b>' ).text( quality || 'desconhecida' ) ] );
 		}
-		if ( typeof data.lwQuality === 'number' ) {
-			addTo( $content, $( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-liftwing-dica' ) )
-				.text( ronda.msg( 'paginas-info-liftwing', Math.round( data.lwQuality * 100 ) ) ) );
+		if ( data.autoQuality ) {
+			addTo( $content, [
+				$( '<span></span>' ).attr( 'title', ronda.msg( 'paginas-info-qualidade-auto-dica' ) )
+					.text( ronda.msg( 'paginas-info-qualidade-auto', data.autoQuality.estimado ) ),
+				document.createTextNode( ' ' ),
+				$( '<a href="#" role="button"></a>' ).text( ronda.msg( 'paginas-info-qualidade-criterios' ) ).on( 'click', function ( e ) {
+					e.preventDefault();
+					showQuality( data.autoQuality );
+				} )
+			] );
+			if ( qfFaltam( data.autoQuality ).length ) {
+				addTo( $content, $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'paginas-info-qualidade-falta',
+					data.autoQuality.alvo, qfFaltam( data.autoQuality ).map( function ( i ) {
+						return i.nome.replace( / \(.*\)$/, '' ).toLowerCase() + ' (' + i.atual + '; ' + i.meta + ')';
+					} ).join( ', ' ) ) ) );
+			}
 		}
 		if ( ctx.ns === 0 && ( ctx.type === 'view' || ctx.type === 'diff' ) ) {
 			refs = $( '#mw-content-text .references li' ).length;

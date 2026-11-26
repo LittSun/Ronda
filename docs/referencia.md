@@ -206,7 +206,7 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 - **Páginas vigiadas**: edições recentes nas suas páginas vigiadas (sem robôs e sem as suas);
 - **Mudanças recentes**: edições não autopatrulhadas no domínio principal;
 - **Páginas novas**: páginas novas não patrulhadas (sem redirecionamentos), abrindo com o link de patrulha;
-- **Edições a revisar**: as 150 últimas edições não patrulhadas passam pelo LiftWing (modelos *damaging* e *goodfaith*, 5 pedidos por vez, com uma nova tentativa em caso de 429/503); ficam as danosas e de má-fé, da mais danosa para a menos;
+- **Edições a revisar**: uma consulta a `list=recentchanges` com `rcshow=!patrolled|oresreview` e `rcprop=oresscores` (extensão ORES da wiki, mesmo limite dos filtros de Mudanças recentes); as de provável má-fé (*goodfaith* < 50%) vêm primeiro e, em cada grupo, da mais danosa para a menos;
 - **Eliminação rápida**: páginas em Categoria:!Páginas para eliminação rápida.
 
 ### #R, Esboço e Fusão
@@ -217,7 +217,7 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 ### Busca, PetScan e Informações
 - **Busca**: o título (entre aspas, se tiver espaços) no Google, Google Notícias, Livros, Acadêmico, Brasil e Portugal e no Bing.
 - **PetScan**: páginas da categoria que precisam de fontes, revisão ou wikificação, ou com menos de 1 000/500 bytes.
-- **Informações**, em três linhas, como o painel Usuário: o estado da página por extenso (com/sem referências, categorias e afluentes, em verde ou vermelho, e se já foi proposta para eliminação); os dados (tamanho, qualidade pela estrela de destaque/bom ou pelas categorias da discussão, última edição, vigilantes, edições eliminadas); e as ligações (registros, visualizações, "Mais informações"). Para páginas inexistentes, a data da eliminação.
+- **Informações**, em três linhas, como o painel Usuário: o estado da página por extenso (com/sem referências, categorias e afluentes, em verde ou vermelho, e se já foi proposta para eliminação); os dados (tamanho, qualidade pela estrela de destaque/bom ou pelas categorias da discussão, qualidade estimada automaticamente pelos critérios do quadro "Parâmetros de qualidade", com o detalhe em janela, última edição, vigilantes, edições eliminadas); e as ligações (registros, visualizações, "Mais informações"). Para páginas inexistentes, a data da eliminação.
 
 ### Pedido
 Os dez pedidos do FastButtons (vandalismo, desproteção, edição, histórico, proteção, restauro, ocultação, nome impróprio, incidente e outro), com o modelo de `<página de pedidos>/Padrão`. O alvo vem preenchido com o usuário (em páginas de usuário e contribuições) ou com a página atual; pedidos sobre usuários podem ocultar o nome. Depois de enviar, abre a página de pedidos na seção criada.
