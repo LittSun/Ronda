@@ -1,6 +1,9 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.21]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.22]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.22"></span>0.7.22 — 26/11/2026 ==
+* '''Janelas no estilo da barra''' ("cartão com título"): o nome Ronda numa aba escura antes do título da janela e um ✕ plano; os grupos (Favoritos, Sugeridas, Fontes e referências…) viram cartões, com traço azul à esquerda nos Favoritos e nas Sugeridas; rodapé cinza com botões planos, o principal em azul e os perigosos em vermelho. Continuam sendo diálogos do jQuery UI, só com outra aparência, e as cores seguem o tema da wiki também no modo escuro (as regras próprias de modo escuro das janelas deixaram de ser necessárias).
 
 == <span id="0.7.21"></span>0.7.21 — 26/11/2026 ==
 * '''Informações''' e '''Usuário''' viram um só botão, '''Informações''', o primeiro da barra, com os dois painéis inteiros: nas contribuições, mostra o do usuário; nas páginas e discussões de usuário, o da página e, abaixo, o do usuário; nas demais páginas, só o da página. O carregamento em segundo plano vale para os dois.

@@ -215,10 +215,6 @@
 	padding-top: 0;
 }
 
-.ronda-form fieldset.ronda-tag-sug {
-	border-color: var( --border-color-progressive, #36c );
-}
-
 .ronda-form .ronda-sug-reason {
 	margin-left: 0.4em;
 	font-size: 0.85em;
@@ -626,26 +622,172 @@
 	}
 }
 
-html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
-	background: var( --background-color-interactive-subtle, #27292d ) !important;
-	border-color: var( --border-color-base, #72777d ) !important;
-	color: var( --color-base, #eaecf0 );
-	box-shadow: none;
+.ronda-dialog.ui-dialog {
+	padding: 0 !important;
+	overflow: hidden;
+	color: var( --color-base, #202122 ) !important;
+	background: var( --background-color-base, #fff ) !important;
+	border: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;
+	border-radius: 3px !important;
+	box-shadow: 0 4px 18px rgba( 0, 0, 0, 0.18 ) !important;
 }
 
-html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
-html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
-	background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
-	color: var( --color-emphasized, #f8f9fa );
+.ronda-dialog .ui-dialog-titlebar {
+	display: flex;
+	align-items: stretch;
+	margin: 0 !important;
+	padding: 0 !important;
+	color: var( --color-base, #202122 ) !important;
+	background: var( --background-color-neutral-subtle, #f8f9fa ) !important;
+	border: 0 !important;
+	border-bottom: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;
+	border-radius: 0 !important;
 }
 
-html.skin-theme-clientpref-night .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
-	background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
+.ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	display: flex;
+	align-items: center;
+	padding: 0.55em 0.9em;
+	font-weight: bold;
+	letter-spacing: 0.03em;
+	color: var( --color-inverted, #fff );
+	background: var( --background-color-inverted, #202122 );
 }
 
-html.skin-theme-clientpref-night .ronda-dialog.ui-dialog,
-html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-content,
-html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane,
+.ronda-dialog .ui-dialog-title {
+	flex: 1;
+	float: none !important;
+	width: auto !important;
+	margin: 0 !important;
+	padding: 0.55em 0.9em;
+	overflow: hidden;
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.ronda-dialog .ui-dialog-titlebar-close {
+	position: static !important;
+	display: flex !important;
+	flex: 0 0 2.8em;
+	align-items: center;
+	justify-content: center;
+	width: auto !important;
+	height: auto !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	font-size: 0 !important;
+	color: var( --color-subtle, #54595d ) !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+}
+
+.ronda-dialog .ui-dialog-titlebar-close::after {
+	content: '✕';
+	font-size: 14px;
+}
+
+.ronda-dialog .ui-dialog-titlebar-close:hover,
+.ronda-dialog .ui-dialog-titlebar-close:focus {
+	background: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;
+}
+
+.ronda-dialog .ui-dialog-titlebar-close .ui-icon,
+.ronda-dialog .ui-dialog-titlebar-close .ui-button-text {
+	display: none !important;
+}
+
+.ronda-dialog .ui-dialog-content {
+	padding: 0.8em 1em !important;
+	color: inherit !important;
+	background: transparent !important;
+}
+
+.ronda-dialog .ronda-form fieldset {
+	margin: 0.7em 0 !important;
+	padding: 0.35em 0.8em 0.55em !important;
+	color: inherit !important;
+	background: var( --background-color-base, #fff ) !important;
+	border: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;
+	border-radius: 2px !important;
+}
+
+.ronda-dialog .ronda-form fieldset fieldset {
+	border-color: var( --border-color-muted, #eaecf0 ) !important;
+}
+
+.ronda-dialog .ronda-form legend {
+	padding: 0 0.35em !important;
+	font-size: 0.85em !important;
+	font-weight: bold !important;
+	color: var( --color-subtle, #54595d ) !important;
+}
+
+.ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+.ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 3px solid var( --color-progressive, #36c ) !important;
+}
+
+.ronda-dialog .ronda-form input[ type="text" ],
+.ronda-dialog .ronda-form input[ type="number" ],
+.ronda-dialog .ronda-form textarea,
+.ronda-dialog .ronda-form select {
+	border-radius: 2px;
+}
+
+.ronda-dialog .ui-dialog-buttonpane {
+	margin: 0 !important;
+	padding: 0.5em 0.8em !important;
+	background: var( --background-color-neutral-subtle, #f8f9fa ) !important;
+	border: 0 !important;
+	border-top: 1px solid var( --border-color-subtle, #c8ccd1 ) !important;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button {
+	margin: 0.15em 0 0.15em 0.4em !important;
+	font-weight: normal;
+	color: var( --color-base, #202122 ) !important;
+	background: transparent !important;
+	border: 1px solid var( --border-color-base, #a2a9b1 ) !important;
+	border-radius: 2px !important;
+	box-shadow: none !important;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	padding: 0.4em 1em;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover,
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-focus {
+	background: var( --background-color-interactive-subtle--hover, #eaecf0 ) !important;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	font-weight: bold;
+	color: var( --color-inverted-fixed, #fff ) !important;
+	background: var( --background-color-progressive, #36c ) !important;
+	border-color: var( --background-color-progressive, #36c ) !important;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: var( --color-inverted-fixed, #fff ) !important;
+	background: var( --background-color-destructive, #d73333 ) !important;
+	border-color: var( --background-color-destructive, #d73333 ) !important;
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue.ui-state-hover,
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary.ui-state-hover,
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red.ui-state-hover {
+	filter: brightness( 1.1 );
+}
+
+.ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-disabled {
+	opacity: 0.5;
+}
+
 html.skin-theme-clientpref-night .ronda-tooltip.ui-tooltip,
 html.skin-theme-clientpref-night .ronda-menu.ui-menu {
 	background: var( --background-color-base, #101418 );
@@ -653,17 +795,6 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu {
 	color: var( --color-base, #eaecf0 );
 }
 
-html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-titlebar.ui-widget-header {
-	background: var( --background-color-neutral, #27292d ) !important;
-	border-color: var( --border-color-subtle, #54595d );
-	color: var( --color-emphasized, #f8f9fa );
-}
-
-html.skin-theme-clientpref-night .ronda-dialog .ui-dialog-buttonpane {
-	border-top-color: var( --border-color-subtle, #54595d );
-}
-
-html.skin-theme-clientpref-night .ronda-dialog fieldset.ui-widget-content,
 html.skin-theme-clientpref-night .ronda-dialog .ronda-list.ui-widget-content {
 	background: transparent;
 	border-color: var( --border-color-subtle, #54595d );
@@ -741,26 +872,7 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 }
 
 @media screen and ( prefers-color-scheme: dark ) {
-	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-default:not( .ui-button-blue ):not( .ui-button-red ) {
-		background: var( --background-color-interactive-subtle, #27292d ) !important;
-		border-color: var( --border-color-base, #72777d ) !important;
-		color: var( --color-base, #eaecf0 );
-		box-shadow: none;
-	}
 
-	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-hover:not( .ui-button-blue ):not( .ui-button-red ),
-	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-focus:not( .ui-button-blue ):not( .ui-button-red ) {
-		background: var( --background-color-interactive-subtle--hover, #3a3d42 ) !important;
-		color: var( --color-emphasized, #f8f9fa );
-	}
-
-	html.skin-theme-clientpref-os .ronda-dialog .ui-button.ui-state-active:not( .ui-button-blue ):not( .ui-button-red ) {
-		background: var( --background-color-interactive-subtle--active, #4a4e54 ) !important;
-	}
-
-	html.skin-theme-clientpref-os .ronda-dialog.ui-dialog,
-	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-content,
-	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane,
 	html.skin-theme-clientpref-os .ronda-tooltip.ui-tooltip,
 	html.skin-theme-clientpref-os .ronda-menu.ui-menu {
 		background: var( --background-color-base, #101418 );
@@ -768,17 +880,6 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 		color: var( --color-base, #eaecf0 );
 	}
 
-	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-titlebar.ui-widget-header {
-		background: var( --background-color-neutral, #27292d ) !important;
-		border-color: var( --border-color-subtle, #54595d );
-		color: var( --color-emphasized, #f8f9fa );
-	}
-
-	html.skin-theme-clientpref-os .ronda-dialog .ui-dialog-buttonpane {
-		border-top-color: var( --border-color-subtle, #54595d );
-	}
-
-	html.skin-theme-clientpref-os .ronda-dialog fieldset.ui-widget-content,
 	html.skin-theme-clientpref-os .ronda-dialog .ronda-list.ui-widget-content {
 		background: transparent;
 		border-color: var( --border-color-subtle, #54595d );

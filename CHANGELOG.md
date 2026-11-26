@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.22 — 26/11/2026
+- **Janelas no estilo da barra** ("cartão com título"): o nome Ronda numa aba escura antes do título da janela e um ✕ plano; os grupos (Favoritos, Sugeridas, Fontes e referências…) viram cartões, com traço azul à esquerda nos Favoritos e nas Sugeridas; rodapé cinza com botões planos, o principal em azul e os perigosos em vermelho. Continuam sendo diálogos do jQuery UI, só com outra aparência, e as cores seguem o tema da wiki também no modo escuro (as regras próprias de modo escuro das janelas deixaram de ser necessárias).
+
 ## 0.7.21 — 26/11/2026
 - **Informações** e **Usuário** viram um só botão, **Informações**, o primeiro da barra, com os dois painéis inteiros: nas contribuições, mostra o do usuário; nas páginas e discussões de usuário, o da página e, abaixo, o do usuário; nas demais páginas, só o da página. O carregamento em segundo plano vale para os dois.
 - **Filas › Edições a revisar** usa as pontuações da extensão ORES da própria pt.wiki, numa só consulta, com o mesmo critério dos filtros de Mudanças recentes (antes eram até 300 pedidos ao LiftWing pelo api.wikimedia.org, que está sendo desativado). As de provável má-fé vêm primeiro.

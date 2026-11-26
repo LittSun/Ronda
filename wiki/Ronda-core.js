@@ -16,7 +16,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.21',
+		version: '0.7.22',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -1575,11 +1575,7 @@ ronda.CHANGELOG_PAGE = 'Usuário:Little Sunshine/Ronda/Changelog';
 ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 
 ronda.news = [
-	'Barra reorganizada: Usuário e Informações viraram um só botão, Informações, o primeiro da barra; em páginas de usuário ele mostra a página e o usuário',
-	'Novos nomes: Listar agora é Filas, e #R agora é Redirecionar',
-	'Barra com cara nova: o nome Ronda numa aba escura, botões planos e o painel aberto marcado em azul',
-	'Manutenção sugere marcações pelo próprio artigo e lembra as usadas recentemente',
-	'Desfazer: depois de cada ação, uma notificação permite desfazer o que o Ronda gravou'
+	'Janelas com a cara da barra: o nome Ronda numa aba escura no título, grupos em cartões e botões planos, com o principal em azul'
 ];
 
 function saveOption( name, value ) {
