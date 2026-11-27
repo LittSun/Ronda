@@ -171,6 +171,11 @@ html.ronda-tema-web1 .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+html.ronda-tema-web1 .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-web1 .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: transparent !important;
 	color: #ff0000 !important;

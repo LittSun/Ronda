@@ -171,6 +171,11 @@ html.ronda-tema-azulejo .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+html.ronda-tema-azulejo .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-azulejo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: #eaf0fb !important;
 	color: #1c3f94 !important;

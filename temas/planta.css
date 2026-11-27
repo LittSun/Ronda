@@ -176,6 +176,12 @@ html.ronda-tema-planta .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+/* O texto segue a cor do botão (a wiki pinta de branco o texto dos botões azuis) */
+html.ronda-tema-planta .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-planta .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: rgba( 232, 241, 255, 0.15 ) !important;
 	color: #e8f1ff !important;

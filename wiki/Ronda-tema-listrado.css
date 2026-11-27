@@ -171,6 +171,11 @@ html.ronda-tema-listrado .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+html.ronda-tema-listrado .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-listrado .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: linear-gradient( #e6e6e6, #c2c2c2 ) !important;
 	color: #111 !important;

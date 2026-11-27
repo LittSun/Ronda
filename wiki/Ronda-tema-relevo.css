@@ -171,6 +171,11 @@ html.ronda-tema-relevo .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #fff, inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf !important;
 }
 
+html.ronda-tema-relevo .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-relevo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: #c0c0c0 !important;
 	color: #000 !important;
