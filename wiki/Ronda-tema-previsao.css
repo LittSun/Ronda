@@ -171,6 +171,11 @@ html.ronda-tema-previsao .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+html.ronda-tema-previsao .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-previsao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: rgba( 255, 255, 255, 0.18 ) !important;
 	color: #fff !important;

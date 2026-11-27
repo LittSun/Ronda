@@ -171,6 +171,11 @@ html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: #1a2330 !important;
 	color: #d6dde6 !important;

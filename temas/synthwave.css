@@ -176,6 +176,12 @@ html.ronda-tema-synthwave .ronda-dialog .ui-dialog-buttonpane .ui-button {
 	box-shadow: none !important;
 }
 
+/* O texto segue a cor do botão (a wiki pinta de branco o texto dos botões azuis) */
+html.ronda-tema-synthwave .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
 html.ronda-tema-synthwave .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
 	background: rgba( 5, 217, 232, 0.12 ) !important;
 	color: #05d9e8 !important;
