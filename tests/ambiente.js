@@ -68,7 +68,10 @@ function criar( opts ) {
 		return { query: { pages: [ { title: params.titles, missing: true } ] } };
 	}
 
-	function Api() {}
+	// Guarda os parâmetros padrão (new mw.Api( { parameters } )), para os testes conferirem
+	function Api( o ) {
+		this.parametros = ( o && o.parameters ) || {};
+	}
 	Api.prototype.get = function ( params ) {
 		consultas.push( params );
 		const r = responder( params );

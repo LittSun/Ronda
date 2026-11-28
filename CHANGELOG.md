@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.8.1 — 28/11/2026
+- **Sessão expirada**: todo pedido à API leva `assert: 'user'`. Se você sair da conta em outra aba ou a sessão vencer, nenhuma edição, aviso ou reversão é gravada deslogada (como IP ou conta temporária); o Ronda avisa para entrar de novo e repetir a ação.
+
 ## 0.8.0 — 27/11/2026
 - **Avisar** e **Reverter**: se a discussão do usuário está na [[:Categoria:!Usuários com nomes impróprios notificados]], os avisos do grupo Nome impróprio aparecem esmaecidos, com "já notificado" no rótulo e a categoria na dica; continuam selecionáveis, para renotificar se for preciso. A verificação vai na mesma consulta que já carregava a discussão. Outras categorias podem ser acrescentadas em `ronda.catalog.notifiedCategories`, indicando os grupos de avisos que cada uma afeta.
 

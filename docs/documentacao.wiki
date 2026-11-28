@@ -38,6 +38,8 @@ Salve e recarregue a página. Se a barra não aparecer, faça uma atualização 
 
 A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; no celular, pelo meta-painel (veja abaixo), e um toque no nome reabre a barra recolhida. Essa escolha fica salva no navegador.
 
+Se você sair da conta em outra aba ou a sessão expirar, o Ronda não grava nada deslogado: ele avisa para entrar de novo e repetir a ação.
+
 == Funcionalidades ==
 {| class="wikitable"
 ! Botão !! Função

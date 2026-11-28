@@ -37,6 +37,7 @@ window.rondaMessages = {
 	'core-desfazer-criadas': 'Páginas criadas que precisam ser eliminadas por um administrador: $1.',
 	'core-erro': 'Erro: $1',
 	'core-nome': 'Ronda',
+	'core-sessao-expirada': 'Você não está mais conectado à sua conta (a sessão expirou ou você saiu em outra aba). Nada foi gravado: entre de novo e repita a ação.',
 	'core-sem-aviso-criador-nao-elegivel': 'sem aviso (criador não elegível)',
 	'core-aviso-enviado-a': 'aviso enviado a $1',
 	'core-fechar': 'Fechar',

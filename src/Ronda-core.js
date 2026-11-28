@@ -28,9 +28,11 @@
 'use strict';
 
 var uid = 0,
-	api = new mw.Api( { parameters: { formatversion: 2 } } ),
+	// assert: 'user' — se a sessão expirar (saída em outra aba, cookie vencido), a API
+	// recusa o pedido em vez de gravar a edição deslogada, como IP ou conta temporária
+	api = new mw.Api( { parameters: { formatversion: 2, assert: 'user' } } ),
 	ronda = window.ronda = {
-		version: '0.8.0',
+		version: '0.8.1',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -312,6 +314,36 @@ ronda.loadMessages = function ( names ) {
 	return api.loadMessagesIfMissing( names, { amlang: mw.config.get( 'wgContentLanguage' ) } );
 };
 
+/**
+ * Sessão expirada: a API recusou um pedido por causa do assert: 'user'. Um aviso só
+ * (a etiqueta substitui o anterior), que fica na tela até ser fechado.
+ */
+ronda.sessionExpired = function () {
+	mw.notify( ronda.msg( 'core-sessao-expirada' ), {
+		type: 'error',
+		title: ronda.msg( 'core-nome' ),
+		autoHide: false,
+		tag: 'ronda-sessao'
+	} );
+};
+
+// Todo pedido do Ronda (leitura ou escrita) passa por aqui; a promessa devolvida é a
+// original, para não perder o abort() do mw.Api
+[ 'get', 'post', 'postWithToken' ].forEach( function ( method ) {
+	var original = api[ method ];
+
+	api[ method ] = function () {
+		var req = original.apply( this, arguments );
+
+		req.then( null, function ( code ) {
+			if ( code === 'assertuserfailed' ) {
+				ronda.sessionExpired();
+			}
+		} );
+		return req;
+	};
+} );
+
 /* ---------------- Menus de motivos (ipbreason-dropdown etc.) ---------------- */
 
 var REASONS_TTL = 7 * 24 * 60 * 60 * 1000, // 1 semana, como no FastButtonsEliminar
@@ -444,7 +476,13 @@ ronda.notifyUser = function ( user, header, text, summary ) {
 };
 
 ronda.fail = function ( code, data ) {
-	var msg = ( data && typeof data === 'object' && api.getErrorMessage )
+	var msg;
+
+	// Sessão expirada: o aviso próprio (ronda.sessionExpired) já foi mostrado
+	if ( code === 'assertuserfailed' ) {
+		return;
+	}
+	msg = ( data && typeof data === 'object' && api.getErrorMessage )
 		? api.getErrorMessage( data )
 		: ronda.msg( 'core-erro', code || 'desconhecido' );
 
@@ -2140,7 +2178,7 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Avisar e Reverter: os avisos de nome impróprio ficam esmaecidos, com "já notificado", quando o usuário já foi notificado'
+	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
