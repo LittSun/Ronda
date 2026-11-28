@@ -101,6 +101,8 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 
 '''Grandes remoções''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): edições recentes no domínio principal que tiraram muito texto, com a porcentagem da página que saiu. Ficam de fora as reversões, que costumam tirar vandalismo, e as edições já desfeitas. Para quem pode patrulhar, só aparecem as de quem não é autopatrulhado. O limite (por padrão, 2000 bytes) fica em '''Preferências… › Filas'''.
 
+'''Filtro de abusos''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): edições recentes que dispararam o [[Especial:Registro de abusos|filtro de abusos]] e foram gravadas, isto é, que o filtro só etiquetou ou registrou. As impedidas ficam de fora. Cada linha mostra os filtros que dispararam, com ligação para a ocorrência. Em '''Preferências… › Filas''' é possível escolher os números dos filtros que entram na lista (por exemplo, 3, 17, 42); vazio, entram todos.
+
 === Avisos e informações de usuários ===
 {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe. Se o usuário já foi notificado por nome impróprio (a discussão dele está na [[:Categoria:!Usuários com nomes impróprios notificados]]), esses avisos aparecem esmaecidos, com a nota "já notificado", mas continuam disponíveis.
 

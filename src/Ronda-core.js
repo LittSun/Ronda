@@ -112,6 +112,10 @@ var uid = 0,
 			removals: {
 				bytes: 2000
 			},
+			// Filas › Filtro de abusos: números dos filtros mostrados ([] = todos)
+			abuseLog: {
+				filters: []
+			},
 			revert: {
 				// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = número da versão, $4 = motivo
 				summary: 'Desfeita(s) uma ou mais edições de [[Special:Contribs/$2|$2]]',
@@ -1760,6 +1764,7 @@ ronda.PREFS = [
 	[ 'revert.links.watchlist', ronda.msg( 'core-links-rapidos-nas-paginas-vigiadas' ), 'check' ],
 	{ section: 'Filas' },
 	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
+	[ 'abuseLog.filters', ronda.msg( 'core-fila-abusos-filtros' ), 'list' ],
 	{ section: 'Avisos' },
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
@@ -2528,7 +2533,8 @@ ronda.news = [
 	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
 	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida',
 	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
-	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas'
+	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas',
+	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

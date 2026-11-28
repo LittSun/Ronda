@@ -2345,6 +2345,21 @@ var MAX = 10,
 		}, note: function ( item ) {
 			return item.oldlen ? ronda.msg( 'patrulha-fila-remocoes-nota', Math.round( ( item.oldlen - item.newlen ) * 100 / item.oldlen ) ) : null;
 		}, key: 'recentchanges', link: 'revid', empty: ronda.msg( 'patrulha-fila-remocoes-vazia', removalBytes() ) },
+		// Filtro de abusos: os números dos filtros (abuseLog.filters) ficam nas preferências
+		{ id: 'FA', label: ronda.msg( 'patrulha-fila-abusos' ), title: ronda.msg( 'patrulha-fila-abusos-dica' ), right: 'abusefilter-log', params: function () {
+			var ids = abuseFilters();
+
+			return $.extend( { list: 'abuselog', afllimit: 200, aflprop: 'ids|filter|user|title|action|result|timestamp|revid' },
+				ids.length ? { aflfilter: ids.join( '|' ) } : {} );
+		}, pick: savedAbuseHits, note: function ( item ) {
+			var $note = $( '<span class="ronda-feed-muted"></span>' );
+
+			item.filters.forEach( function ( f, i ) {
+				$note.append( i ? ', ' : '', $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseLog/' + f.log ) )
+					.text( ronda.msg( 'patrulha-fila-abusos-filtro', f.id ) ).attr( 'title', f.name || '' ) );
+			} );
+			return $note;
+		}, key: 'abuselog', link: 'revid', sizes: false, empty: ronda.msg( 'patrulha-fila-abusos-vazia' ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
@@ -2354,6 +2369,15 @@ var MAX = 10,
 /** Limite das Grandes remoções, em bytes (preferências: removals.bytes) */
 function removalBytes() {
 	return Math.max( 1, Number( ( ronda.config.removals || {} ).bytes ) || 2000 );
+}
+
+/** Números dos filtros da fila Filtro de abusos (preferências: abuseLog.filters); vazio = todos */
+function abuseFilters() {
+	var ids = ( ronda.config.abuseLog || {} ).filters;
+
+	return ( Array.isArray( ids ) ? ids : String( ids || '' ).split( /[,\s|]+/ ) ).map( Number ).filter( function ( n ) {
+		return n > 0 && Math.floor( n ) === n;
+	} );
 }
 
 /* ---------------- Funções puras ---------------- */
@@ -2387,6 +2411,36 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/**
+ * Filtro de abusos: só as ocorrências cuja edição foi gravada (com revid); as
+ * impedidas, as que só avisaram (e não foram salvas) e as que não são edições ficam
+ * de fora. Uma linha por edição, com todos os filtros que ela disparou.
+ * @param {Object[]} list list=abuselog, da mais recente para a mais antiga
+ * @return {Object[]} { revid, title, user, timestamp, filters: [ { id, name, log } ] }
+ */
+function savedAbuseHits( list ) {
+	var byRev = {},
+		out = [];
+
+	list.forEach( function ( e ) {
+		var hit;
+
+		if ( !e.revid ) {
+			return;
+		}
+		hit = byRev[ e.revid ];
+		if ( !hit ) {
+			hit = byRev[ e.revid ] = { revid: e.revid, title: e.title, user: e.user, timestamp: e.timestamp, filters: [] };
+			out.push( hit );
+		}
+		hit.filters.push( { id: e.filter_id, name: e.filter, log: e.id } );
+	} );
+	return out.slice( 0, MAX );
+}
+
+ronda.lists.savedAbuseHits = savedAbuseHits;
+ronda.lists.abuseFilters = abuseFilters;
 
 /**
  * Grandes remoções: edições que tiraram pelo menos `bytes` bytes, das mais recentes

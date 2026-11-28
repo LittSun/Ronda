@@ -213,6 +213,7 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 - **Páginas novas**: páginas novas não patrulhadas (sem redirecionamentos), abrindo com o link de patrulha;
 - **Edições a revisar**: uma consulta a `list=recentchanges` com `rcshow=!patrolled|oresreview` e `rcprop=oresscores` (extensão ORES da wiki, mesmo limite dos filtros de Mudanças recentes); as de provável má-fé (*goodfaith* < 50%) vêm primeiro e, em cada grupo, da mais danosa para a menos;
 - **Grandes remoções**: até 500 mudanças recentes no domínio principal (sem robôs; com o direito `patrol`, só as não autopatrulhadas), filtradas no navegador (`ronda.lists.bigRemovals`): as que tiraram pelo menos `removals.bytes` bytes (padrão 2000), sem reversões (`mw-rollback`, `mw-undo`, `mw-manual-revert`) e sem as já desfeitas (`mw-reverted`). Cada linha mostra a porcentagem da página que saiu.
+- **Filtro de abusos** (direito `abusefilter-log`): até 200 ocorrências de `list=abuselog` (com `aflfilter` quando `abuseLog.filters` tem números), das quais ficam só as que têm `revid`, ou seja, edições gravadas (`ronda.lists.savedAbuseHits`): as impedidas e as que só avisaram, sem salvar, ficam de fora. Uma linha por edição, com cada filtro ligado à ocorrência (Especial:Registro de abusos/N).
 - **Eliminação rápida**: páginas em Categoria:!Páginas para eliminação rápida.
 
 ### #R, Esboço e Fusão
@@ -299,6 +300,9 @@ window.rondaConfig = {
 	},
 	removals: {
 		bytes: 2000                     // Filas › Grandes remoções: tiraram pelo menos N bytes
+	},
+	abuseLog: {
+		filters: []                     // Filas › Filtro de abusos: números dos filtros mostrados ([] = todos)
 	},
 	revert: {
 		// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = versão, $4 = motivo
