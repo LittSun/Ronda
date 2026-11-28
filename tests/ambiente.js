@@ -68,7 +68,10 @@ function criar( opts ) {
 		return { query: { pages: [ { title: params.titles, missing: true } ] } };
 	}
 
-	function Api() {}
+	// Guarda os parâmetros padrão (new mw.Api( { parameters } )), para os testes conferirem
+	function Api( o ) {
+		this.parametros = ( o && o.parameters ) || {};
+	}
 	Api.prototype.get = function ( params ) {
 		consultas.push( params );
 		const r = responder( params );
@@ -94,6 +97,10 @@ function criar( opts ) {
 
 		return $.when( transform( { content: content, timestamp: '2026-01-01T00:00:00Z' } ) ).then( ( params ) =>
 			self.postWithToken( 'csrf', Object.assign( { action: 'edit', title: title }, params ) ) );
+	};
+	// Como o mw.Api de verdade: seção nova pelo postWithToken (com os embrulhos do Ronda)
+	Api.prototype.newSection = function ( title, header, message, extra ) {
+		return this.postWithToken( 'csrf', Object.assign( { action: 'edit', section: 'new', title: title, summary: header, text: message }, extra ) );
 	};
 	Api.prototype.loadMessagesIfMissing = () => D();
 	Api.prototype.getErrorMessage = () => $( '<span>' ).text( 'erro' );

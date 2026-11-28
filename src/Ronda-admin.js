@@ -379,7 +379,10 @@ function open( ctx ) {
 
 ronda.registerModule( {
 	id: 'eliminacao',
+	// O Propor eliminação também tem o id 'eliminacao'; a chave separa os dois na barra
+	key: 'eliminar',
 	admin: true,
+	rights: [ 'delete' ],
 	label: ronda.msg( 'admin-eliminar-botao' ),
 	title: ronda.msg( 'admin-eliminar-esta-pagina' ),
 	order: 30,
@@ -622,7 +625,8 @@ function showDialog( ctx, titles, truncated, options ) {
 					text: newText,
 					summary: summary,
 					minor: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'move' )
 				} );
 			} );
 		}, function ( done, total, result ) {
@@ -715,6 +719,7 @@ function open( ctx, options ) {
 ronda.registerModule( {
 	id: 'desligar',
 	admin: true,
+	rights: [ ronda.config.unlink.right ],
 	label: ronda.msg( 'admin-desligar-botao' ),
 	title: ronda.msg( 'admin-remover-as-ligacoes-de-outras-paginas' ),
 	order: 35,
@@ -1006,6 +1011,7 @@ function open( ctx ) {
 ronda.registerModule( {
 	id: 'protecao',
 	admin: true,
+	rights: [ 'protect' ],
 	label: ronda.msg( 'admin-proteger-botao' ),
 	title: ronda.msg( 'admin-alterar-a-protecao-desta-pagina' ),
 	order: 45,
@@ -1555,6 +1561,7 @@ function open( ctx ) {
 ronda.registerModule( {
 	id: 'bloqueio',
 	admin: true,
+	rights: [ 'block' ],
 	label: ronda.msg( 'admin-bloquear-botao' ),
 	title: ronda.msg( 'admin-bloquear-este-usuario-ou-ip' ),
 	order: 40,
@@ -1647,7 +1654,8 @@ function openUndelete( ctx ) {
 				action: 'undelete',
 				title: ctx.page,
 				reason: reason,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'move' )
 			}, cbTalk && cbTalk.isChecked() ? { undeletetalk: true } : {} ) ).then( function () {
 				mw.notify( ronda.msg( 'admin-pagina-restaurada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 				location.href = mw.util.getUrl( ctx.page );
@@ -2181,6 +2189,7 @@ function openBatch( ctx, options ) {
 ronda.registerModule( {
 	id: 'restaurar',
 	admin: true,
+	rights: [ 'undelete' ],
 	label: ronda.msg( 'admin-restaurar-botao' ),
 	title: ronda.msg( 'admin-restaurar-esta-pagina-eliminada' ),
 	order: 31,
@@ -2193,6 +2202,7 @@ ronda.registerModule( {
 ronda.registerModule( {
 	id: 'lote',
 	admin: true,
+	rights: [ 'delete', 'protect', 'undelete' ],
 	label: ronda.msg( 'admin-lote' ),
 	title: ronda.msg( 'admin-eliminar-restaurar-ou-proteger-varias-paginas' ),
 	order: 60,

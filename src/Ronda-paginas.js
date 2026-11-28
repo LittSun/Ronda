@@ -481,7 +481,8 @@ function warnCreator( ctx, items ) {
 				+ listText( items.map( function ( item ) {
 					return ronda.tpl( item.template );
 				} ) ),
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'warn' )
 		} );
 	} );
 }
@@ -502,7 +503,8 @@ function followUps( ctx, result, values, byId, warn ) {
 					sectiontitle: '[[' + ctx.page + ']]',
 					text: values[ id ].situacao + ' ~~' + '~~',
 					summary: 'Manutenção urgente: [[' + ctx.page + ']]',
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'request' )
 				} );
 			} );
 		}
@@ -829,7 +831,8 @@ function showForm( ctx, text, aliases, info ) {
 				text: result.text,
 				summary: summarize( result, opts ),
 				minor: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'tag' )
 			} );
 		} ).then( function ( res ) {
 			ronda.recentTags.push( result.added ).then( null, function () {} );
@@ -1071,7 +1074,8 @@ ronda.proposal = {
 	buildER: buildER,
 	buildESR: buildESR,
 	afterHatnotes: afterHatnotes,
-	place: place
+	place: place,
+	oldPageCheck: oldPageCheck
 };
 
 /* ================================================================== *
@@ -1121,7 +1125,8 @@ function tagPage( page, code, summary, hatnotes ) {
 			text: place( revision.content, code, { noinclude: ronda.useNoinclude( page ), hatnotes: hatnotes } ),
 			summary: summary,
 			nocreate: true,
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'deletion' )
 		} );
 	} );
 }
@@ -1277,6 +1282,77 @@ function extraWarnFields() {
  * Rápida
  * ================================================================== */
 
+/**
+ * Artigo antigo ou com interwikis: a ER raramente é o caminho (o caso comum é um
+ * vandalismo recente sobre um artigo que existe há tempo). Limites em ronda.config.speedy;
+ * 0 desliga o critério.
+ * @param {Object} info { created: data ISO da primeira edição, interwikis: número }
+ * @param {number} now
+ * @param {Object} limits { oldDays, oldInterwikis }
+ * @return {Object} { warn, days (null sem data), interwikis, byAge, byInterwikis }
+ */
+function oldPageCheck( info, now, limits ) {
+	var created = info.created ? Date.parse( info.created ) : NaN,
+		days = isNaN( created ) ? null : Math.floor( ( now - created ) / ( 24 * 60 * 60 * 1000 ) ),
+		iw = info.interwikis || 0,
+		byAge = limits.oldDays > 0 && days !== null && days >= limits.oldDays,
+		byIw = limits.oldInterwikis > 0 && iw >= limits.oldInterwikis;
+
+	return { warn: byAge || byIw, days: days, interwikis: iw, byAge: byAge, byInterwikis: byIw };
+}
+
+/** "há 3 anos", "há 5 meses", "há 12 dias" */
+function ageText( days ) {
+	if ( days >= 365 ) {
+		return ronda.msg( 'paginas-ha-anos', Math.floor( days / 365 ) );
+	}
+	if ( days >= 60 ) {
+		return ronda.msg( 'paginas-ha-meses', Math.floor( days / 30 ) );
+	}
+	return ronda.msg( 'paginas-ha-dias', days );
+}
+
+/**
+ * Consulta a criação e os interwikis do artigo e, se passarem dos limites, põe o alerta
+ * no topo do diálogo da ER (que já está aberto: a consulta não atrasa a janela).
+ */
+function oldPageAlert( page, $content ) {
+	var limits = ronda.config.speedy || {};
+
+	if ( page.ns !== 0 || page.isRedirect || !( limits.oldDays > 0 || limits.oldInterwikis > 0 ) ) {
+		return;
+	}
+	ronda.api.get( {
+		action: 'query',
+		titles: page.title,
+		prop: 'revisions|langlinks',
+		rvprop: 'timestamp',
+		rvdir: 'newer',
+		rvlimit: 1,
+		lllimit: 'max'
+	} ).then( function ( data ) {
+		var p = ( data.query && data.query.pages && data.query.pages[ 0 ] ) || {},
+			first = ( p.revisions || [] )[ 0 ],
+			r = oldPageCheck( { created: first && first.timestamp, interwikis: ( p.langlinks || [] ).length }, Date.now(), limits ),
+			facts = [];
+
+		if ( !r.warn ) {
+			return;
+		}
+		if ( r.days !== null ) {
+			facts.push( ronda.msg( 'paginas-er-antiga-idade', new Date( first.timestamp ).toLocaleDateString( 'pt-BR' ), ageText( r.days ) ) );
+		}
+		if ( r.interwikis ) {
+			facts.push( ronda.msg( 'paginas-er-antiga-iw', r.interwikis ) );
+		}
+		$content.prepend( ronda.ui.message( 'highlight', $( '<span></span>' ).append(
+			document.createTextNode( ronda.msg( 'paginas-er-antiga', facts.join( ronda.msg( 'paginas-er-antiga-e' ) ) ) + ' ' ),
+			$( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( page.title, { action: 'history' } ) )
+				.text( ronda.msg( 'paginas-er-antiga-historico' ) )
+		) ).addClass( 'ronda-er-antiga' ) );
+	}, function () {} );
+}
+
 function showSpeedy( ctx, page ) {
 	var rules = rulesFor( page ),
 		$rule = $( '<select></select>' ).append( $( '<option value=""></option>' ).text( ronda.msg( 'paginas-escolha-a-regra' ) ) ),
@@ -1321,6 +1397,7 @@ function showSpeedy( ctx, page ) {
 	}
 
 	$content.append( ronda.ui.row( ronda.msg( 'paginas-regra' ), $rule ), ronda.ui.row( ronda.msg( 'paginas-observacao' ), $obs ), $warnRow, $extraRow, $progress, $log );
+	oldPageAlert( page, $content );
 
 	function submit() {
 		var r = selected(),
@@ -1806,7 +1883,8 @@ function createMaster( master, justification, extras, archived ) {
 			summary: 'Eliminação por consenso: discussão aberta para [[' + master + ']]'
 				+ ( extras.length ? ' e mais ' + extras.length + ' página(s)' : '' ),
 			createonly: !archived,
-			watchlist: ronda.creationWatchlist()
+			watchlist: ronda.creationWatchlist(),
+			watchlistexpiry: ronda.watchExpiry( 'deletion', ronda.creationWatchlist() )
 		} );
 	} );
 }
@@ -1818,7 +1896,8 @@ function createRedirect( title, master, archived ) {
 		text: '#REDIRECIONAMENTO [[' + peTitle( master ) + ']]',
 		summary: 'Eliminação por consenso: proposta conjunta, discussão em [[' + peTitle( master ) + ']]',
 		createonly: !archived,
-		watchlist: ronda.creationWatchlist()
+		watchlist: ronda.creationWatchlist(),
+		watchlistexpiry: ronda.watchExpiry( 'deletion', ronda.creationWatchlist() )
 	} );
 }
 
@@ -1842,7 +1921,8 @@ function tagPage( page, master, isBundle ) {
 				summary: 'Eliminação por consenso: proposta, discussão em [[' + peTitle( master ) + ']]'
 					+ ( isBundle ? ' (conjunta)' : '' ),
 				nocreate: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'deletion' )
 			} );
 		} );
 	} );
@@ -2691,7 +2771,7 @@ function showForm( ctx, page, groups ) {
 
 			plan.forEach( function ( params, i ) {
 				tasks.push( { critical: i === 0, label: ronda.msg( 'paginas-movendo-para', params.from, params.to ), fn: function () {
-					return ronda.post( $.extend( {}, params, { watchlist: ronda.config.watchlist } ) );
+					return ronda.post( $.extend( {}, params, { watchlist: ronda.config.watchlist, watchlistexpiry: ronda.watchExpiry( 'move' ) } ) );
 				} } );
 			} );
 
@@ -2990,14 +3070,16 @@ function openRedirect( ctx ) {
 		var params = {
 				text: redirectText( ctx.ns, target, reason ),
 				summary: 'Redirecionamento: para [[' + target + ']]' + ( reason ? ' — ' + reason : '' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'tag' )
 			},
 			edit = ctx.exists || ronda.inEditForm()
 				? ronda.editPage( ctx.page, function () {
 					return ronda.params( params );
 				} )
 				: ronda.post( $.extend( {}, params, { action: 'edit', title: ctx.page, createonly: true,
-					watchlist: ronda.creationWatchlist() } ) );
+					watchlist: ronda.creationWatchlist(),
+					watchlistexpiry: ronda.watchExpiry( 'tag', ronda.creationWatchlist() ) } ) );
 
 		ronda.ui.setBusy( $dlg, true );
 		// Patrulha só depois que a edição deu certo
@@ -3076,7 +3158,8 @@ function openStub( ctx ) {
 					summary: 'Marcação: ' + ronda.tpl( template ),
 					minor: true,
 					nocreate: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'tag' )
 				} );
 			} ).then( patrolCurrent ).then( function () {
 				done( $dlg, ronda.msg( 'paginas-esboco-adicionado' ) );
@@ -3137,7 +3220,8 @@ function openMerge( ctx ) {
 						text: ( ronda.useNoinclude( page ) ? '<noinclude>' + tpl + '</noinclude>' : tpl ) + '\n' + rev.content,
 						summary: 'Fusão: proposta com [[' + code.split( '|' )[ 1 ] + ']]',
 						nocreate: true,
-						watchlist: ronda.config.watchlist
+						watchlist: ronda.config.watchlist,
+						watchlistexpiry: ronda.watchExpiry( 'tag' )
 					} );
 				} );
 			} );
@@ -4278,7 +4362,8 @@ function openRequest( ctx, options ) {
 				title: r.page,
 				appendtext: '\n' + buildRequest( model, { request: r, target: target, target2: target2, text: text, hide: hide } ),
 				summary: 'Pedido: ' + r.label.toLowerCase() + ( target ? ' — [[' + ( r.target === 'user' ? 'Special:Contributions/' + target + '|' + target : ':' + target ) + ']]' : '' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'request' )
 			} );
 		} ).then( function () {
 			mw.notify( ronda.msg( 'paginas-pedido-enviado' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );

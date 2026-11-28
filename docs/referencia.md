@@ -7,7 +7,7 @@ Como o Ronda funciona por dentro: princípios, módulos, mensagens, configuraç�
 - **Interface nativa.** Só o módulo `jquery.ui` do MediaWiki, que é o **jQuery UI 1.9.2** (`dialog`, `button`, `buttonset`, `autocomplete`, `progressbar`, `tooltip`), controles nativos do HTML (`<select>`, caixas de seleção) e classes nativas (`ui-widget`, `ui-state-highlight`, `ui-state-error`, `wikitable`). APIs do jQuery UI 1.10+ (`controlgroup`, `checkboxradio`, `selectmenu`, opção `classes`) não existem no MediaWiki e não devem ser usadas.
 - **Visual nativo.** Os diálogos usam o tema do jQuery UI do próprio skin; os botões principais usam as classes nativas do Vector (`ui-button-blue`, `ui-button-red`). A barra de botões da página tem um estilo leve, com as variáveis de cor do MediaWiki. No **modo escuro** nativo, a barra, os diálogos, campos, menus e dicas passam a usar as variáveis do Codex (o tema do jQuery UI só tem cores claras).
 - **Sem reinventar a roda.** Motivos e durações vêm das mesmas mensagens que os formulários especiais usam (`MediaWiki:Ipbreason-dropdown`, `Ipboptions`, `Deletereason-dropdown`, `Protect-dropdown`, `Protect-expiry-options`). Os níveis de proteção vêm do `siteinfo` do próprio wiki.
-- **Edição segura.** As alterações de texto usam `mw.Api#edit`, que recalcula o conteúdo sobre a versão atual e detecta conflitos de edição.
+- **Edição segura.** As alterações de texto usam `mw.Api#edit`, que recalcula o conteúdo sobre a versão atual e detecta conflitos de edição. Todo pedido à API leva `assert: 'user'`: se a sessão expirar, a API recusa o pedido (`assertuserfailed`) em vez de gravar a ação deslogada, e o Ronda mostra um aviso para entrar de novo.
 - **Catálogos separados da lógica.** Avisos, marcações, regras e motivos ficam em `src/Ronda-catalogo.js`; as opções pessoais, nas preferências. O catálogo de motivos de eliminação prevalece sobre o menu nativo.
 - **Rastreável.** Toda edição feita como script de usuário leva `(via [[User:Little Sunshine/Ronda|script]] #Ronda)` no fim do resumo; esse texto não pode ser alterado pelas preferências.
 
@@ -123,6 +123,7 @@ Detalhes:
 - Gera `{{ER|<regra>|3=<observação>|2=~~~~}}` no topo, dentro de `<noinclude>` em predefinições, userboxes e páginas transcluídas.
 - Aviso ao criador: `Aviso-ER` (com a regra e a observação), `Aviso-não remova` ou nenhum. Nas regras técnicas (C1, D1, D2, P1, R1, R2 e G1) não há aviso, como no FastButtons.
 - O criador não é avisado se for você, se a página veio de uma moção ou se for um IP que criou a página há mais de 24 horas.
+- **Artigo antigo ou com interwikis**: ao abrir o formulário, uma consulta à parte (`prop=revisions|langlinks`, primeira edição) busca a data de criação e os interwikis. Se o artigo tiver pelo menos `speedy.oldDays` dias ou `speedy.oldInterwikis` interwikis (padrão: 365 e 3; 0 desliga o critério), aparece no topo um alerta com a data, a idade, o número de interwikis e o link para o histórico. Não vale para redirecionamentos nem fora do domínio principal. A função pura é `ronda.proposal.oldPageCheck`.
 
 ### Eliminação semirrápida (ESR)
 
@@ -198,6 +199,10 @@ Com o direito `rollback` usa a reversão rápida da API; sem ele, desfaz até a 
 ### Preferências
 O link **Preferências do Ronda** no menu de ações abre um diálogo com as opções principais (vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção). Elas ficam salvas na sua conta (opção `userjs-ronda`) e valem em qualquer navegador. O `window.rondaConfig` do common.js, se existir, continua valendo por cima. O sufixo do resumo e a etiqueta (`summarySuffix`, `tag`) são fixos: não aparecem no diálogo e valores salvos por versões antigas são ignorados. Páginas criadas de propósito pelo Ronda (discussão de PE, redirecionamentos da proposta conjunta, #R numa página nova) são vigiadas por padrão, a menos que a opção escolhida seja "Deixar de vigiar".
 
+**Vigilância com prazo** (`watchExpiry`): cada escrita informa o seu tipo de ação com `watchlistexpiry: ronda.watchExpiry( 'tipo' )`, que devolve o prazo escolhido ou `undefined` (sem prazo, ou `watchlist` em `nochange`/`unwatch`); `ronda.params` tira o parâmetro quando ele é `undefined`. Antes de uma escrita com prazo, o núcleo consulta `prop=info&inprop=watched`: se a página já é vigiada sem prazo, ou com prazo que termina depois, o prazo sai do pedido (`ronda.keepWatch`), porque a API trocaria a vigilância atual pela nova, mais curta.
+
+**Barra personalizada** (`toolbar`): em *Preferências › Barra*, cada botão tem ▲ ▼ e um menu (na barra, no menu "Mais" ou escondido), numa lista para patrulha e edição e noutra para as ações administrativas, que continuam no grupo da direita. A lista mostra os módulos não ocultos que a conta pode usar: os que têm `rights` só aparecem com pelo menos um desses direitos. A chave de cada botão é `ronda.moduleKey( mod )` (o `id`, ou `mod.key` quando o id se repete: o Eliminar usa `eliminar`, porque o Propor eliminação também tem o id `eliminacao`). `ronda.toolbarSort( mods, order )` aplica a ordem; com a ordem padrão, o diálogo grava `order: []`, para que mudanças futuras na ordem padrão continuem valendo. Os guardados no "Mais" vão para o fim do grupo deles, escondidos, e o botão **Mais ▾** (antes deles, no grupo de patrulha) mostra ou esconde todos de uma vez. No modo de teste, os escondidos também aparecem.
+
 ### Avisar fora do contexto de usuário
 Em diffs, reversões e versões antigas o Avisar sempre aparece. Se o diff não identifica o usuário (nome oculto, edição sua), o Ronda pergunta quem avisar antes de abrir o diálogo. O catálogo também tem as notificações de bloqueio do FastButtons (`bloqueado`, `bloqueado-disc`, `bloqueado-CPV`, `proxy`), que entram sob o título "Notificação de bloqueio", e o "Vandalismo repetido" vai para o topo da discussão.
 
@@ -207,6 +212,11 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 - **Mudanças recentes**: edições não autopatrulhadas no domínio principal;
 - **Páginas novas**: páginas novas não patrulhadas (sem redirecionamentos), abrindo com o link de patrulha;
 - **Edições a revisar**: uma consulta a `list=recentchanges` com `rcshow=!patrolled|oresreview` e `rcprop=oresscores` (extensão ORES da wiki, mesmo limite dos filtros de Mudanças recentes); as de provável má-fé (*goodfaith* < 50%) vêm primeiro e, em cada grupo, da mais danosa para a menos;
+- **Grandes remoções**: até 500 mudanças recentes no domínio principal (sem robôs; com o direito `patrol`, só as não autopatrulhadas), filtradas no navegador (`ronda.lists.bigRemovals`): as que tiraram pelo menos `removals.bytes` bytes (padrão 2000), sem reversões (`mw-rollback`, `mw-undo`, `mw-manual-revert`) e sem as já desfeitas (`mw-reverted`). Cada linha mostra a porcentagem da página que saiu.
+- **Filtro de abusos** (direito `abusefilter-log`): até 200 ocorrências de `list=abuselog` (com `aflfilter` quando `abuseLog.filters` tem números), das quais ficam só as que têm `revid`, ou seja, edições gravadas (`ronda.lists.savedAbuseHits`): as impedidas e as que só avisaram, sem salvar, ficam de fora. Uma linha por edição, com cada filtro ligado à ocorrência (Especial:Registro de abusos/N).
+- **Páginas novas pequenas**: até 500 páginas novas no domínio principal, sem redirecionamentos (com o direito `patrol`, só as não patrulhadas), das quais ficam as com menos de `smallPages.bytes` bytes (padrão 1000; `ronda.lists.smallNewPages`). Abrem com o link de patrulha.
+- **Páginas novas de contas novas**: até 100 páginas novas no domínio principal, sem redirecionamentos (com o direito `patrol`, só as não patrulhadas), e uma consulta `list=users` (`registration|editcount`) para até 50 autores. Ficam as de contas registradas há até `newAccounts.days` dias e com até `newAccounts.edits` edições (padrão 30 e 100) e as de IPs; contas sem data de registro (muito antigas) ficam de fora (`ronda.lists.newAccountPages`). Cada linha mostra a idade da conta e as edições.
+- **Páginas novas sem `<ref>`**: até 50 páginas novas no domínio principal, sem redirecionamentos (com o direito `patrol`, só as não patrulhadas), e uma consulta com o texto atual de todas (`prop=revisions`, `rvprop=content`). Ficam as que não têm nenhuma tag `<ref>` fora de comentários (`ronda.lists.hasRefTag` e `withoutRefs`), sem as eliminadas, as que viraram redirecionamento e as marcadas para eliminação.
 - **Eliminação rápida**: páginas em Categoria:!Páginas para eliminação rápida.
 
 ### #R, Esboço e Fusão
@@ -246,7 +256,20 @@ window.rondaConfig = {
 	// summarySuffix e tag são fixos (não vêm das preferências):
 	// summarySuffix: ' (via [[User:Little Sunshine/Ronda|script]] #Ronda)', tag: null
 	icon: 'UserScript Ronda Icon.svg',  // ícone do Commons ao lado do nome na barra; null = sem ícone
+	toolbar: {                          // barra personalizada, com as chaves de ronda.moduleKey (o id, ou mod.key)
+		order: [],                      // ordem escolhida; vazio = ordem padrão (mod.order). Os botões fora da lista vêm depois
+		more: [],                       // guardados no menu "Mais", no fim do grupo deles
+		hidden: []                      // escondidos
+	},
 	watchlist: 'preferences',           // vigilância das páginas editadas: 'preferences' (segue as preferências do MediaWiki), 'watch', 'nochange' ou 'unwatch'
+	watchExpiry: {                      // prazo da vigilância por tipo de ação: '' (sem prazo), '1 week', '2 weeks', '1 month', '3 months', '6 months'
+		revert: '',                     // reversões, links rápidos, reverter todas no topo, restaurar versão
+		warn: '',                       // avisos e notificações em discussões de usuários
+		tag: '',                        // Manutenção, Esboço, Fusão, Redirecionar
+		deletion: '',                   // ER, ESR, consenso (a página e a discussão criada)
+		request: '',                    // pedidos e registros em páginas do domínio Wikipédia
+		move: ''                        // Mover, Restaurar e as edições do Desligar
+	},
 	unlink: {
 		right: 'delete',                // direito exigido para ver o Desligar
 		namespaces: '0',                // domínios onde as ligações são removidas, ex.: '0|14' ou [ 0, 14 ]
@@ -271,8 +294,25 @@ window.rondaConfig = {
 	deletion: {
 		redirectReason: '[[WP:ER|ER]] R1: redirecionamento para página eliminada'
 	},
+	speedy: {
+		oldDays: 365,                   // alerta na ER: artigo criado há pelo menos N dias (0 = não considerar)
+		oldInterwikis: 3                // alerta na ER: artigo com pelo menos N interwikis (0 = não considerar)
+	},
 	move: {
 		deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'  // $1 = página movida
+	},
+	removals: {
+		bytes: 2000                     // Filas › Grandes remoções: tiraram pelo menos N bytes
+	},
+	abuseLog: {
+		filters: []                     // Filas › Filtro de abusos: números dos filtros mostrados ([] = todos)
+	},
+	smallPages: {
+		bytes: 1000                     // Filas › Páginas novas pequenas: menos de N bytes
+	},
+	newAccounts: {
+		days: 30,                       // Filas › Páginas novas de contas novas: conta criada há até N dias
+		edits: 100                      // … e com até N edições
 	},
 	revert: {
 		// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = versão, $4 = motivo
@@ -365,7 +405,9 @@ O gadget expõe `window.ronda` e dispara o hook `ronda.ready` com ele.
 		id: 'exemplo',
 		label: 'Exemplo',
 		title: 'Dica do botão',
-		order: 50,                      // posição na barra
+		order: 50,                      // posição na barra (padrão; o usuário pode mudar em Preferências › Barra)
+		// key: 'exemplo',              // chave nas preferências da barra, se o id se repetir (padrão: id)
+		// rights: [ 'rollback' ],      // basta um destes direitos para o botão aparecer em Preferências › Barra
 		isAvailable: function ( ctx ) {
 			return ctx.type === 'diff' && ronda.can( 'rollback' );
 		},

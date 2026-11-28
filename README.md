@@ -1,6 +1,6 @@
 # Ronda
 
-Versão **0.8.0** — veja o [histórico de versões](CHANGELOG.md).
+Versão **0.9.0** — veja o [histórico de versões](CHANGELOG.md).
 
 Barra de patrulha, manutenção e administração para a **Wikipédia em português**. O Ronda reúne o **FastButtons** e o **DiffTools** (Reversão e avisos) numa só ferramenta, com recursos inspirados no **Twinkle**: reversão rápida, avisos com nível sugerido, marcações de manutenção, propostas de eliminação, pedidos, listas de patrulha e, para quem tem as permissões, eliminação, restauro, bloqueio, proteção, remoção de ligações e ações em lote.
 

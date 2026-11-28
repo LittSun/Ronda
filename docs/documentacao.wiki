@@ -38,6 +38,8 @@ Salve e recarregue a página. Se a barra não aparecer, faça uma atualização 
 
 A barra pode ser recolhida e reaberta pelo link '''Ronda''' no menu de ações; no celular, pelo meta-painel (veja abaixo), e um toque no nome reabre a barra recolhida. Essa escolha fica salva no navegador.
 
+Se você sair da conta em outra aba ou a sessão expirar, o Ronda não grava nada deslogado: ele avisa para entrar de novo e repetir a ação.
+
 == Funcionalidades ==
 {| class="wikitable"
 ! Botão !! Função
@@ -97,6 +99,16 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 
 {{Usuário:Little Sunshine/Ronda/Botão|Filas}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Ao deixar o mouse sobre uma entrada, aparece uma prévia: o diff da edição ou, para páginas novas e marcadas, o começo do texto. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar que a própria wiki aponta como provavelmente danosas, com as de provável má-fé primeiro (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
 
+'''Grandes remoções''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): edições recentes no domínio principal que tiraram muito texto, com a porcentagem da página que saiu. Ficam de fora as reversões, que costumam tirar vandalismo, e as edições já desfeitas. Para quem pode patrulhar, só aparecem as de quem não é autopatrulhado. O limite (por padrão, 2000 bytes) fica em '''Preferências… › Filas'''.
+
+'''Filtro de abusos''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): edições recentes que dispararam o [[Especial:Registro de abusos|filtro de abusos]] e foram gravadas, isto é, que o filtro só etiquetou ou registrou. As impedidas ficam de fora. Cada linha mostra os filtros que dispararam, com ligação para a ocorrência. Em '''Preferências… › Filas''' é possível escolher os números dos filtros que entram na lista (por exemplo, 3, 17, 42); vazio, entram todos.
+
+'''Páginas novas pequenas''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): páginas novas no domínio principal, sem os redirecionamentos, com menos de 1000 bytes, candidatas comuns a eliminação rápida, esboço ou fusão. Para quem pode patrulhar, só as ainda não patrulhadas, abrindo com o link de patrulha. O tamanho fica em '''Preferências… › Filas'''.
+
+'''Páginas novas de contas novas''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): páginas novas no domínio principal, sem os redirecionamentos, criadas por contas registradas há até 30 dias e com até 100 edições; cada linha mostra a idade da conta e o número de edições. Para quem pode patrulhar, só as ainda não patrulhadas. Os dois limites ficam em '''Preferências… › Filas'''.
+
+'''Páginas novas sem <nowiki><ref></nowiki>''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): páginas novas no domínio principal cujo texto atual não tem nenhuma tag <code><nowiki><ref></nowiki></code>, candidatas a {{tl|Sem-fontes}} ou {{tl|Sem notas}}. Ficam de fora as eliminadas, as que viraram redirecionamento e as já marcadas para eliminação. Para quem pode patrulhar, só as ainda não patrulhadas.
+
 === Avisos e informações de usuários ===
 {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe. Se o usuário já foi notificado por nome impróprio (a discussão dele está na [[:Categoria:!Usuários com nomes impróprios notificados]]), esses avisos aparecem esmaecidos, com a nota "já notificado", mas continuam disponíveis.
 
@@ -128,7 +140,7 @@ No formulário de edição, {{Usuário:Little Sunshine/Ronda/Botão|Manutenção
 
 {{Usuário:Little Sunshine/Ronda/Botão|Propor eliminação}} mostra os tipos de proposta que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário do tipo escolhido. Em artigos, o diálogo traz também o link '''Detectar VDA''', que abre o [https://copyvios.toolforge.org/ detector de cópia] numa aba nova, já com a página preenchida.
 
-* '''Rápida''': apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido.
+* '''Rápida''': apresenta apenas as regras aplicáveis ao tipo de página. Para redirecionamentos, oferece R1 e R2 e avisa sobre afluentes. Insere {{tl|ER}} com regra e observação opcional; em predefinições, userboxes e páginas transcluídas, usa <code><nowiki><noinclude></nowiki></code> para evitar que a marcação apareça nas páginas que as incluem. Pode avisar o criador com {{tl|Aviso-ER}} ou {{tl|Aviso-não remova}}, exceto nas regras técnicas C1, D1, D2, P1, R1, R2 e G1. Na mesma edição da discussão, é possível mandar um '''aviso a mais''' escolhido na lista de avisos (por exemplo, vandalismo ou spam), com nível escolhido ou sugerido. Num artigo antigo ou com interwikis, o formulário mostra no topo quando ele foi criado e quantos interwikis tem e lembra que, se o problema for vandalismo ou uma edição recente, o melhor costuma ser restaurar uma versão anterior. Os limites (por padrão, um ano e três interwikis) ficam em '''Preferências… › Eliminação rápida'''; 0 desliga cada critério.
 * '''Semirrápida''': sugere uma justificativa editável conforme o assunto. Usa {{tl|ESR-banda}}, {{tl|ESR-bio}}, {{tl|ESR-matrad}} ou {{tl|ESR-arquivo}} nos casos correspondentes, com aviso opcional ao criador.
 * '''Por consenso''': se já houver uma discussão de eliminação ainda não encerrada, não abre outra; se a anterior estiver encerrada (com {{tl|Nomeação concluída}}), pede confirmação para arquivá-la. Depois, abre a proposta em [[Wikipédia:Páginas para eliminar]], marca a página e avisa o criador. Permite propostas conjuntas, marcando as demais páginas e redirecionando suas discussões para a principal. A nova discussão entra nas páginas vigiadas.
 
@@ -176,6 +188,9 @@ Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam 
 
 Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. O painel {{Usuário:Little Sunshine/Ronda/Botão|Informações}} é carregado em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar tema, vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 
+=== Barra ===
+Em '''Preferências… › Barra''', é possível escolher a ordem dos botões (com as setas ▲ ▼) e onde cada um fica: '''na barra''', no menu '''Mais''' ou '''escondido'''. O menu '''Mais''' aparece no fim da barra quando há botões guardados nele; um clique mostra esses botões, outro clique os esconde. As ações administrativas têm a sua própria lista, porque ficam sempre à direita da barra, e só aparecem para quem tem as permissões. Cada botão continua aparecendo apenas nas páginas em que pode ser usado. '''Voltar à barra padrão''' desfaz as escolhas.
+
 === Temas ===
 Em '''Preferências… › Tema''', ou direto no meta-painel (clique em '''Ronda'''), é possível mudar a aparência da barra, dos painéis e das janelas do Ronda. A troca vale na hora, sem recarregar a página; nas preferências, a escolha aparece como prévia e só fica salva ao clicar em '''Salvar'''. O funcionamento é o mesmo em todos. Opções:
 * '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.
@@ -185,6 +200,8 @@ Em '''Preferências… › Tema''', ou direto no meta-painel (clique em '''Ronda
 Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, logotipos nem marcas de terceiros. O arquivo de um tema só é carregado por quem o escolhe.
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
+
+'''Vigilância por tempo determinado:''' em '''Preferências… › Vigilância''', cada tipo de ação pode ter um prazo próprio (sem prazo, 1 semana, 2 semanas, 1 mês, 3 meses ou 6 meses): reversões, avisos e notificações, marcações, propostas de eliminação, pedidos e, por fim, Mover, Restaurar e Desligar. Por exemplo, vigiar por 1 semana as páginas revertidas e por 1 mês a discussão de quem foi avisado. Depois do prazo, a página sai sozinha da lista de páginas vigiadas. O prazo só vale quando a página passa a ser vigiada; uma página que você já vigia sem prazo, ou por mais tempo, continua como está.
 
 Com o '''modo de simulação''' ativo, o Ronda continua consultando páginas, mas não publica edições nem executa eliminações, bloqueios ou proteções. Em vez disso, registra os detalhes no console e exibe uma notificação. '''Exceção:''' preferências e avisos favoritos continuam sendo salvos. O modo também pode ser ativado por <code>window.rondaConfig = { dryRun: true };</code>.
 

@@ -28,9 +28,11 @@
 'use strict';
 
 var uid = 0,
-	api = new mw.Api( { parameters: { formatversion: 2 } } ),
+	// assert: 'user' — se a sessão expirar (saída em outra aba, cookie vencido), a API
+	// recusa o pedido em vez de gravar a edição deslogada, como IP ou conta temporária
+	api = new mw.Api( { parameters: { formatversion: 2, assert: 'user' } } ),
 	ronda = window.ronda = {
-		version: '0.8.0',
+		version: '0.9.0',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -49,8 +51,25 @@ var uid = 0,
 			// Vigilância das páginas editadas; 'preferences' segue "Adicionar à lista de
 			// páginas vigiadas as páginas que eu editar" das preferências do MediaWiki
 			watchlist: 'preferences',
+			// Prazo da vigilância por tipo de ação ('' = sem prazo; ex.: '1 week', '1 month').
+			// Vale quando a página passa a ser vigiada (watchlist 'watch' ou 'preferences');
+			// uma vigilância sem prazo, ou com prazo mais longo, nunca é encurtada.
+			watchExpiry: {
+				revert: '',    // reversões, links rápidos, reverter todas no topo, restaurar versão
+				warn: '',      // avisos e notificações em discussões de usuários
+				tag: '',       // Manutenção, Esboço, Fusão e Redirecionar
+				deletion: '',  // propostas de eliminação (ER, ESR, consenso e a discussão criada)
+				request: '',   // pedidos e registros em páginas do domínio Wikipédia
+				move: ''       // Mover, Restaurar e as edições do Desligar
+			},
 			// Buscar em segundo plano os dados dos painéis Usuário e Informações
 			prefetch: true,
+			// Barra personalizada (Preferências › Barra), com as chaves de ronda.moduleKey
+			toolbar: {
+				order: [],    // ordem escolhida; botões fora da lista vêm depois, na ordem padrão
+				more: [],     // botões guardados no menu "Mais", no fim da barra
+				hidden: []    // botões que não aparecem
+			},
 			unlink: {
 				right: 'delete',      // direito exigido para ver o módulo Desligar
 				namespaces: '0',      // domínios onde as ligações são removidas
@@ -80,9 +99,31 @@ var uid = 0,
 			deletion: {
 				redirectReason: '[[WP:ER|ER]] R1: redirecionamento para página eliminada'
 			},
+			speedy: {
+				// Alerta ao propor ER para um artigo antigo ou com interwikis (0 = não considerar)
+				oldDays: 365,         // dias desde a criação
+				oldInterwikis: 3      // número de interwikis
+			},
 			move: {
 				// Eliminação do destino antes de mover; $1 = página que será movida para lá
 				deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'
+			},
+			// Filas › Grandes remoções: edições que tiraram pelo menos este número de bytes
+			removals: {
+				bytes: 2000
+			},
+			// Filas › Filtro de abusos: números dos filtros mostrados ([] = todos)
+			abuseLog: {
+				filters: []
+			},
+			// Filas › Páginas novas pequenas: páginas novas com menos deste número de bytes
+			smallPages: {
+				bytes: 1000
+			},
+			// Filas › Páginas novas de contas novas: conta criada há até N dias e com até N edições
+			newAccounts: {
+				days: 30,
+				edits: 100
 			},
 			revert: {
 				// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = número da versão, $4 = motivo
@@ -243,11 +284,19 @@ ronda.can = function ( right ) {
  * @param {string} [mod.title] Dica (tooltip)
  * @param {number} [mod.order]
  * @param {boolean} [mod.admin] Ação administrativa: vai para o grupo destacado da barra
+ * @param {string} [mod.key] Chave nas preferências da barra, quando o id se repete (padrão: id)
+ * @param {string[]} [mod.rights] Direitos dos quais basta um para usar o botão; sem eles, o
+ *  botão não aparece nas preferências da barra
  * @param {Function} mod.isAvailable function ( ctx ) → boolean
  * @param {Function} mod.open function ( ctx, [options] )
  */
 ronda.registerModule = function ( mod ) {
 	ronda.modules.push( mod );
+};
+
+/** Chave do botão nas preferências da barra (toolbar.order, more e hidden) */
+ronda.moduleKey = function ( mod ) {
+	return mod.key || mod.id;
 };
 
 ronda.getModule = function ( id ) {
@@ -283,6 +332,10 @@ ronda.params = function ( params ) {
 				: ( ronda.config.summarySuffix || '' ).trim();
 		}
 	} );
+	// Sem prazo de vigilância para o tipo de ação (ronda.watchExpiry): o parâmetro sai
+	if ( params.watchlistexpiry === undefined || params.watchlistexpiry === '' ) {
+		delete params.watchlistexpiry;
+	}
 	return params;
 };
 
@@ -294,6 +347,102 @@ ronda.params = function ( params ) {
 ronda.creationWatchlist = function () {
 	return ronda.config.watchlist === 'unwatch' ? 'unwatch' : 'watch';
 };
+
+/** Prazos oferecidos nas preferências: [ valor da API, mensagem ] ('' = sem prazo) */
+ronda.WATCH_EXPIRIES = [
+	[ '', 'core-prazo-sem-prazo' ],
+	[ '1 week', 'core-prazo-1-semana' ],
+	[ '2 weeks', 'core-prazo-2-semanas' ],
+	[ '1 month', 'core-prazo-1-mes' ],
+	[ '3 months', 'core-prazo-3-meses' ],
+	[ '6 months', 'core-prazo-6-meses' ]
+];
+
+/**
+ * Prazo da vigilância (watchlistexpiry) para um tipo de ação de ronda.config.watchExpiry
+ * (revert, warn, tag, deletion, request, move), ou undefined quando não há prazo ou a
+ * página não vai ser vigiada. ronda.params tira o parâmetro quando ele é undefined.
+ * @param {string} kind
+ * @param {string} [watchlist] valor do parâmetro watchlist da mesma escrita
+ *  (padrão: ronda.config.watchlist)
+ */
+ronda.watchExpiry = function ( kind, watchlist ) {
+	var expiry = ( ronda.config.watchExpiry || {} )[ kind ];
+
+	watchlist = watchlist || ronda.config.watchlist;
+	if ( !expiry || expiry === 'infinite' || ( watchlist !== 'watch' && watchlist !== 'preferences' ) ) {
+		return undefined;
+	}
+	return expiry;
+};
+
+/**
+ * Momento (ms) em que um prazo relativo como '1 week' ou '3 months' termina, a partir
+ * de now; null se o formato não for reconhecido. Meses contam 31 dias e anos, 366:
+ * na dúvida, o prazo pedido parece mais longo e a vigilância atual é mantida.
+ */
+ronda.watchExpiryTime = function ( expiry, now ) {
+	var DAY = 24 * 60 * 60 * 1000,
+		units = { day: DAY, week: 7 * DAY, month: 31 * DAY, year: 366 * DAY },
+		m = /^\s*(\d+)\s*(day|week|month|year)s?\s*$/i.exec( String( expiry || '' ) ),
+		t;
+
+	if ( m ) {
+		return now + parseInt( m[ 1 ], 10 ) * units[ m[ 2 ].toLowerCase() ];
+	}
+	t = Date.parse( expiry );
+	return isNaN( t ) ? null : t;
+};
+
+/**
+ * A vigilância atual deve ficar como está? Sim se for sem prazo (current vazio) ou
+ * terminar depois do prazo pedido: a API trocaria a atual pela nova, mais curta.
+ * @param {string|undefined} current watchlistexpiry da página (prop=info, inprop=watched)
+ * @param {string} requested prazo pedido (ex.: '1 week')
+ */
+ronda.keepWatch = function ( current, requested, now ) {
+	var until = ronda.watchExpiryTime( requested, now || Date.now() ),
+		cur;
+
+	if ( !current ) {
+		return true;
+	}
+	cur = Date.parse( current );
+	return until !== null && !isNaN( cur ) && cur >= until;
+};
+
+/*
+ * Escritas com prazo de vigilância: antes de gravar, consulta se a página já é vigiada.
+ * Se a vigilância atual for sem prazo ou mais longa, o prazo é retirado do pedido, para
+ * não encurtá-la. Se a consulta falhar, grava como pedido.
+ */
+( function () {
+	var post = api.postWithToken;
+
+	api.postWithToken = function ( type, params, ajaxOptions ) {
+		var self = this,
+			title = params && ( params.title || params.from );
+
+		function send( p ) {
+			return post.call( self, type, p, ajaxOptions );
+		}
+		if ( !params || !params.watchlistexpiry || !title ) {
+			return post.apply( self, arguments );
+		}
+		return api.get( { action: 'query', prop: 'info', inprop: 'watched', titles: title } ).then( function ( data ) {
+			var page = data && data.query && data.query.pages && data.query.pages[ 0 ],
+				p = params;
+
+			if ( page && page.watched && ronda.keepWatch( page.watchlistexpiry, params.watchlistexpiry ) ) {
+				p = $.extend( {}, params );
+				delete p.watchlistexpiry;
+			}
+			return send( p );
+		}, function () {
+			return send( params );
+		} );
+	};
+}() );
 
 /**
  * Predefinição citada num resumo de edição: {{[[Pre:Nome|Nome]]}}
@@ -311,6 +460,36 @@ ronda.post = function ( params ) {
 ronda.loadMessages = function ( names ) {
 	return api.loadMessagesIfMissing( names, { amlang: mw.config.get( 'wgContentLanguage' ) } );
 };
+
+/**
+ * Sessão expirada: a API recusou um pedido por causa do assert: 'user'. Um aviso só
+ * (a etiqueta substitui o anterior), que fica na tela até ser fechado.
+ */
+ronda.sessionExpired = function () {
+	mw.notify( ronda.msg( 'core-sessao-expirada' ), {
+		type: 'error',
+		title: ronda.msg( 'core-nome' ),
+		autoHide: false,
+		tag: 'ronda-sessao'
+	} );
+};
+
+// Todo pedido do Ronda (leitura ou escrita) passa por aqui; a promessa devolvida é a
+// original, para não perder o abort() do mw.Api
+[ 'get', 'post', 'postWithToken' ].forEach( function ( method ) {
+	var original = api[ method ];
+
+	api[ method ] = function () {
+		var req = original.apply( this, arguments );
+
+		req.then( null, function ( code ) {
+			if ( code === 'assertuserfailed' ) {
+				ronda.sessionExpired();
+			}
+		} );
+		return req;
+	};
+} );
 
 /* ---------------- Menus de motivos (ipbreason-dropdown etc.) ---------------- */
 
@@ -439,12 +618,18 @@ ronda.notifyUser = function ( user, header, text, summary ) {
 		text,
 		// sectiontitle explícito: sem ele, o MediaWiki usa o resumo (com o sufixo
 		// do Ronda) como título da seção
-		ronda.params( { sectiontitle: header, summary: summary, watchlist: ronda.config.watchlist } )
+		ronda.params( { sectiontitle: header, summary: summary, watchlist: ronda.config.watchlist, watchlistexpiry: ronda.watchExpiry( 'warn' ) } )
 	);
 };
 
 ronda.fail = function ( code, data ) {
-	var msg = ( data && typeof data === 'object' && api.getErrorMessage )
+	var msg;
+
+	// Sessão expirada: o aviso próprio (ronda.sessionExpired) já foi mostrado
+	if ( code === 'assertuserfailed' ) {
+		return;
+	}
+	msg = ( data && typeof data === 'object' && api.getErrorMessage )
 		? api.getErrorMessage( data )
 		: ronda.msg( 'core-erro', code || 'desconhecido' );
 
@@ -678,7 +863,8 @@ ronda.warnCreator = function ( title, code, summary, extra ) {
 				title: mw.config.get( 'wgFormattedNamespaces' )[ 3 ] + ':' + creator,
 				appendtext: '\n\n' + parts.join( '\n\n' ),
 				summary: summaries.join( '; ' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'warn' )
 			} ).then( function () {
 				return ronda.msg( 'core-aviso-enviado-a', creator );
 			} );
@@ -1356,16 +1542,44 @@ ronda.modoTeste = function ( on ) {
 	return !!on;
 };
 
+/**
+ * Botões na ordem das preferências (toolbar.order): os da lista vêm na ordem dela; os
+ * demais (ex.: um módulo novo), depois, na ordem padrão (mod.order).
+ * @param {Object[]} mods
+ * @param {string[]} [order] chaves de ronda.moduleKey
+ * @return {Object[]} nova lista
+ */
+ronda.toolbarSort = function ( mods, order ) {
+	order = order || [];
+
+	function rank( m ) {
+		var k = order.indexOf( ronda.moduleKey( m ) );
+
+		return k === -1 ? order.length : k;
+	}
+	return mods.map( function ( m, i ) {
+		return { m: m, i: i };
+	} ).sort( function ( a, b ) {
+		return ( rank( a.m ) - rank( b.m ) ) || ( ( a.m.order || 0 ) - ( b.m.order || 0 ) ) || ( a.i - b.i );
+	} ).map( function ( x ) {
+		return x.m;
+	} );
+};
+
 ronda.renderToolbar = function () {
-	var $group, $adminGroup, $bar,
+	var $group, $adminGroup, $bar, $more, $firstMore,
 		ctx = ronda.ctx,
 		testing = ronda.modoTeste(),
-		available = ronda.modules.filter( function ( m ) {
+		tb = ronda.config.toolbar || {},
+		hidden = tb.hidden || [],
+		more = tb.more || [],
+		available = ronda.toolbarSort( ronda.modules.filter( function ( m ) {
 			if ( testing ) {
 				return true;
 			}
-			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação)
-			if ( m.hidden ) {
+			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação);
+			// os escondidos nas preferências da barra também ficam de fora
+			if ( m.hidden || hidden.indexOf( ronda.moduleKey( m ) ) !== -1 ) {
 				return false;
 			}
 			// Um módulo com erro fica fora da barra, sem derrubar os demais
@@ -1376,21 +1590,28 @@ ronda.renderToolbar = function () {
 				console.error( '[Ronda] módulo "' + m.id + '" ignorado:', e );
 				return false;
 			}
-		} ).sort( function ( a, b ) {
-			return ( a.order || 0 ) - ( b.order || 0 );
-		} );
+		} ), tb.order );
 
 	if ( !available.length ) {
 		return null;
+	}
+
+	/** Guardado no menu "Mais" (Preferências › Barra) */
+	function inMore( mod ) {
+		return more.indexOf( ronda.moduleKey( mod ) ) !== -1;
 	}
 
 	// Dois grupos: edição/patrulha e ações administrativas (mod.admin)
 	$group = $( '<div class="ronda-toolbar-group"></div>' );
 	$adminGroup = $( '<div class="ronda-toolbar-group ronda-toolbar-admin"></div>' );
 
-	available.forEach( function ( mod ) {
+	// Os do menu "Mais" vão para o fim do grupo, escondidos até o menu ser aberto
+	available.filter( function ( mod ) {
+		return !inMore( mod );
+	} ).concat( available.filter( inMore ) ).forEach( function ( mod ) {
 		$( '<button type="button"></button>' )
-			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) )
+			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) + ( inMore( mod ) ? ' ronda-btn-mais-item' : '' ) )
+			.toggle( !inMore( mod ) )
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
@@ -1414,6 +1635,26 @@ ronda.renderToolbar = function () {
 			} )
 			.appendTo( mod.admin ? $adminGroup : $group );
 	} );
+
+	// Botão "Mais": mostra ou esconde os botões guardados, nos dois grupos
+	if ( available.some( inMore ) ) {
+		$more = $( '<button type="button" class="ronda-btn ronda-btn-mais"></button>' )
+			.text( ronda.msg( 'core-barra-mais' ) )
+			.attr( { title: ronda.msg( 'core-barra-mais-dica' ), 'aria-expanded': 'false' } )
+			.on( 'click', function () {
+				var open = $more.attr( 'aria-expanded' ) !== 'true';
+
+				$more.attr( 'aria-expanded', String( open ) );
+				$more.button( 'option', 'label', ronda.msg( open ? 'core-barra-menos' : 'core-barra-mais' ) );
+				$bar.find( '.ronda-btn-mais-item' ).toggle( open );
+			} );
+		$firstMore = $group.children( '.ronda-btn-mais-item' ).first();
+		if ( $firstMore.length ) {
+			$more.insertBefore( $firstMore );
+		} else {
+			$more.appendTo( $group.children().length ? $group : $adminGroup );
+		}
+	}
 
 	$bar = $( '<div id="ronda-toolbar" class="ui-widget noprint"></div>' ).append(
 		brand()
@@ -1497,15 +1738,30 @@ ronda.applyTheme = function ( id ) {
 	return id;
 };
 
-/** Campos do diálogo: [ caminho, rótulo, tipo, opções ] */
+/** Opções dos prazos de vigilância: [ valor, rótulo ] */
+function watchExpiryOptions() {
+	return ronda.WATCH_EXPIRIES.map( function ( o ) {
+		return [ o[ 0 ], ronda.msg( o[ 1 ] ) ];
+	} );
+}
+
+/** Campos do diálogo: [ caminho, rótulo, tipo, opções ]; { section } abre um grupo e { note }, uma explicação */
 ronda.PREFS = [
 	{ section: 'Geral' },
 	[ 'theme', ronda.msg( 'core-tema' ), 'select', ronda.THEMES ],
-	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
-		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
 	[ 'dryRun', ronda.msg( 'core-modo-de-simulacao-nada-e-gravado' ), 'check' ],
 	[ 'prefetch', ronda.msg( 'core-pre-carregar-paineis' ), 'check' ],
+	{ section: 'Vigilância' },
+	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
+		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
+	{ note: ronda.msg( 'core-prazo-nota' ) },
+	[ 'watchExpiry.revert', ronda.msg( 'core-prazo-revert' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.warn', ronda.msg( 'core-prazo-warn' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.tag', ronda.msg( 'core-prazo-tag' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.deletion', ronda.msg( 'core-prazo-deletion' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.request', ronda.msg( 'core-prazo-request' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.move', ronda.msg( 'core-prazo-move' ), 'select', watchExpiryOptions() ],
 	{ section: 'Reversão' },
 	[ 'revert.patrol', ronda.msg( 'core-marcar-como-patrulhada-ao-reverter' ), 'check' ],
 	[ 'revert.confirm', ronda.msg( 'core-pedir-confirmacao-antes-de-reverter-pelos' ), 'check' ],
@@ -1515,14 +1771,25 @@ ronda.PREFS = [
 	[ 'revert.links.contribs', ronda.msg( 'core-links-rapidos-nas-contribuicoes' ), 'check' ],
 	[ 'revert.links.recentchanges', ronda.msg( 'core-links-rapidos-nas-mudancas-recentes' ), 'check' ],
 	[ 'revert.links.watchlist', ronda.msg( 'core-links-rapidos-nas-paginas-vigiadas' ), 'check' ],
+	{ section: 'Filas' },
+	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
+	[ 'abuseLog.filters', ronda.msg( 'core-fila-abusos-filtros' ), 'list' ],
+	[ 'smallPages.bytes', ronda.msg( 'core-fila-pequenas-bytes' ), 'number' ],
+	[ 'newAccounts.days', ronda.msg( 'core-fila-contas-dias' ), 'number' ],
+	[ 'newAccounts.edits', ronda.msg( 'core-fila-contas-edicoes' ), 'number' ],
 	{ section: 'Avisos' },
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
 	[ 'warnings.confirm', ronda.msg( 'core-confirmar-aviso-repetido-em-24-h' ), 'check' ],
+	{ section: 'Eliminação rápida' },
+	[ 'speedy.oldDays', ronda.msg( 'core-er-antiga-dias' ), 'number', { min: 0 } ],
+	[ 'speedy.oldInterwikis', ronda.msg( 'core-er-antiga-iw' ), 'number', { min: 0 } ],
 	{ section: 'Outros' },
 	[ 'unlink.namespaces', ronda.msg( 'core-dominios-onde-o-desligar-remove-ligacoes' ), 'text' ],
 	[ 'unlink.currentNamespace', ronda.msg( 'core-desligar-tambem-no-dominio-da-propria' ), 'check' ],
-	[ 'maintenance.namespaces', ronda.msg( 'core-dominios-do-botao-manutencao-ex-0' ), 'list' ]
+	[ 'maintenance.namespaces', ronda.msg( 'core-dominios-do-botao-manutencao-ex-0' ), 'list' ],
+	{ section: 'Barra' },
+	[ 'toolbar', ronda.msg( 'core-barra-intro' ), 'toolbar' ]
 ];
 
 function getPath( obj, path ) {
@@ -1541,6 +1808,129 @@ function setPath( obj, path, value ) {
 }
 
 ronda.prefs = { getPath: getPath, setPath: setPath };
+
+/** Mínimo de um campo numérico das preferências: { min } no quarto item, ou 1 */
+function numberMin( f ) {
+	return f[ 3 ] && typeof f[ 3 ].min === 'number' ? f[ 3 ].min : 1;
+}
+
+/**
+ * Editor da barra nas preferências: um quadro para patrulha e edição e outro para as
+ * ações administrativas (cada grupo tem o seu lugar na barra), com ▲ ▼ para mudar a
+ * ordem e um menu por botão: na barra, no menu "Mais" ou escondido. Só aparecem os
+ * botões que a conta pode usar (mod.rights).
+ * @param {Object} cur { order, more, hidden }
+ * @param {string} intro texto explicativo
+ * @return {{ $element: jQuery, value: Function }} value() → { order, more, hidden }
+ */
+function toolbarEditor( cur, intro ) {
+	var testing = ronda.modoTeste(),
+		$el = $( '<div class="ronda-pref-barra"></div>' ),
+		mods = ronda.modules.filter( function ( m ) {
+			return !m.hidden && ( testing || !m.rights || m.rights.some( function ( r ) {
+				return ronda.can( r );
+			} ) );
+		} ),
+		byDefault = ronda.toolbarSort( mods ),
+		// Como no diálogo: primeiro patrulha e edição, depois administração
+		defaultKeys = byDefault.filter( function ( m ) {
+			return !m.admin;
+		} ).concat( byDefault.filter( function ( m ) {
+			return !!m.admin;
+		} ) ).map( function ( m ) {
+			return ronda.moduleKey( m );
+		} );
+
+	function arrow( text, msg, dir, $li ) {
+		return $( '<button type="button" class="ronda-pref-barra-seta"></button>' ).text( text )
+			.attr( { title: ronda.msg( msg ), 'aria-label': ronda.msg( msg ) } )
+			.button()
+			.on( 'click', function () {
+				var $btn = $( this ),
+					$other = dir < 0 ? $li.prev() : $li.next();
+
+				if ( $other.length ) {
+					$li[ dir < 0 ? 'insertBefore' : 'insertAfter' ]( $other );
+				}
+				$btn.trigger( 'focus' );
+			} );
+	}
+
+	function row( m, conf ) {
+		var key = ronda.moduleKey( m ),
+			$li = $( '<li></li>' ).attr( 'data-key', key ),
+			$sel = $( '<select></select>' ).append(
+				$( '<option value="bar"></option>' ).text( ronda.msg( 'core-barra-na-barra' ) ),
+				$( '<option value="more"></option>' ).text( ronda.msg( 'core-barra-no-mais' ) ),
+				$( '<option value="hidden"></option>' ).text( ronda.msg( 'core-barra-escondido' ) )
+			).attr( 'aria-label', m.label );
+
+		$sel.val( ( conf.hidden || [] ).indexOf( key ) !== -1 ? 'hidden'
+			: ( conf.more || [] ).indexOf( key ) !== -1 ? 'more' : 'bar' );
+		$li.toggleClass( 'ronda-pref-barra-off', $sel.val() === 'hidden' );
+		$sel.on( 'change', function () {
+			$li.toggleClass( 'ronda-pref-barra-off', $sel.val() === 'hidden' );
+		} );
+		return $li.append(
+			arrow( '▲', 'core-barra-subir', -1, $li ),
+			arrow( '▼', 'core-barra-descer', 1, $li ),
+			$( '<span class="ronda-pref-barra-nome"></span>' ).text( m.label ).attr( 'title', m.title || '' ),
+			$sel
+		);
+	}
+
+	function build( conf ) {
+		var sorted = ronda.toolbarSort( mods, conf.order );
+
+		$el.empty().append( $( '<p class="ronda-pref-barra-intro"></p>' ).text( intro ) );
+		[ [ false, 'core-barra-grupo-patrulha' ], [ true, 'core-barra-grupo-admin' ] ].forEach( function ( g ) {
+			var group = sorted.filter( function ( m ) {
+					return !!m.admin === g[ 0 ];
+				} ),
+				$list = $( '<ol class="ronda-pref-barra-lista"></ol>' );
+
+			if ( !group.length ) {
+				return;
+			}
+			group.forEach( function ( m ) {
+				$list.append( row( m, conf ) );
+			} );
+			$el.append( $( '<div class="ronda-pref-barra-grupo"></div>' ).text( ronda.msg( g[ 1 ] ) ), $list );
+		} );
+		$( '<button type="button" class="ronda-pref-barra-padrao"></button>' ).text( ronda.msg( 'core-barra-padrao' ) )
+			.button()
+			.on( 'click', function () {
+				build( {} );
+			} )
+			.appendTo( $el );
+	}
+
+	build( cur );
+
+	return {
+		$element: $el,
+		value: function () {
+			var out = { order: [], more: [], hidden: [] };
+
+			$el.find( 'li[data-key]' ).each( function () {
+				var key = $( this ).attr( 'data-key' ),
+					v = $( this ).find( 'select' ).val();
+
+				out.order.push( key );
+				if ( v === 'more' ) {
+					out.more.push( key );
+				} else if ( v === 'hidden' ) {
+					out.hidden.push( key );
+				}
+			} );
+			// Ordem padrão: nada a guardar (assim, mudanças futuras na ordem padrão valem)
+			if ( out.order.join( '|' ) === defaultKeys.join( '|' ) ) {
+				out.order = [];
+			}
+			return out;
+		}
+	};
+}
 
 ronda.openPreferences = function () {
 	// Valores do diálogo: padrões + preferências salvas (sem o window.rondaConfig do common.js)
@@ -1561,6 +1951,10 @@ ronda.openPreferences = function () {
 				.appendTo( $content );
 			return;
 		}
+		if ( f.note ) {
+			$fs.append( $( '<p class="ronda-pref-nota"></p>' ).text( f.note ) );
+			return;
+		}
 		path = f[ 0 ];
 		label = f[ 1 ];
 		type = f[ 2 ];
@@ -1570,6 +1964,12 @@ ronda.openPreferences = function () {
 			cb = ronda.ui.checkbox( label, type === 'icon' ? !!cur : !!cur );
 			$fs.append( cb.$element );
 			fields.push( { path: path, type: type, read: cb.isChecked } );
+			return;
+		}
+		if ( type === 'toolbar' ) {
+			cb = toolbarEditor( cur || {}, label );
+			$fs.append( cb.$element );
+			fields.push( { path: path, type: type, read: cb.value } );
 			return;
 		}
 		if ( type === 'select' ) {
@@ -1586,11 +1986,11 @@ ronda.openPreferences = function () {
 			}
 		} else {
 			$input = type === 'number'
-				? $( '<input type="number" min="1" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).val( cur )
+				? $( '<input type="number" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).attr( 'min', numberMin( f ) ).val( cur )
 				: ronda.ui.text( type === 'list' ? ( cur || [] ).join( ', ' ) : ( cur === undefined ? '' : String( cur ) ), '' );
 		}
 		$fs.append( ronda.ui.row( label, $input ) );
-		fields.push( { path: path, type: type, read: function () {
+		fields.push( { path: path, type: type, min: numberMin( f ), read: function () {
 			return $input.val();
 		} } );
 	} );
@@ -1602,7 +2002,8 @@ ronda.openPreferences = function () {
 			var v = f.read();
 
 			if ( f.type === 'number' ) {
-				v = Math.max( 1, parseInt( v, 10 ) || 1 );
+				v = parseInt( v, 10 );
+				v = Math.max( f.min, isNaN( v ) ? f.min : v );
 			} else if ( f.type === 'list' ) {
 				v = String( v ).split( /[,\s|]+/ ).filter( Boolean ).map( Number ).filter( function ( n ) {
 					return !isNaN( n );
@@ -2140,7 +2541,10 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Avisar e Reverter: os avisos de nome impróprio ficam esmaecidos, com "já notificado", quando o usuário já foi notificado'
+	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
+	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
+	'Filas novas: Grandes remoções, Filtro de abusos e páginas novas pequenas, de contas novas e sem <ref> (ajustes em Preferências › Filas)',
+	'Eliminação rápida: alerta para artigos antigos ou com interwikis'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

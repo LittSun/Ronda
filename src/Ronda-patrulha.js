@@ -822,7 +822,8 @@ function showForm( ctx, mode, talk, plan ) {
 					title: ctx.page,
 					user: user,
 					summary: summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} ) ).then( function () {
 					return ronda.msg( 'patrulha-reversao-rapida' );
 				} );
@@ -835,7 +836,8 @@ function showForm( ctx, mode, talk, plan ) {
 				undoafter: ctx.oldId,
 				summary: summary,
 				nocreate: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'revert' )
 			} ).then( function ( data ) {
 				return data && data.edit && data.edit.nochange !== undefined ? ronda.msg( 'patrulha-nada-a-desfazer' ) : 'feito';
 			} );
@@ -920,7 +922,8 @@ function showForm( ctx, mode, talk, plan ) {
 					title: cfg().reportPage,
 					appendtext: '\n\n{{subst:NUI|' + user + '}}',
 					summary: 'Pedido: revisão do nome de usuário [[Special:Contributions/' + user + '|' + user + ']]',
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'request' )
 				} );
 			} } );
 		} );
@@ -941,7 +944,8 @@ function showForm( ctx, mode, talk, plan ) {
 					action: 'edit',
 					title: talkTitle( user ),
 					summary: w.summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'warn' )
 				}, w.parts.length ? { appendtext: ( talk.exists ? '\n\n' : '' ) + w.parts.join( '\n\n' ) } : {},
 				w.top.length ? { prependtext: w.top.join( '\n\n' ) + '\n\n' } : {} ) );
 			} } );
@@ -1058,7 +1062,8 @@ function reportVandal( user, c, page ) {
 			title: title,
 			appendtext: '\n' + body,
 			summary: 'Pedido: vandalismo — [[Special:Contributions/' + user + '|' + user + ']]',
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'request' )
 		} );
 	} );
 }
@@ -1818,7 +1823,8 @@ function rollbackAll( user, titles ) {
 					title: it.title,
 					user: user,
 					summary: summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} ) );
 			} };
 		} ), function () {
@@ -2329,11 +2335,133 @@ var MAX = 10,
 				return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: '!patrolled|oresreview',
 					rcprop: 'user|comment|title|sizes|ids|oresscores', rclimit: 50 };
 			}, key: 'recentchanges', link: 'revid', scores: true, empty: ronda.msg( 'patrulha-nenhuma-edicao-para-patrulhar-ou-desfazer' ) },
+		// Grandes remoções: o limite (removals.bytes) fica nas preferências
+		{ id: 'REM', label: ronda.msg( 'patrulha-fila-remocoes' ), title: ronda.msg( 'patrulha-fila-remocoes-dica', removalBytes() ), params: function () {
+			// Com o direito de patrulhar, só as edições de quem não é autopatrulhado
+			return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!bot|!autopatrolled' : '!bot',
+				rcprop: 'user|comment|title|sizes|ids|tags', rclimit: 500 };
+		}, pick: function ( list ) {
+			return bigRemovals( list, removalBytes() );
+		}, note: function ( item ) {
+			return item.oldlen ? ronda.msg( 'patrulha-fila-remocoes-nota', Math.round( ( item.oldlen - item.newlen ) * 100 / item.oldlen ) ) : null;
+		}, key: 'recentchanges', link: 'revid', empty: ronda.msg( 'patrulha-fila-remocoes-vazia', removalBytes() ) },
+		// Filtro de abusos: os números dos filtros (abuseLog.filters) ficam nas preferências
+		{ id: 'FA', label: ronda.msg( 'patrulha-fila-abusos' ), title: ronda.msg( 'patrulha-fila-abusos-dica' ), right: 'abusefilter-log', params: function () {
+			var ids = abuseFilters();
+
+			return $.extend( { list: 'abuselog', afllimit: 200, aflprop: 'ids|filter|user|title|action|result|timestamp|revid' },
+				ids.length ? { aflfilter: ids.join( '|' ) } : {} );
+		}, pick: savedAbuseHits, note: function ( item ) {
+			var $note = $( '<span class="ronda-feed-muted"></span>' );
+
+			item.filters.forEach( function ( f, i ) {
+				$note.append( i ? ', ' : '', $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseLog/' + f.log ) )
+					.text( ronda.msg( 'patrulha-fila-abusos-filtro', f.id ) ).attr( 'title', f.name || '' ) );
+			} );
+			return $note;
+		}, key: 'abuselog', link: 'revid', sizes: false, empty: ronda.msg( 'patrulha-fila-abusos-vazia' ) },
+		// Páginas novas pequenas: o tamanho máximo (smallPages.bytes) fica nas preferências
+		{ id: 'PNP', label: ronda.msg( 'patrulha-fila-pequenas' ), title: ronda.msg( 'patrulha-fila-pequenas-dica', smallPageBytes() ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 500 };
+		}, pick: function ( list ) {
+			return smallNewPages( list, smallPageBytes() );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-pequenas-vazia', smallPageBytes() ) },
+		// Páginas novas de contas novas: idade e edições da conta (newAccounts) ficam nas preferências
+		{ id: 'PNC', label: ronda.msg( 'patrulha-fila-contas' ), title: ronda.msg( 'patrulha-fila-contas-dica', newAccountLimits().days, newAccountLimits().edits ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 100 };
+		}, pick: function ( list ) {
+			// Data de registro e edições dos autores (até 50 contas numa consulta)
+			var users = [];
+
+			list.forEach( function ( item ) {
+				if ( item.user && users.indexOf( item.user ) === -1 && !mw.util.isIPAddress( item.user ) ) {
+					users.push( item.user );
+				}
+			} );
+			if ( !users.length ) {
+				return newAccountPages( list, {}, newAccountLimits(), Date.now() );
+			}
+			return ronda.api.get( { action: 'query', list: 'users', ususers: users.slice( 0, 50 ).join( '|' ), usprop: 'registration|editcount' } )
+				.then( function ( data ) {
+					var info = {};
+
+					( ( data.query && data.query.users ) || [] ).forEach( function ( u ) {
+						info[ u.name ] = u;
+					} );
+					return newAccountPages( list, info, newAccountLimits(), Date.now() );
+				} );
+		}, note: function ( item ) {
+			var a = item.account;
+
+			return !a ? null : a.ip ? ronda.msg( 'patrulha-fila-contas-ip' )
+				: a.days === 0 ? ronda.msg( 'patrulha-fila-contas-hoje', a.edits )
+					: ronda.msg( 'patrulha-fila-contas-nota', a.days, a.edits );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-contas-vazia' ) },
+		// Páginas novas sem <ref>: lê o texto atual das páginas numa consulta só
+		{ id: 'PSR', label: ronda.msg( 'patrulha-fila-semref' ), title: ronda.msg( 'patrulha-fila-semref-dica' ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 50 };
+		}, pick: function ( list ) {
+			var titles = [];
+
+			list.forEach( function ( item ) {
+				if ( titles.indexOf( item.title ) === -1 ) {
+					titles.push( item.title );
+				}
+			} );
+			if ( !titles.length ) {
+				return [];
+			}
+			return ronda.api.get( { action: 'query', titles: titles.slice( 0, 50 ).join( '|' ), prop: 'revisions', rvprop: 'content', rvslots: 'main' } )
+				.then( function ( data ) {
+					var contents = {};
+
+					( ( data.query && data.query.pages ) || [] ).forEach( function ( p ) {
+						var rev = ( p.revisions || [] )[ 0 ];
+
+						if ( !p.missing && rev && rev.slots && rev.slots.main ) {
+							contents[ p.title ] = rev.slots.main.content || '';
+						}
+					} );
+					return withoutRefs( list, contents );
+				} );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-semref-vazia' ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
 	],
 	runId = 0;
+
+/** Limite das Grandes remoções, em bytes (preferências: removals.bytes) */
+function removalBytes() {
+	return Math.max( 1, Number( ( ronda.config.removals || {} ).bytes ) || 2000 );
+}
+
+/** Números dos filtros da fila Filtro de abusos (preferências: abuseLog.filters); vazio = todos */
+function abuseFilters() {
+	var ids = ( ronda.config.abuseLog || {} ).filters;
+
+	return ( Array.isArray( ids ) ? ids : String( ids || '' ).split( /[,\s|]+/ ) ).map( Number ).filter( function ( n ) {
+		return n > 0 && Math.floor( n ) === n;
+	} );
+}
+
+/** Tamanho máximo das Páginas novas pequenas, em bytes (preferências: smallPages.bytes) */
+function smallPageBytes() {
+	return Math.max( 1, Number( ( ronda.config.smallPages || {} ).bytes ) || 1000 );
+}
+
+/** Limites de "conta nova" (preferências: newAccounts.days e newAccounts.edits) */
+function newAccountLimits() {
+	var c = ronda.config.newAccounts || {};
+
+	return { days: Math.max( 1, Number( c.days ) || 30 ), edits: Math.max( 1, Number( c.edits ) || 100 ) };
+}
 
 /* ---------------- Funções puras ---------------- */
 
@@ -2366,6 +2494,118 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/** O texto tem alguma tag <ref> (inclusive <ref name="…"/>)? Comentários não contam */
+function hasRefTag( text ) {
+	return /<ref[\s>\/]/i.test( String( text || '' ).replace( /<!--[\s\S]*?-->/g, '' ) );
+}
+
+/**
+ * Páginas novas sem <ref>: as que ainda existem, sem nenhuma tag <ref> no texto atual.
+ * Ficam de fora as já marcadas para eliminação e as que viraram redirecionamento.
+ * @param {Object[]} list páginas novas (recentchanges), da mais recente para a mais antiga
+ * @param {Object} contents texto atual por título (sem o título: página eliminada)
+ */
+function withoutRefs( list, contents ) {
+	var seen = {};
+
+	return list.filter( function ( item ) {
+		var text = contents[ item.title ];
+
+		if ( seen[ item.title ] || typeof text !== 'string' ) {
+			return false;
+		}
+		seen[ item.title ] = true;
+		return !hasRefTag( text ) && !ronda.hasEliminationTag( text ) && !/^\s*#(redirect|redirecionamento)/i.test( text );
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.hasRefTag = hasRefTag;
+ronda.lists.withoutRefs = withoutRefs;
+
+/**
+ * Páginas novas de contas novas: criadas por conta registrada há até `limits.days`
+ * dias e com até `limits.edits` edições (ou por IP, que não tem conta). Contas
+ * desconhecidas ou sem data de registro (muito antigas) ficam de fora. Cada item
+ * ganha `account` ({ days, edits } ou { ip: true }) para a linha.
+ * @param {Object[]} list páginas novas (recentchanges)
+ * @param {Object} info list=users por nome: { registration, editcount }
+ */
+function newAccountPages( list, info, limits, now ) {
+	return list.filter( function ( item ) {
+		var u = info[ item.user ],
+			days;
+
+		if ( item.user && mw.util.isIPAddress( item.user ) ) {
+			item.account = { ip: true };
+			return true;
+		}
+		if ( !u || !u.registration ) {
+			return false;
+		}
+		days = Math.floor( ( now - Date.parse( u.registration ) ) / ( 24 * 60 * 60 * 1000 ) );
+		item.account = { days: Math.max( 0, days ), edits: u.editcount || 0 };
+		return days <= limits.days && item.account.edits <= limits.edits;
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.newAccountPages = newAccountPages;
+
+/** Páginas novas pequenas: criações com menos de `bytes` bytes, das mais recentes para as mais antigas */
+function smallNewPages( list, bytes ) {
+	return list.filter( function ( item ) {
+		return ( item.newlen || 0 ) < bytes;
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.smallNewPages = smallNewPages;
+
+/**
+ * Filtro de abusos: só as ocorrências cuja edição foi gravada (com revid); as
+ * impedidas, as que só avisaram (e não foram salvas) e as que não são edições ficam
+ * de fora. Uma linha por edição, com todos os filtros que ela disparou.
+ * @param {Object[]} list list=abuselog, da mais recente para a mais antiga
+ * @return {Object[]} { revid, title, user, timestamp, filters: [ { id, name, log } ] }
+ */
+function savedAbuseHits( list ) {
+	var byRev = {},
+		out = [];
+
+	list.forEach( function ( e ) {
+		var hit;
+
+		if ( !e.revid ) {
+			return;
+		}
+		hit = byRev[ e.revid ];
+		if ( !hit ) {
+			hit = byRev[ e.revid ] = { revid: e.revid, title: e.title, user: e.user, timestamp: e.timestamp, filters: [] };
+			out.push( hit );
+		}
+		hit.filters.push( { id: e.filter_id, name: e.filter, log: e.id } );
+	} );
+	return out.slice( 0, MAX );
+}
+
+ronda.lists.savedAbuseHits = savedAbuseHits;
+ronda.lists.abuseFilters = abuseFilters;
+
+/**
+ * Grandes remoções: edições que tiraram pelo menos `bytes` bytes, das mais recentes
+ * para as mais antigas. Ficam de fora as reversões (que costumam tirar vandalismo) e
+ * as edições que já foram desfeitas (etiqueta mw-reverted).
+ */
+function bigRemovals( list, bytes ) {
+	var skip = [ 'mw-rollback', 'mw-undo', 'mw-manual-revert', 'mw-reverted' ];
+
+	return list.filter( function ( item ) {
+		return ( item.newlen || 0 ) - ( item.oldlen || 0 ) <= -bytes && !( item.tags || [] ).some( function ( t ) {
+			return skip.indexOf( t ) !== -1;
+		} );
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.bigRemovals = bigRemovals;
 
 /* ---------------- Interface ---------------- */
 
@@ -2460,19 +2700,28 @@ function render( $out, def, list ) {
 			$li = $( '<li></li>' ).append( $link ),
 			dano = def.scores ? prob( item, 'damaging' ) : null,
 			fe = def.scores ? prob( item, 'goodfaith' ) : null,
-			d, n, comment;
+			d, n, comment, note;
 
 		attachHover( $link, item, def );
 
 		if ( def.link !== 'page' ) {
-			d = sizeDiff( item );
-			n = Number( d );
-			$li.append( ' ', $( '<span></span>' )
-				.addClass( n > 0 ? 'ronda-ok' : n < 0 ? 'ronda-bad' : 'ronda-feed-muted' )
-				.toggleClass( 'ronda-feed-big', Math.abs( n ) >= 500 )
-				.text( '(' + d + ')' ) );
+			// Listas sem tamanho (def.sizes === false) não mostram a diferença
+			if ( def.sizes !== false ) {
+				d = sizeDiff( item );
+				n = Number( d );
+				$li.append( ' ', $( '<span></span>' )
+					.addClass( n > 0 ? 'ronda-ok' : n < 0 ? 'ronda-bad' : 'ronda-feed-muted' )
+					.toggleClass( 'ronda-feed-big', Math.abs( n ) >= 500 )
+					.text( '(' + d + ')' ) );
+			}
 			if ( item.user ) {
 				$li.append( sep(), $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Contributions/' + item.user ) ).text( item.user ) );
+			}
+			// Informação própria da fila (def.note: texto ou jQuery)
+			note = def.note ? def.note( item ) : null;
+			if ( note ) {
+				$li.append( sep(), typeof note === 'string'
+					? $( '<span class="ronda-feed-muted"></span>' ).text( note ) : note );
 			}
 			if ( dano !== null ) {
 				$li.append( sep(), $( '<span class="ronda-bad"></span>' ).text( 'dano ' + pct( dano ) ) );
@@ -2498,10 +2747,13 @@ function load( def, $out ) {
 	ronda.api.get( $.extend( { action: 'query' }, def.params() ) ).then( function ( data ) {
 		var list = ( data.query && data.query[ def.key ] ) || [];
 
+		// def.pick: filtro ou consulta extra da fila; devolve a lista ou uma promessa dela
+		return def.pick ? def.pick( list ) : def.scores ? pickSuspects( list ) : list;
+	} ).then( function ( list ) {
 		if ( id !== runId ) {
 			return;
 		}
-		render( $out, def, def.scores ? pickSuspects( list ) : list );
+		render( $out, def, list );
 	}, function () {
 		if ( id === runId ) {
 			$out.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-a-lista', def.label ) );
@@ -2646,7 +2898,8 @@ function revertNow( title, user, mode, reason ) {
 				title: title,
 				user: user,
 				summary: summary,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'revert' )
 			} ) ).then( function () {
 				return plan;
 			} );
@@ -2659,7 +2912,8 @@ function revertNow( title, user, mode, reason ) {
 			undoafter: plan.good.revid,
 			summary: summary,
 			nocreate: true,
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'revert' )
 		} ).then( function () {
 			return plan;
 		} );
@@ -2778,7 +3032,8 @@ function restore( title, revid, $box ) {
 					summary: ( rev.user ? fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' )
 						: ronda.msg( 'patrulha-restaurada-versao-autor-oculto', rev.revid ) ) + ( reason ? ' (' + reason + ')' : '' ),
 					nocreate: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} );
 			} );
 		} ).then( function () {
