@@ -46,7 +46,7 @@ test( 'Fila: pede só os filtros escolhidos e mostra a edição com a ligação 
 	assert.strictEqual( q.aflfilter, '3|17' );
 	assert.match( q.aflprop, /revid/ );
 	assert.strictEqual( linhas.length, 1 );
-	assert.match( linhas[ 0 ], /^Alfa · Fulano · filtro 3, filtro 17$/ );
+	assert.match( linhas[ 0 ], /^Alfa · Fulano · 3: Filtro 3; 17: Filtro 17$/ );
 	const hrefs = Array.from( a.$( '#ronda-toolbar .ronda-feed li a' ).map( ( i, el ) => decodeURIComponent( a.$( el ).attr( 'href' ) ) ).get() );
 
 	assert.ok( hrefs.some( ( h ) => /diff=500/.test( h ) ) );
@@ -79,4 +79,81 @@ test( 'Preferências: os números dos filtros são salvos como lista', async () 
 	a.$( '.ronda-dialog .ui-dialog-buttonpane button' ).first().trigger( 'click' );
 	await a.ate( () => a.escritas( 'options' ).length > 0 );
 	assert.deepStrictEqual( JSON.parse( a.escritas( 'options' )[ 0 ].optionvalue ).abuseLog.filters, [ 3, 17, 42 ] );
+} );
+
+/* ---------------- Descrições, acesso e alertas ---------------- */
+
+const FILTROS = { query: { abusefilters: [
+	{ id: 3, description: 'Remoção de conteúdo', enabled: '', hits: 10 },
+	{ id: 17, description: 'Spam', enabled: '', 'private': '', hitsredacted: '' },
+	{ id: 42, description: 'Antigo', hits: 0 }
+] } };
+
+test( 'Filtros: descrição, marcas e se a conta vê o registro (hitsredacted)', async () => {
+	const a = criar( { rights: [ 'edit', 'abusefilter-log' ], responder: ( p ) => p.list === 'abusefilters' ? FILTROS : undefined } );
+	let dados;
+
+	a.ronda.abuse.info().then( ( d ) => {
+		dados = d;
+	} );
+	await a.ate( () => dados );
+	assert.strictEqual( dados.byId[ 3 ].visible, true );
+	assert.strictEqual( dados.byId[ 17 ].visible, false );
+	assert.strictEqual( dados.byId[ 17 ][ 'private' ], true );
+	assert.strictEqual( dados.byId[ 42 ].enabled, false );
+	assert.strictEqual( a.ronda.abuse.label( 3 ), '3: Remoção de conteúdo' );
+	const acesso = a.ronda.abuse.access().map( ( x ) => x.id + '=' + x.ok ).join( ' ' );
+
+	assert.match( acesso, /public=true private=false protected=false suppressed=false/ );
+} );
+
+test( 'Escolher filtros: sem acesso fica esmaecido e desabilitado; aplicar devolve fila e alerta', async () => {
+	const a = criar( { rights: [ 'edit', 'abusefilter-log' ], responder: ( p ) => p.list === 'abusefilters' ? FILTROS : undefined } );
+	let saida;
+
+	a.ronda.abuse.openPicker( { filters: [ 3 ], alert: [] }, ( o ) => {
+		saida = o;
+	} );
+	await a.ate( () => a.$( '.ronda-af-table tr[data-id]' ).length > 0 );
+	const $d = a.$( '.ronda-dialog' ).last();
+
+	assert.match( $d.text(), /Remoção de conteúdo/ );
+	assert.ok( $d.find( 'tr[data-id=17]' ).hasClass( 'ronda-af-off' ) );
+	assert.strictEqual( $d.find( 'tr[data-id=17] input:disabled' ).length, 2 );
+	assert.match( $d.find( 'tr[data-id=17]' ).attr( 'title' ), /privado/i );
+	assert.strictEqual( $d.find( 'tr[data-id=42]' ).css( 'display' ), 'none', 'desativado escondido por padrão' );
+	$d.find( 'tr[data-id=3] input[data-k=alert]' ).prop( 'checked', true );
+	$d.parent().find( '.ui-dialog-buttonpane button' ).first().trigger( 'click' );
+	assert.strictEqual( saida.filters.join(), '3' );
+	assert.strictEqual( saida.alert.join(), '3' );
+} );
+
+test( 'Alerta: a primeira consulta só marca o ponto de partida; as seguintes avisam das novas', async () => {
+	let registro = [ oc( 10, 3, 500 ) ];
+	const a = criar( { rights: [ 'edit', 'abusefilter-log' ], rondaConfig: { abuseLog: { alert: [ 3 ] } },
+		responder: ( p ) => p.list === 'abuselog' ? { query: { abuselog: registro } } : undefined } );
+	let novas;
+
+	a.$( 'body' ).append( '<div id="ronda-toolbar"><button class="ronda-btn-listar"></button></div>' );
+	assert.strictEqual( a.ronda.abuse.fresh( registro, null ).length, 0 );
+
+	a.ronda.abuse.poll().then( ( h ) => {
+		novas = h;
+	} );
+	await a.ate( () => novas );
+	assert.strictEqual( novas.length, 0 );
+	assert.strictEqual( a.consultas.find( ( p ) => p.list === 'abuselog' ).aflfilter, '3' );
+
+	registro = [ oc( 12, 3, 502, 'Gama' ), oc( 11, 3, 501, 'Beta' ), oc( 10, 3, 500 ) ];
+	novas = null;
+	a.ronda.abuse.poll().then( ( h ) => {
+		novas = h;
+	} );
+	await a.ate( () => novas );
+	assert.deepStrictEqual( Array.from( novas, ( e ) => e.id ), [ 12, 11 ] );
+	assert.ok( a.$( '.ronda-btn-listar' ).hasClass( 'ronda-btn-alert' ) );
+	assert.match( a.notificacoes.map( ( n ) => typeof n === 'string' ? n : a.$( n ).text() ).join( ' ' ), /3: Filtro 3 — Fulano em Gama/ );
+
+	a.ronda.abuse.clearBadge();
+	assert.ok( !a.$( '.ronda-btn-listar' ).hasClass( 'ronda-btn-alert' ) );
 } );

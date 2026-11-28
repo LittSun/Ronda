@@ -3,6 +3,11 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.10.0 — 28/11/2026
+- **Filtro de abusos com descrição**: a fila Filtro de abusos mostra cada filtro como "número: descrição", não só o número.
+- **Escolher filtros pela descrição**: em *Preferências › Filas*, um botão abre a lista de todos os filtros (`list=abusefilters`), com número, descrição e marcas (privado, protegido, suprimido, desativado), busca e duas colunas: **Fila** (os mostrados na fila) e **Alerta**. No topo, o que a conta vê no registro, pelos direitos: filtros públicos, privados, protegidos, suprimidos, registros ocultos e detalhes privados (IP). Filtros cujo registro a conta não vê (a API esconde o número de ocorrências deles) ficam esmaecidos e desabilitados, com o motivo na dica.
+- **Alertas**: com filtros em *Filtros com alerta*, o Ronda consulta o registro deles a cada minuto, só com a aba visível. Ocorrências novas geram uma notificação (filtro, usuário, página e **ver na fila**) e um selo **!** no botão Filas, que some ao abrir as Filas. A primeira consulta só marca o ponto de partida; cada ocorrência é avisada uma vez, mesmo com várias abas.
+
 ## 0.9.0 — 28/11/2026
 - **Sessão expirada**: todo pedido à API leva `assert: 'user'`. Se você sair da conta em outra aba ou a sessão vencer, nenhuma edição, aviso ou reversão é gravada deslogada (como IP ou conta temporária); o Ronda avisa para entrar de novo e repetir a ação.
 - **Vigilância por tempo determinado**: em *Preferências › Vigilância* (seção nova, que também recebe a opção "Páginas editadas"), cada tipo de ação tem o seu prazo: reversões, avisos e notificações, marcações, propostas de eliminação, pedidos e Mover/Restaurar/Desligar (sem prazo, 1 semana, 2 semanas, 1 mês, 3 ou 6 meses). Usa o `watchlistexpiry` da API. Uma página que já é vigiada sem prazo, ou por mais tempo, continua como está. O padrão é sem prazo, como antes.
