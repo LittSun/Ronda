@@ -32,7 +32,7 @@ var uid = 0,
 	// recusa o pedido em vez de gravar a edição deslogada, como IP ou conta temporária
 	api = new mw.Api( { parameters: { formatversion: 2, assert: 'user' } } ),
 	ronda = window.ronda = {
-		version: '0.9.0',
+		version: '0.10.0',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -113,8 +113,10 @@ var uid = 0,
 				bytes: 2000
 			},
 			// Filas › Filtro de abusos: números dos filtros mostrados ([] = todos)
+			// e dos que geram alerta quando disparam ([] = nenhum)
 			abuseLog: {
-				filters: []
+				filters: [],
+				alert: []
 			},
 			// Filas › Páginas novas pequenas: páginas novas com menos deste número de bytes
 			smallPages: {
@@ -1774,6 +1776,8 @@ ronda.PREFS = [
 	{ section: 'Filas' },
 	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
 	[ 'abuseLog.filters', ronda.msg( 'core-fila-abusos-filtros' ), 'list' ],
+	[ 'abuseLog.alert', ronda.msg( 'core-fila-abusos-alerta' ), 'list' ],
+	[ 'abuseLog', ronda.msg( 'core-fila-abusos-escolher' ), 'afpicker' ],
 	[ 'smallPages.bytes', ronda.msg( 'core-fila-pequenas-bytes' ), 'number' ],
 	[ 'newAccounts.days', ronda.msg( 'core-fila-contas-dias' ), 'number' ],
 	[ 'newAccounts.edits', ronda.msg( 'core-fila-contas-edicoes' ), 'number' ],
@@ -1966,6 +1970,25 @@ ronda.openPreferences = function () {
 			fields.push( { path: path, type: type, read: cb.isChecked } );
 			return;
 		}
+		if ( type === 'afpicker' ) {
+			// Escolher os filtros numa lista com as descrições (preenche os dois campos acima)
+			if ( ronda.abuse && ronda.can( 'abusefilter-log' ) ) {
+				$fs.append( $( '<div class="ronda-refresh"></div>' ).append( $( '<button type="button"></button>' ).text( label ).button()
+					.on( 'click', function () {
+						var $f = $fs.find( '[data-pref="abuseLog.filters"]' ),
+							$a = $fs.find( '[data-pref="abuseLog.alert"]' ),
+							nums = function ( $i ) {
+								return String( $i.val() ).split( /[,\s|]+/ ).filter( Boolean ).map( Number );
+							};
+
+						ronda.abuse.openPicker( { filters: nums( $f ), alert: nums( $a ) }, function ( out ) {
+							$f.val( out.filters.join( ', ' ) );
+							$a.val( out.alert.join( ', ' ) );
+						} );
+					} ) ) );
+			}
+			return;
+		}
 		if ( type === 'toolbar' ) {
 			cb = toolbarEditor( cur || {}, label );
 			$fs.append( cb.$element );
@@ -1989,6 +2012,7 @@ ronda.openPreferences = function () {
 				? $( '<input type="number" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).attr( 'min', numberMin( f ) ).val( cur )
 				: ronda.ui.text( type === 'list' ? ( cur || [] ).join( ', ' ) : ( cur === undefined ? '' : String( cur ) ), '' );
 		}
+		$input.attr( 'data-pref', path );
 		$fs.append( ronda.ui.row( label, $input ) );
 		fields.push( { path: path, type: type, min: numberMin( f ), read: function () {
 			return $input.val();
@@ -2541,10 +2565,9 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
-	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
-	'Filas novas: Grandes remoções, Filtro de abusos e páginas novas pequenas, de contas novas e sem <ref> (ajustes em Preferências › Filas)',
-	'Eliminação rápida: alerta para artigos antigos ou com interwikis'
+	'Filtro de abusos: os filtros aparecem com a descrição, não só o número',
+	'Preferências › Filas: escolher filtros pela descrição, vendo quais o registro desta conta mostra (públicos, privados, protegidos, suprimidos)',
+	'Alertas: filtros escolhidos avisam quando disparam, com um selo no botão Filas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

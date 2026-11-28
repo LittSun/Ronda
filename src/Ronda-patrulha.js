@@ -2355,8 +2355,8 @@ var MAX = 10,
 			var $note = $( '<span class="ronda-feed-muted"></span>' );
 
 			item.filters.forEach( function ( f, i ) {
-				$note.append( i ? ', ' : '', $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseLog/' + f.log ) )
-					.text( ronda.msg( 'patrulha-fila-abusos-filtro', f.id ) ).attr( 'title', f.name || '' ) );
+				$note.append( i ? '; ' : '', $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseLog/' + f.log ) )
+					.text( ronda.abuse.label( f.id, f.name ) ).attr( 'title', ronda.msg( 'patrulha-fila-abusos-filtro', f.id ) ) );
 			} );
 			return $note;
 		}, key: 'abuselog', link: 'revid', sizes: false, empty: ronda.msg( 'patrulha-fila-abusos-vazia' ) },
@@ -2761,7 +2761,8 @@ function load( def, $out ) {
 	} );
 }
 
-function open() {
+/** @param {string} [listId] fila a abrir já carregada (ex.: 'FA', pelo alerta do filtro) */
+function open( ctx, listId ) {
 	ronda.ui.togglePanel( 'listar', function ( $panel ) {
 		var $out = $( '<div class="ronda-up-line"></div>' ),
 			$bar = $( '<div class="ronda-up-line"></div>' );
@@ -2778,12 +2779,25 @@ function open() {
 					$bar.find( '.ronda-up-current' ).removeClass( 'ronda-up-current' ).removeAttr( 'aria-current' );
 					$( this ).addClass( 'ronda-up-current' ).attr( 'aria-current', 'true' );
 					load( def, $out );
-				} ) );
+				} ).attr( 'data-fila', def.id ) );
 		} );
 
 		$panel.append( $bar, $out );
+		if ( listId ) {
+			$bar.find( '[data-fila="' + listId + '"]' ).trigger( 'click' );
+		}
+		// Abrir as Filas dá os alertas do filtro por vistos
+		ronda.abuse.clearBadge();
 	} );
 }
+
+ronda.lists.open = function ( listId ) {
+	if ( !$( '#ronda-toolbar .ronda-btn-listar' ).hasClass( 'ronda-btn-on' ) ) {
+		open( ronda.ctx, listId );
+	} else if ( listId ) {
+		$( '[data-fila="' + listId + '"]' ).trigger( 'click' );
+	}
+};
 
 ronda.registerModule( {
 	id: 'listar',
@@ -2795,6 +2809,317 @@ ronda.registerModule( {
 	},
 	open: open
 } );
+
+}( window.ronda ) );
+
+/* ================================================================== *
+ * Filtro de abusos: descrições, o que a conta pode ver e alertas
+ *
+ * - ronda.abuse.info(): todos os filtros (list=abusefilters), com descrição,
+ *   situação e marcas (privado, protegido, suprimido) e se a conta vê o registro
+ *   deles (a API omite o número de ocorrências, "hitsredacted", quando não vê).
+ *   Guardado na sessão por uma hora.
+ * - ronda.abuse.access(): o que a conta vê, pelos direitos.
+ * - ronda.abuse.openPicker(): escolher os filtros da fila e os dos alertas.
+ * - Alertas: com filtros em abuseLog.alert, consulta o registro a cada minuto
+ *   (só com a aba visível) e avisa das ocorrências novas, com um selo no Filas.
+ * ================================================================== */
+
+( function ( ronda ) {
+'use strict';
+
+var CACHE_KEY = 'ronda-filtros',
+	CACHE_TTL = 3600e3,
+	SEEN_KEY = 'ronda-filtro-visto',
+	BADGE_KEY = 'ronda-filtro-novos',
+	POLL = 60e3,
+	names = {},
+	infoPromise = null;
+
+function session() {
+	return mw.storage && mw.storage.session ? mw.storage.session : null;
+}
+
+/** "12: Descrição" (ou só "filtro 12", sem descrição) */
+function label( id, name ) {
+	name = name || names[ id ];
+	return name ? id + ': ' + name : ronda.msg( 'patrulha-fila-abusos-filtro', id );
+}
+
+function flagged( e, k ) {
+	return k in e && e[ k ] !== false;
+}
+
+/** Todos os filtros não apagados: { list, byId } */
+function info() {
+	var cached = session() && session().getObject( CACHE_KEY );
+
+	if ( cached && Date.now() - cached.time < CACHE_TTL ) {
+		infoPromise = infoPromise || $.Deferred().resolve( cached.data ).promise();
+	}
+	if ( !infoPromise ) {
+		infoPromise = ronda.api.get( { action: 'query', list: 'abusefilters', abflimit: 'max', abfshow: '!deleted',
+			abfprop: 'id|description|status|private|protected|suppressed|hits' } ).then( function ( d ) {
+			var list = ( ( d.query || {} ).abusefilters || [] ).map( function ( e ) {
+				return {
+					id: e.id,
+					description: e.description || '',
+					enabled: flagged( e, 'enabled' ),
+					'private': flagged( e, 'private' ),
+					'protected': flagged( e, 'protected' ),
+					suppressed: flagged( e, 'suppressed' ),
+					// Sem acesso ao registro do filtro, a API esconde o número de ocorrências
+					visible: !( 'hitsredacted' in e )
+				};
+			} );
+
+			if ( session() ) {
+				session().setObject( CACHE_KEY, { time: Date.now(), data: list } );
+			}
+			return list;
+		}, function () {
+			infoPromise = null;
+			return [];
+		} );
+	}
+	return infoPromise.then( function ( list ) {
+		var byId = {};
+
+		list.forEach( function ( f ) {
+			byId[ f.id ] = f;
+			names[ f.id ] = f.description;
+		} );
+		return { list: list, byId: byId };
+	} );
+}
+
+/** O que a conta vê no registro do filtro, pelos direitos */
+function access() {
+	return [
+		{ id: 'public', label: ronda.msg( 'patrulha-af-publicos' ), ok: ronda.can( 'abusefilter-log' ) },
+		{ id: 'private', label: ronda.msg( 'patrulha-af-privados' ), ok: ronda.can( 'abusefilter-log-private' ) || ronda.can( 'abusefilter-view-private' ) },
+		{ id: 'protected', label: ronda.msg( 'patrulha-af-protegidos' ), ok: ronda.can( 'abusefilter-access-protected-vars' ) },
+		{ id: 'suppressed', label: ronda.msg( 'patrulha-af-suprimidos' ), ok: ronda.can( 'viewsuppressed' ) },
+		{ id: 'hidden', label: ronda.msg( 'patrulha-af-ocultos' ), ok: ronda.can( 'abusefilter-hidden-log' ) },
+		{ id: 'details', label: ronda.msg( 'patrulha-af-detalhes' ), ok: ronda.can( 'abusefilter-privatedetails' ) }
+	];
+}
+
+/** Por que a conta não vê o registro deste filtro */
+function whyHidden( f ) {
+	var a = {};
+
+	access().forEach( function ( x ) {
+		a[ x.id ] = x.ok;
+	} );
+	if ( f.suppressed && !a.suppressed ) {
+		return ronda.msg( 'patrulha-af-sem-suprimidos' );
+	}
+	if ( f[ 'private' ] && !a[ 'private' ] ) {
+		return ronda.msg( 'patrulha-af-sem-privados' );
+	}
+	if ( f[ 'protected' ] && !a[ 'protected' ] ) {
+		return ronda.msg( 'patrulha-af-sem-protegidos' );
+	}
+	return ronda.msg( 'patrulha-af-sem-acesso' );
+}
+
+function marks( f ) {
+	return [ f[ 'private' ] ? ronda.msg( 'patrulha-af-marca-privado' ) : '', f[ 'protected' ] ? ronda.msg( 'patrulha-af-marca-protegido' ) : '',
+		f.suppressed ? ronda.msg( 'patrulha-af-marca-suprimido' ) : '', f.enabled ? '' : ronda.msg( 'patrulha-af-marca-desativado' ) ].filter( Boolean );
+}
+
+/**
+ * Escolher filtros: coluna "Fila" (abuseLog.filters) e "Alerta" (abuseLog.alert).
+ * @param {Object} cur { filters: [], alert: [] }
+ * @param {Function} done function ( { filters, alert } )
+ */
+function openPicker( cur, done ) {
+	var $dlg,
+		$box = $( '<div class="ronda-af-picker"></div>' ).text( ronda.msg( 'patrulha-carregando' ) ),
+		$search = ronda.ui.text( '', ronda.msg( 'patrulha-af-buscar' ) ),
+		cbOff = ronda.ui.checkbox( ronda.msg( 'patrulha-af-mostrar-desativados' ), false ),
+		$access = $( '<div class="ronda-af-access"></div>' ).append( document.createTextNode( ronda.msg( 'patrulha-af-voce-ve' ) ) );
+
+	access().forEach( function ( x, i ) {
+		$access.append( i ? ' · ' : '', $( '<span></span>' ).addClass( x.ok ? 'ronda-ok' : 'ronda-feed-muted' )
+			.text( ( x.ok ? '✓ ' : '✗ ' ) + x.label ) );
+	} );
+
+	function filter() {
+		var q = $search.val().toLowerCase().trim(),
+			off = cbOff.isChecked();
+
+		$box.find( 'tr[data-id]' ).each( function () {
+			var $tr = $( this );
+
+			$tr.toggle( ( off || $tr.data( 'enabled' ) || $tr.find( 'input:checked' ).length > 0 ) &&
+				( !q || $tr.text().toLowerCase().indexOf( q ) !== -1 ) );
+		} );
+	}
+
+	info().then( function ( data ) {
+		var $table = $( '<table class="ronda-af-table"></table>' ).append( $( '<tr></tr>' ).append(
+			$( '<th></th>' ).text( ronda.msg( 'patrulha-af-col-fila' ) ),
+			$( '<th></th>' ).text( ronda.msg( 'patrulha-af-col-alerta' ) ),
+			$( '<th></th>' ).text( '#' ),
+			$( '<th></th>' ).text( ronda.msg( 'patrulha-af-col-descricao' ) ) ) );
+
+		data.list.forEach( function ( f ) {
+			var m = marks( f ),
+				$tr = $( '<tr></tr>' ).attr( 'data-id', f.id ).data( 'enabled', f.enabled )
+					.toggleClass( 'ronda-af-off', !f.visible );
+
+			[ 'filters', 'alert' ].forEach( function ( k ) {
+				$( '<td></td>' ).append( $( '<input type="checkbox">' ).attr( 'data-k', k )
+					.prop( 'checked', ( cur[ k ] || [] ).indexOf( f.id ) !== -1 )
+					.prop( 'disabled', !f.visible ) ).appendTo( $tr );
+			} );
+			$tr.append( $( '<td></td>' ).append( $( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseFilter/' + f.id ) ).text( f.id ) ),
+				$( '<td></td>' ).append( document.createTextNode( f.description ),
+					m.length ? $( '<span class="ronda-feed-muted"></span>' ).text( ' (' + m.join( ', ' ) + ')' ) : null ) );
+			if ( !f.visible ) {
+				$tr.attr( 'title', whyHidden( f ) );
+			}
+			$table.append( $tr );
+		} );
+		$box.empty().append( data.list.length ? $table : document.createTextNode( ronda.msg( 'patrulha-af-nenhum' ) ) );
+		filter();
+	} );
+
+	$search.on( 'input', filter );
+	cbOff.$input.on( 'change', filter );
+
+	$dlg = ronda.ui.dialog( {
+		title: ronda.msg( 'patrulha-af-escolher-titulo' ),
+		width: 620,
+		content: [ $access, $( '<p class="ronda-feed-muted"></p>' ).text( ronda.msg( 'patrulha-af-escolher-ajuda' ) ),
+			$search, cbOff.$element, $box ],
+		buttons: [ { text: ronda.msg( 'patrulha-af-aplicar' ), 'class': 'ui-priority-primary ui-button-blue', click: function () {
+			var out = { filters: [], alert: [] };
+
+			$box.find( 'input:checked' ).each( function () {
+				out[ $( this ).attr( 'data-k' ) ].push( Number( $( this ).closest( 'tr' ).attr( 'data-id' ) ) );
+			} );
+			ronda.ui.close( $dlg );
+			done( out );
+		} }, { text: ronda.msg( 'core-cancelar' ), click: function () {
+			ronda.ui.close( $dlg );
+		} } ]
+	} );
+}
+
+/* ---------------- Alertas ---------------- */
+
+function alertFilters() {
+	var ids = ( ronda.config.abuseLog || {} ).alert;
+
+	return ( Array.isArray( ids ) ? ids : [] ).map( Number ).filter( function ( n ) {
+		return n > 0;
+	} );
+}
+
+function badge( n ) {
+	$( '#ronda-toolbar .ronda-btn-listar' ).toggleClass( 'ronda-btn-alert', n > 0 )
+		.attr( 'data-alerta', n > 0 ? ronda.msg( 'patrulha-af-alerta-selo', n ) : null );
+}
+
+function clearBadge() {
+	if ( window.localStorage ) {
+		mw.storage.remove( BADGE_KEY );
+	}
+	badge( 0 );
+}
+
+/**
+ * Ocorrências novas desde a última vista (o maior id do registro).
+ * Na primeira vez só marca o ponto de partida, para não avisar do passado.
+ * @return {Object[]} as novas, da mais recente para a mais antiga
+ */
+function fresh( entries, seen ) {
+	if ( seen === null ) {
+		return [];
+	}
+	return entries.filter( function ( e ) {
+		return e.id > seen;
+	} );
+}
+
+function notifyHits( hits ) {
+	var $msg = $( '<div></div>' );
+
+	hits.slice( 0, 3 ).forEach( function ( e ) {
+		$msg.append( $( '<div></div>' ).append(
+			$( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:AbuseLog/' + e.id ) ).text( label( e.filter_id, e.filter ) ),
+			document.createTextNode( ' — ' + ( e.user || '?' ) + ronda.msg( 'patrulha-af-alerta-em', e.title || '?' ) ) ) );
+	} );
+	if ( hits.length > 3 ) {
+		$msg.append( $( '<div></div>' ).text( ronda.msg( 'patrulha-af-alerta-mais', hits.length - 3 ) ) );
+	}
+	$msg.append( $( '<a href="#" role="button"></a>' ).text( ronda.msg( 'patrulha-af-alerta-fila' ) ).on( 'click', function ( ev ) {
+		ev.preventDefault();
+		ronda.lists.open( 'FA' );
+	} ) );
+	mw.notify( $msg, { title: ronda.msg( 'patrulha-af-alerta-titulo' ), type: 'warn', autoHide: false, tag: 'ronda-filtro' } );
+}
+
+function poll() {
+	var ids = alertFilters();
+
+	if ( !ids.length || document.hidden ) {
+		return $.Deferred().resolve( [] ).promise();
+	}
+	return ronda.api.get( { action: 'query', list: 'abuselog', aflfilter: ids.join( '|' ), afllimit: 20,
+		aflprop: 'ids|filter|user|title|action|result|timestamp|revid' } ).then( function ( d ) {
+		var entries = ( d.query || {} ).abuselog || [],
+			raw = mw.storage.get( SEEN_KEY ),
+			seen = raw === null || raw === false ? null : Number( raw ),
+			hits = fresh( entries, seen ),
+			top = entries.length ? entries[ 0 ].id : ( seen || 0 ),
+			count;
+
+		// Grava antes de avisar: outra aba aberta não repete o alerta
+		mw.storage.set( SEEN_KEY, String( Math.max( top, seen || 0 ) ) );
+		if ( hits.length ) {
+			count = Number( mw.storage.get( BADGE_KEY ) || 0 ) + hits.length;
+			mw.storage.set( BADGE_KEY, String( count ) );
+			badge( count );
+			notifyHits( hits );
+		}
+		return hits;
+	}, function () {
+		return [];
+	} );
+}
+
+function start() {
+	if ( !alertFilters().length || !ronda.can( 'abusefilter-log' ) ) {
+		return;
+	}
+	badge( Number( mw.storage.get( BADGE_KEY ) || 0 ) );
+	info();
+	poll();
+	setInterval( poll, POLL );
+	// Selo em dia entre abas
+	window.addEventListener( 'storage', function ( e ) {
+		if ( e.key === BADGE_KEY ) {
+			badge( Number( e.newValue || 0 ) );
+		}
+	} );
+}
+
+ronda.abuse = {
+	info: info,
+	access: access,
+	label: label,
+	openPicker: openPicker,
+	fresh: fresh,
+	poll: poll,
+	clearBadge: clearBadge,
+	alertFilters: alertFilters
+};
+
+mw.hook( 'ronda.ready' ).add( start );
 
 }( window.ronda ) );
 
