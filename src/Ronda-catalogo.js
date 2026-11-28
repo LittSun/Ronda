@@ -348,6 +348,14 @@ ronda.catalog.warnings = [
 		title: 'Nome com caracteres fora dos sistemas de escrita', summary: 'Aviso sobre nome impróprio ([[WP:NOEMOJI|caracteres fora dos sistemas de escrita]])' }
 ];
 
+/*
+ * Categorias de quem já foi notificado (na discussão do usuário). Os avisos dos grupos
+ * listados ficam esmaecidos, com a nota "já notificado", mas continuam selecionáveis.
+ */
+ronda.catalog.notifiedCategories = [
+	{ category: 'Categoria:!Usuários com nomes impróprios notificados', groups: [ 'Nome impróprio' ] }
+];
+
 /* ================================================================== *
  * Motivos de eliminação de reserva (mesma base da ferramenta de
  * eliminação em massa adaptada de en:User:Animum/massdelete.js).

@@ -1027,4 +1027,12 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 		color: var( --color-emphasized, #f8f9fa );
 	}
 }
+
+.ronda-dialog .ronda-warn-done > label {
+	opacity: 0.55;
+}
+
+.ronda-dialog .ronda-warn-done.ronda-tag-open > label {
+	opacity: 1;
+}
 /* </nowiki> */

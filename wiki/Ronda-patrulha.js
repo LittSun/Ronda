@@ -227,6 +227,14 @@ ronda.revert = {
 	summary: revertSummary
 };
 
+function notified( item, talk ) {
+	var cats = ( talk && talk.categories ) || [];
+
+	return ( ronda.catalog.notifiedCategories || [] ).filter( function ( c ) {
+		return cats.indexOf( c.category ) !== -1 && ( c.groups || [] ).indexOf( item.group ) !== -1;
+	} )[ 0 ] || null;
+}
+
 function loadTalk( user ) {
 	var title = talkTitle( user );
 
@@ -245,9 +253,12 @@ function loadTalk( user ) {
 		ronda.api.get( {
 			action: 'query',
 			titles: title,
-			prop: 'revisions',
 			rvprop: 'content',
-			rvslots: 'main'
+			rvslots: 'main',
+			prop: 'revisions|categories',
+			clcategories: ( ronda.catalog.notifiedCategories || [] ).map( function ( c ) {
+				return c.category;
+			} ).join( '|' ) || undefined
 		} ).then( first )
 	).then( function ( a, b ) {
 		var hist = a.query.pages[ 0 ],
@@ -256,7 +267,10 @@ function loadTalk( user ) {
 		return {
 			exists: !hist.missing,
 			revisions: hist.revisions || [],
-			text: cur.revisions ? cur.revisions[ 0 ].slots.main.content : ''
+			text: cur.revisions ? cur.revisions[ 0 ].slots.main.content : '',
+			categories: ( cur.categories || [] ).map( function ( c ) {
+				return c.title;
+			} )
 		};
 	} );
 }
@@ -428,7 +442,7 @@ function showForm( ctx, mode, talk, plan ) {
 		}
 
 		ronda.catalog.warnings.forEach( function ( item, order ) {
-			var cb, prev, sug, $params, $level, fields, report, vreport, k, $note, $star;
+			var cb, prev, sug, $params, $level, fields, report, vreport, k, $note, $star, done;
 
 			if ( ( item.ip === true && !isIP ) || ( item.ip === false && isIP ) ) {
 				return;
@@ -443,8 +457,9 @@ function showForm( ctx, mode, talk, plan ) {
 
 			prev = previous( item, talk.revisions, talk.text, now, days );
 			sug = suggest( prev );
+			done = notified( item, talk );
 
-			cb = ronda.ui.checkbox( item.label + ( prev ? ' · ' + prev.level : '' ), false );
+			cb = ronda.ui.checkbox( item.label + ( prev ? ' · ' + prev.level : '' ) + ( done ? ' · ' + ronda.msg( 'patrulha-ja-notificado' ) : '' ), false );
 			$params = $( '<div class="ronda-tag-params"></div>' ).hide();
 
 			if ( item.levels ) {
@@ -495,10 +510,10 @@ function showForm( ctx, mode, talk, plan ) {
 			}
 
 			cb.$element
-				.addClass( 'ronda-tag ronda-warn' + ( prev ? ' ronda-warn-prior' : '' ) )
+				.addClass( 'ronda-tag ronda-warn' + ( prev ? ' ronda-warn-prior' : '' ) + ( done ? ' ronda-warn-done' : '' ) )
 				.attr( 'title', item.title + ( prev
 					? ronda.msg( 'patrulha-ultimo-aviso-em', LEVEL_ORDINAL[ prev.level ], formatDate( prev.time ) )
-					: '' ) )
+					: '' ) + ( done ? ' — ' + ronda.msg( 'patrulha-ja-notificado-dica', done.category ) : '' ) )
 				.data( 'search', normalize( item.label + ' ' + item.group + ' ' + item.title ) )
 				.append( $params );
 
