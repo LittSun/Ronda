@@ -822,7 +822,8 @@ function showForm( ctx, mode, talk, plan ) {
 					title: ctx.page,
 					user: user,
 					summary: summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} ) ).then( function () {
 					return ronda.msg( 'patrulha-reversao-rapida' );
 				} );
@@ -835,7 +836,8 @@ function showForm( ctx, mode, talk, plan ) {
 				undoafter: ctx.oldId,
 				summary: summary,
 				nocreate: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'revert' )
 			} ).then( function ( data ) {
 				return data && data.edit && data.edit.nochange !== undefined ? ronda.msg( 'patrulha-nada-a-desfazer' ) : 'feito';
 			} );
@@ -920,7 +922,8 @@ function showForm( ctx, mode, talk, plan ) {
 					title: cfg().reportPage,
 					appendtext: '\n\n{{subst:NUI|' + user + '}}',
 					summary: 'Pedido: revisão do nome de usuário [[Special:Contributions/' + user + '|' + user + ']]',
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'request' )
 				} );
 			} } );
 		} );
@@ -941,7 +944,8 @@ function showForm( ctx, mode, talk, plan ) {
 					action: 'edit',
 					title: talkTitle( user ),
 					summary: w.summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'warn' )
 				}, w.parts.length ? { appendtext: ( talk.exists ? '\n\n' : '' ) + w.parts.join( '\n\n' ) } : {},
 				w.top.length ? { prependtext: w.top.join( '\n\n' ) + '\n\n' } : {} ) );
 			} } );
@@ -1058,7 +1062,8 @@ function reportVandal( user, c, page ) {
 			title: title,
 			appendtext: '\n' + body,
 			summary: 'Pedido: vandalismo — [[Special:Contributions/' + user + '|' + user + ']]',
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'request' )
 		} );
 	} );
 }
@@ -1818,7 +1823,8 @@ function rollbackAll( user, titles ) {
 					title: it.title,
 					user: user,
 					summary: summary,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} ) );
 			} };
 		} ), function () {
@@ -2646,7 +2652,8 @@ function revertNow( title, user, mode, reason ) {
 				title: title,
 				user: user,
 				summary: summary,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'revert' )
 			} ) ).then( function () {
 				return plan;
 			} );
@@ -2659,7 +2666,8 @@ function revertNow( title, user, mode, reason ) {
 			undoafter: plan.good.revid,
 			summary: summary,
 			nocreate: true,
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'revert' )
 		} ).then( function () {
 			return plan;
 		} );
@@ -2778,7 +2786,8 @@ function restore( title, revid, $box ) {
 					summary: ( rev.user ? fillSummary( cfg().restoreSummary, rev.user, '', rev.revid, '' )
 						: ronda.msg( 'patrulha-restaurada-versao-autor-oculto', rev.revid ) ) + ( reason ? ' (' + reason + ')' : '' ),
 					nocreate: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'revert' )
 				} );
 			} );
 		} ).then( function () {

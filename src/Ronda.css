@@ -491,6 +491,13 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	margin: 0.6em 0;
 }
 
+/* Explicação dentro de um grupo das preferências (a cor segue a do tema) */
+.ronda-form .ronda-pref-nota {
+	margin: 0.3em 0 0.5em;
+	font-size: 0.9em;
+	opacity: 0.8;
+}
+
 .ronda-form .ronda-refresh {
 	margin-top: 0.3em;
 	text-align: right;

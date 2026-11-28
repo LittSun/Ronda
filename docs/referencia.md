@@ -198,6 +198,8 @@ Com o direito `rollback` usa a reversão rápida da API; sem ele, desfaz até a 
 ### Preferências
 O link **Preferências do Ronda** no menu de ações abre um diálogo com as opções principais (vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção). Elas ficam salvas na sua conta (opção `userjs-ronda`) e valem em qualquer navegador. O `window.rondaConfig` do common.js, se existir, continua valendo por cima. O sufixo do resumo e a etiqueta (`summarySuffix`, `tag`) são fixos: não aparecem no diálogo e valores salvos por versões antigas são ignorados. Páginas criadas de propósito pelo Ronda (discussão de PE, redirecionamentos da proposta conjunta, #R numa página nova) são vigiadas por padrão, a menos que a opção escolhida seja "Deixar de vigiar".
 
+**Vigilância com prazo** (`watchExpiry`): cada escrita informa o seu tipo de ação com `watchlistexpiry: ronda.watchExpiry( 'tipo' )`, que devolve o prazo escolhido ou `undefined` (sem prazo, ou `watchlist` em `nochange`/`unwatch`); `ronda.params` tira o parâmetro quando ele é `undefined`. Antes de uma escrita com prazo, o núcleo consulta `prop=info&inprop=watched`: se a página já é vigiada sem prazo, ou com prazo que termina depois, o prazo sai do pedido (`ronda.keepWatch`), porque a API trocaria a vigilância atual pela nova, mais curta.
+
 ### Avisar fora do contexto de usuário
 Em diffs, reversões e versões antigas o Avisar sempre aparece. Se o diff não identifica o usuário (nome oculto, edição sua), o Ronda pergunta quem avisar antes de abrir o diálogo. O catálogo também tem as notificações de bloqueio do FastButtons (`bloqueado`, `bloqueado-disc`, `bloqueado-CPV`, `proxy`), que entram sob o título "Notificação de bloqueio", e o "Vandalismo repetido" vai para o topo da discussão.
 
@@ -247,6 +249,14 @@ window.rondaConfig = {
 	// summarySuffix: ' (via [[User:Little Sunshine/Ronda|script]] #Ronda)', tag: null
 	icon: 'UserScript Ronda Icon.svg',  // ícone do Commons ao lado do nome na barra; null = sem ícone
 	watchlist: 'preferences',           // vigilância das páginas editadas: 'preferences' (segue as preferências do MediaWiki), 'watch', 'nochange' ou 'unwatch'
+	watchExpiry: {                      // prazo da vigilância por tipo de ação: '' (sem prazo), '1 week', '2 weeks', '1 month', '3 months', '6 months'
+		revert: '',                     // reversões, links rápidos, reverter todas no topo, restaurar versão
+		warn: '',                       // avisos e notificações em discussões de usuários
+		tag: '',                        // Manutenção, Esboço, Fusão, Redirecionar
+		deletion: '',                   // ER, ESR, consenso (a página e a discussão criada)
+		request: '',                    // pedidos e registros em páginas do domínio Wikipédia
+		move: ''                        // Mover, Restaurar e as edições do Desligar
+	},
 	unlink: {
 		right: 'delete',                // direito exigido para ver o Desligar
 		namespaces: '0',                // domínios onde as ligações são removidas, ex.: '0|14' ou [ 0, 14 ]

@@ -481,7 +481,8 @@ function warnCreator( ctx, items ) {
 				+ listText( items.map( function ( item ) {
 					return ronda.tpl( item.template );
 				} ) ),
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'warn' )
 		} );
 	} );
 }
@@ -502,7 +503,8 @@ function followUps( ctx, result, values, byId, warn ) {
 					sectiontitle: '[[' + ctx.page + ']]',
 					text: values[ id ].situacao + ' ~~' + '~~',
 					summary: 'Manutenção urgente: [[' + ctx.page + ']]',
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'request' )
 				} );
 			} );
 		}
@@ -829,7 +831,8 @@ function showForm( ctx, text, aliases, info ) {
 				text: result.text,
 				summary: summarize( result, opts ),
 				minor: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'tag' )
 			} );
 		} ).then( function ( res ) {
 			ronda.recentTags.push( result.added ).then( null, function () {} );
@@ -1121,7 +1124,8 @@ function tagPage( page, code, summary, hatnotes ) {
 			text: place( revision.content, code, { noinclude: ronda.useNoinclude( page ), hatnotes: hatnotes } ),
 			summary: summary,
 			nocreate: true,
-			watchlist: ronda.config.watchlist
+			watchlist: ronda.config.watchlist,
+			watchlistexpiry: ronda.watchExpiry( 'deletion' )
 		} );
 	} );
 }
@@ -1806,7 +1810,8 @@ function createMaster( master, justification, extras, archived ) {
 			summary: 'Eliminação por consenso: discussão aberta para [[' + master + ']]'
 				+ ( extras.length ? ' e mais ' + extras.length + ' página(s)' : '' ),
 			createonly: !archived,
-			watchlist: ronda.creationWatchlist()
+			watchlist: ronda.creationWatchlist(),
+			watchlistexpiry: ronda.watchExpiry( 'deletion', ronda.creationWatchlist() )
 		} );
 	} );
 }
@@ -1818,7 +1823,8 @@ function createRedirect( title, master, archived ) {
 		text: '#REDIRECIONAMENTO [[' + peTitle( master ) + ']]',
 		summary: 'Eliminação por consenso: proposta conjunta, discussão em [[' + peTitle( master ) + ']]',
 		createonly: !archived,
-		watchlist: ronda.creationWatchlist()
+		watchlist: ronda.creationWatchlist(),
+		watchlistexpiry: ronda.watchExpiry( 'deletion', ronda.creationWatchlist() )
 	} );
 }
 
@@ -1842,7 +1848,8 @@ function tagPage( page, master, isBundle ) {
 				summary: 'Eliminação por consenso: proposta, discussão em [[' + peTitle( master ) + ']]'
 					+ ( isBundle ? ' (conjunta)' : '' ),
 				nocreate: true,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'deletion' )
 			} );
 		} );
 	} );
@@ -2691,7 +2698,7 @@ function showForm( ctx, page, groups ) {
 
 			plan.forEach( function ( params, i ) {
 				tasks.push( { critical: i === 0, label: ronda.msg( 'paginas-movendo-para', params.from, params.to ), fn: function () {
-					return ronda.post( $.extend( {}, params, { watchlist: ronda.config.watchlist } ) );
+					return ronda.post( $.extend( {}, params, { watchlist: ronda.config.watchlist, watchlistexpiry: ronda.watchExpiry( 'move' ) } ) );
 				} } );
 			} );
 
@@ -2990,14 +2997,16 @@ function openRedirect( ctx ) {
 		var params = {
 				text: redirectText( ctx.ns, target, reason ),
 				summary: 'Redirecionamento: para [[' + target + ']]' + ( reason ? ' — ' + reason : '' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'tag' )
 			},
 			edit = ctx.exists || ronda.inEditForm()
 				? ronda.editPage( ctx.page, function () {
 					return ronda.params( params );
 				} )
 				: ronda.post( $.extend( {}, params, { action: 'edit', title: ctx.page, createonly: true,
-					watchlist: ronda.creationWatchlist() } ) );
+					watchlist: ronda.creationWatchlist(),
+					watchlistexpiry: ronda.watchExpiry( 'tag', ronda.creationWatchlist() ) } ) );
 
 		ronda.ui.setBusy( $dlg, true );
 		// Patrulha só depois que a edição deu certo
@@ -3076,7 +3085,8 @@ function openStub( ctx ) {
 					summary: 'Marcação: ' + ronda.tpl( template ),
 					minor: true,
 					nocreate: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'tag' )
 				} );
 			} ).then( patrolCurrent ).then( function () {
 				done( $dlg, ronda.msg( 'paginas-esboco-adicionado' ) );
@@ -3137,7 +3147,8 @@ function openMerge( ctx ) {
 						text: ( ronda.useNoinclude( page ) ? '<noinclude>' + tpl + '</noinclude>' : tpl ) + '\n' + rev.content,
 						summary: 'Fusão: proposta com [[' + code.split( '|' )[ 1 ] + ']]',
 						nocreate: true,
-						watchlist: ronda.config.watchlist
+						watchlist: ronda.config.watchlist,
+						watchlistexpiry: ronda.watchExpiry( 'tag' )
 					} );
 				} );
 			} );
@@ -4278,7 +4289,8 @@ function openRequest( ctx, options ) {
 				title: r.page,
 				appendtext: '\n' + buildRequest( model, { request: r, target: target, target2: target2, text: text, hide: hide } ),
 				summary: 'Pedido: ' + r.label.toLowerCase() + ( target ? ' — [[' + ( r.target === 'user' ? 'Special:Contributions/' + target + '|' + target : ':' + target ) + ']]' : '' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'request' )
 			} );
 		} ).then( function () {
 			mw.notify( ronda.msg( 'paginas-pedido-enviado' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );

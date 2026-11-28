@@ -188,6 +188,8 @@ Os temas usam só CSS e as fontes instaladas no computador; não usam imagens, l
 
 Por padrão, a vigilância segue as preferências do MediaWiki. Páginas criadas pelo Ronda, como discussões de eliminação, redirecionamentos de propostas conjuntas e novos redirecionamentos, são vigiadas, salvo quando a opção escolhida é '''Deixar de vigiar'''.
 
+'''Vigilância por tempo determinado:''' em '''Preferências… › Vigilância''', cada tipo de ação pode ter um prazo próprio (sem prazo, 1 semana, 2 semanas, 1 mês, 3 meses ou 6 meses): reversões, avisos e notificações, marcações, propostas de eliminação, pedidos e, por fim, Mover, Restaurar e Desligar. Por exemplo, vigiar por 1 semana as páginas revertidas e por 1 mês a discussão de quem foi avisado. Depois do prazo, a página sai sozinha da lista de páginas vigiadas. O prazo só vale quando a página passa a ser vigiada; uma página que você já vigia sem prazo, ou por mais tempo, continua como está.
+
 Com o '''modo de simulação''' ativo, o Ronda continua consultando páginas, mas não publica edições nem executa eliminações, bloqueios ou proteções. Em vez disso, registra os detalhes no console e exibe uma notificação. '''Exceção:''' preferências e avisos favoritos continuam sendo salvos. O modo também pode ser ativado por <code>window.rondaConfig = { dryRun: true };</code>.
 
 <gallery mode="packed-hover" heights="160">

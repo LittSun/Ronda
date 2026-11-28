@@ -32,7 +32,7 @@ var uid = 0,
 	// recusa o pedido em vez de gravar a edição deslogada, como IP ou conta temporária
 	api = new mw.Api( { parameters: { formatversion: 2, assert: 'user' } } ),
 	ronda = window.ronda = {
-		version: '0.8.1',
+		version: '0.9.0',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -51,6 +51,17 @@ var uid = 0,
 			// Vigilância das páginas editadas; 'preferences' segue "Adicionar à lista de
 			// páginas vigiadas as páginas que eu editar" das preferências do MediaWiki
 			watchlist: 'preferences',
+			// Prazo da vigilância por tipo de ação ('' = sem prazo; ex.: '1 week', '1 month').
+			// Vale quando a página passa a ser vigiada (watchlist 'watch' ou 'preferences');
+			// uma vigilância sem prazo, ou com prazo mais longo, nunca é encurtada.
+			watchExpiry: {
+				revert: '',    // reversões, links rápidos, reverter todas no topo, restaurar versão
+				warn: '',      // avisos e notificações em discussões de usuários
+				tag: '',       // Manutenção, Esboço, Fusão e Redirecionar
+				deletion: '',  // propostas de eliminação (ER, ESR, consenso e a discussão criada)
+				request: '',   // pedidos e registros em páginas do domínio Wikipédia
+				move: ''       // Mover, Restaurar e as edições do Desligar
+			},
 			// Buscar em segundo plano os dados dos painéis Usuário e Informações
 			prefetch: true,
 			unlink: {
@@ -285,6 +296,10 @@ ronda.params = function ( params ) {
 				: ( ronda.config.summarySuffix || '' ).trim();
 		}
 	} );
+	// Sem prazo de vigilância para o tipo de ação (ronda.watchExpiry): o parâmetro sai
+	if ( params.watchlistexpiry === undefined || params.watchlistexpiry === '' ) {
+		delete params.watchlistexpiry;
+	}
 	return params;
 };
 
@@ -296,6 +311,102 @@ ronda.params = function ( params ) {
 ronda.creationWatchlist = function () {
 	return ronda.config.watchlist === 'unwatch' ? 'unwatch' : 'watch';
 };
+
+/** Prazos oferecidos nas preferências: [ valor da API, mensagem ] ('' = sem prazo) */
+ronda.WATCH_EXPIRIES = [
+	[ '', 'core-prazo-sem-prazo' ],
+	[ '1 week', 'core-prazo-1-semana' ],
+	[ '2 weeks', 'core-prazo-2-semanas' ],
+	[ '1 month', 'core-prazo-1-mes' ],
+	[ '3 months', 'core-prazo-3-meses' ],
+	[ '6 months', 'core-prazo-6-meses' ]
+];
+
+/**
+ * Prazo da vigilância (watchlistexpiry) para um tipo de ação de ronda.config.watchExpiry
+ * (revert, warn, tag, deletion, request, move), ou undefined quando não há prazo ou a
+ * página não vai ser vigiada. ronda.params tira o parâmetro quando ele é undefined.
+ * @param {string} kind
+ * @param {string} [watchlist] valor do parâmetro watchlist da mesma escrita
+ *  (padrão: ronda.config.watchlist)
+ */
+ronda.watchExpiry = function ( kind, watchlist ) {
+	var expiry = ( ronda.config.watchExpiry || {} )[ kind ];
+
+	watchlist = watchlist || ronda.config.watchlist;
+	if ( !expiry || expiry === 'infinite' || ( watchlist !== 'watch' && watchlist !== 'preferences' ) ) {
+		return undefined;
+	}
+	return expiry;
+};
+
+/**
+ * Momento (ms) em que um prazo relativo como '1 week' ou '3 months' termina, a partir
+ * de now; null se o formato não for reconhecido. Meses contam 31 dias e anos, 366:
+ * na dúvida, o prazo pedido parece mais longo e a vigilância atual é mantida.
+ */
+ronda.watchExpiryTime = function ( expiry, now ) {
+	var DAY = 24 * 60 * 60 * 1000,
+		units = { day: DAY, week: 7 * DAY, month: 31 * DAY, year: 366 * DAY },
+		m = /^\s*(\d+)\s*(day|week|month|year)s?\s*$/i.exec( String( expiry || '' ) ),
+		t;
+
+	if ( m ) {
+		return now + parseInt( m[ 1 ], 10 ) * units[ m[ 2 ].toLowerCase() ];
+	}
+	t = Date.parse( expiry );
+	return isNaN( t ) ? null : t;
+};
+
+/**
+ * A vigilância atual deve ficar como está? Sim se for sem prazo (current vazio) ou
+ * terminar depois do prazo pedido: a API trocaria a atual pela nova, mais curta.
+ * @param {string|undefined} current watchlistexpiry da página (prop=info, inprop=watched)
+ * @param {string} requested prazo pedido (ex.: '1 week')
+ */
+ronda.keepWatch = function ( current, requested, now ) {
+	var until = ronda.watchExpiryTime( requested, now || Date.now() ),
+		cur;
+
+	if ( !current ) {
+		return true;
+	}
+	cur = Date.parse( current );
+	return until !== null && !isNaN( cur ) && cur >= until;
+};
+
+/*
+ * Escritas com prazo de vigilância: antes de gravar, consulta se a página já é vigiada.
+ * Se a vigilância atual for sem prazo ou mais longa, o prazo é retirado do pedido, para
+ * não encurtá-la. Se a consulta falhar, grava como pedido.
+ */
+( function () {
+	var post = api.postWithToken;
+
+	api.postWithToken = function ( type, params, ajaxOptions ) {
+		var self = this,
+			title = params && ( params.title || params.from );
+
+		function send( p ) {
+			return post.call( self, type, p, ajaxOptions );
+		}
+		if ( !params || !params.watchlistexpiry || !title ) {
+			return post.apply( self, arguments );
+		}
+		return api.get( { action: 'query', prop: 'info', inprop: 'watched', titles: title } ).then( function ( data ) {
+			var page = data && data.query && data.query.pages && data.query.pages[ 0 ],
+				p = params;
+
+			if ( page && page.watched && ronda.keepWatch( page.watchlistexpiry, params.watchlistexpiry ) ) {
+				p = $.extend( {}, params );
+				delete p.watchlistexpiry;
+			}
+			return send( p );
+		}, function () {
+			return send( params );
+		} );
+	};
+}() );
 
 /**
  * Predefinição citada num resumo de edição: {{[[Pre:Nome|Nome]]}}
@@ -471,7 +582,7 @@ ronda.notifyUser = function ( user, header, text, summary ) {
 		text,
 		// sectiontitle explícito: sem ele, o MediaWiki usa o resumo (com o sufixo
 		// do Ronda) como título da seção
-		ronda.params( { sectiontitle: header, summary: summary, watchlist: ronda.config.watchlist } )
+		ronda.params( { sectiontitle: header, summary: summary, watchlist: ronda.config.watchlist, watchlistexpiry: ronda.watchExpiry( 'warn' ) } )
 	);
 };
 
@@ -716,7 +827,8 @@ ronda.warnCreator = function ( title, code, summary, extra ) {
 				title: mw.config.get( 'wgFormattedNamespaces' )[ 3 ] + ':' + creator,
 				appendtext: '\n\n' + parts.join( '\n\n' ),
 				summary: summaries.join( '; ' ),
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'warn' )
 			} ).then( function () {
 				return ronda.msg( 'core-aviso-enviado-a', creator );
 			} );
@@ -1535,15 +1647,30 @@ ronda.applyTheme = function ( id ) {
 	return id;
 };
 
-/** Campos do diálogo: [ caminho, rótulo, tipo, opções ] */
+/** Opções dos prazos de vigilância: [ valor, rótulo ] */
+function watchExpiryOptions() {
+	return ronda.WATCH_EXPIRIES.map( function ( o ) {
+		return [ o[ 0 ], ronda.msg( o[ 1 ] ) ];
+	} );
+}
+
+/** Campos do diálogo: [ caminho, rótulo, tipo, opções ]; { section } abre um grupo e { note }, uma explicação */
 ronda.PREFS = [
 	{ section: 'Geral' },
 	[ 'theme', ronda.msg( 'core-tema' ), 'select', ronda.THEMES ],
-	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
-		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
 	[ 'icon', ronda.msg( 'core-mostrar-o-icone-na-barra' ), 'icon' ],
 	[ 'dryRun', ronda.msg( 'core-modo-de-simulacao-nada-e-gravado' ), 'check' ],
 	[ 'prefetch', ronda.msg( 'core-pre-carregar-paineis' ), 'check' ],
+	{ section: 'Vigilância' },
+	[ 'watchlist', ronda.msg( 'core-paginas-editadas' ), 'select', [ [ 'preferences', ronda.msg( 'core-seguir-as-minhas-preferencias-do-mediawiki' ) ],
+		[ 'watch', ronda.msg( 'core-sempre-vigiar' ) ], [ 'nochange', ronda.msg( 'core-nao-mudar-a-vigilancia' ) ], [ 'unwatch', ronda.msg( 'core-deixar-de-vigiar' ) ] ] ],
+	{ note: ronda.msg( 'core-prazo-nota' ) },
+	[ 'watchExpiry.revert', ronda.msg( 'core-prazo-revert' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.warn', ronda.msg( 'core-prazo-warn' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.tag', ronda.msg( 'core-prazo-tag' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.deletion', ronda.msg( 'core-prazo-deletion' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.request', ronda.msg( 'core-prazo-request' ), 'select', watchExpiryOptions() ],
+	[ 'watchExpiry.move', ronda.msg( 'core-prazo-move' ), 'select', watchExpiryOptions() ],
 	{ section: 'Reversão' },
 	[ 'revert.patrol', ronda.msg( 'core-marcar-como-patrulhada-ao-reverter' ), 'check' ],
 	[ 'revert.confirm', ronda.msg( 'core-pedir-confirmacao-antes-de-reverter-pelos' ), 'check' ],
@@ -1597,6 +1724,10 @@ ronda.openPreferences = function () {
 			$fs = $( '<fieldset class="ui-widget-content ui-corner-all"></fieldset>' )
 				.append( $( '<legend></legend>' ).text( f.section ) )
 				.appendTo( $content );
+			return;
+		}
+		if ( f.note ) {
+			$fs.append( $( '<p class="ronda-pref-nota"></p>' ).text( f.note ) );
 			return;
 		}
 		path = f[ 0 ];
@@ -2178,7 +2309,8 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta'
+	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta',
+	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

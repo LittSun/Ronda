@@ -622,7 +622,8 @@ function showDialog( ctx, titles, truncated, options ) {
 					text: newText,
 					summary: summary,
 					minor: true,
-					watchlist: ronda.config.watchlist
+					watchlist: ronda.config.watchlist,
+					watchlistexpiry: ronda.watchExpiry( 'move' )
 				} );
 			} );
 		}, function ( done, total, result ) {
@@ -1647,7 +1648,8 @@ function openUndelete( ctx ) {
 				action: 'undelete',
 				title: ctx.page,
 				reason: reason,
-				watchlist: ronda.config.watchlist
+				watchlist: ronda.config.watchlist,
+				watchlistexpiry: ronda.watchExpiry( 'move' )
 			}, cbTalk && cbTalk.isChecked() ? { undeletetalk: true } : {} ) ).then( function () {
 				mw.notify( ronda.msg( 'admin-pagina-restaurada' ), { type: 'success', title: ronda.msg( 'core-nome' ) } );
 				location.href = mw.util.getUrl( ctx.page );

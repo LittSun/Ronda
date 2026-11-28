@@ -98,6 +98,10 @@ function criar( opts ) {
 		return $.when( transform( { content: content, timestamp: '2026-01-01T00:00:00Z' } ) ).then( ( params ) =>
 			self.postWithToken( 'csrf', Object.assign( { action: 'edit', title: title }, params ) ) );
 	};
+	// Como o mw.Api de verdade: seção nova pelo postWithToken (com os embrulhos do Ronda)
+	Api.prototype.newSection = function ( title, header, message, extra ) {
+		return this.postWithToken( 'csrf', Object.assign( { action: 'edit', section: 'new', title: title, summary: header, text: message }, extra ) );
+	};
 	Api.prototype.loadMessagesIfMissing = () => D();
 	Api.prototype.getErrorMessage = () => $( '<span>' ).text( 'erro' );
 	Api.prototype.saveOption = () => D();
