@@ -2401,6 +2401,36 @@ var MAX = 10,
 				: a.days === 0 ? ronda.msg( 'patrulha-fila-contas-hoje', a.edits )
 					: ronda.msg( 'patrulha-fila-contas-nota', a.days, a.edits );
 		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-contas-vazia' ) },
+		// Páginas novas sem <ref>: lê o texto atual das páginas numa consulta só
+		{ id: 'PSR', label: ronda.msg( 'patrulha-fila-semref' ), title: ronda.msg( 'patrulha-fila-semref-dica' ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 50 };
+		}, pick: function ( list ) {
+			var titles = [];
+
+			list.forEach( function ( item ) {
+				if ( titles.indexOf( item.title ) === -1 ) {
+					titles.push( item.title );
+				}
+			} );
+			if ( !titles.length ) {
+				return [];
+			}
+			return ronda.api.get( { action: 'query', titles: titles.slice( 0, 50 ).join( '|' ), prop: 'revisions', rvprop: 'content', rvslots: 'main' } )
+				.then( function ( data ) {
+					var contents = {};
+
+					( ( data.query && data.query.pages ) || [] ).forEach( function ( p ) {
+						var rev = ( p.revisions || [] )[ 0 ];
+
+						if ( !p.missing && rev && rev.slots && rev.slots.main ) {
+							contents[ p.title ] = rev.slots.main.content || '';
+						}
+					} );
+					return withoutRefs( list, contents );
+				} );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-semref-vazia' ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
@@ -2464,6 +2494,34 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/** O texto tem alguma tag <ref> (inclusive <ref name="…"/>)? Comentários não contam */
+function hasRefTag( text ) {
+	return /<ref[\s>\/]/i.test( String( text || '' ).replace( /<!--[\s\S]*?-->/g, '' ) );
+}
+
+/**
+ * Páginas novas sem <ref>: as que ainda existem, sem nenhuma tag <ref> no texto atual.
+ * Ficam de fora as já marcadas para eliminação e as que viraram redirecionamento.
+ * @param {Object[]} list páginas novas (recentchanges), da mais recente para a mais antiga
+ * @param {Object} contents texto atual por título (sem o título: página eliminada)
+ */
+function withoutRefs( list, contents ) {
+	var seen = {};
+
+	return list.filter( function ( item ) {
+		var text = contents[ item.title ];
+
+		if ( seen[ item.title ] || typeof text !== 'string' ) {
+			return false;
+		}
+		seen[ item.title ] = true;
+		return !hasRefTag( text ) && !ronda.hasEliminationTag( text ) && !/^\s*#(redirect|redirecionamento)/i.test( text );
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.hasRefTag = hasRefTag;
+ronda.lists.withoutRefs = withoutRefs;
 
 /**
  * Páginas novas de contas novas: criadas por conta registrada há até `limits.days`

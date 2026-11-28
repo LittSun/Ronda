@@ -107,6 +107,8 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 
 '''Páginas novas de contas novas''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): páginas novas no domínio principal, sem os redirecionamentos, criadas por contas registradas há até 30 dias e com até 100 edições; cada linha mostra a idade da conta e o número de edições. Para quem pode patrulhar, só as ainda não patrulhadas. Os dois limites ficam em '''Preferências… › Filas'''.
 
+'''Páginas novas sem <nowiki><ref></nowiki>''' (em {{Usuário:Little Sunshine/Ronda/Botão|Filas}}): páginas novas no domínio principal cujo texto atual não tem nenhuma tag <code><nowiki><ref></nowiki></code>, candidatas a {{tl|Sem-fontes}} ou {{tl|Sem notas}}. Ficam de fora as eliminadas, as que viraram redirecionamento e as já marcadas para eliminação. Para quem pode patrulhar, só as ainda não patrulhadas.
+
 === Avisos e informações de usuários ===
 {{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe. Se o usuário já foi notificado por nome impróprio (a discussão dele está na [[:Categoria:!Usuários com nomes impróprios notificados]]), esses avisos aparecem esmaecidos, com a nota "já notificado", mas continuam disponíveis.
 

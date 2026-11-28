@@ -2548,7 +2548,8 @@ ronda.news = [
 	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas',
 	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas',
 	'Filas: Páginas novas pequenas, com o tamanho em Preferências › Filas',
-	'Filas: Páginas novas de contas novas, com a idade e as edições da conta em Preferências › Filas'
+	'Filas: Páginas novas de contas novas, com a idade e as edições da conta em Preferências › Filas',
+	'Filas: Páginas novas sem <ref>, para achar artigos novos sem notas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
