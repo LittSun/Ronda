@@ -19,7 +19,9 @@ Como o repositório está organizado e como gerar, testar e publicar o Ronda. Pa
 | `dist/Ronda-console.js` | **Gerado.** Pacote único para colar no console |
 | `docs/` | Referência técnica, roteiro, a página de documentação da wiki (`documentacao.wiki`) e o questionário (`questionario.wiki`) |
 
-Edite só `src/`, `ferramentas/` e `docs/`. As pastas `wiki/` e `dist/` são geradas e o GitHub Actions as atualiza sozinho no `main`.
+Edite só `src/`, `ferramentas/` e `docs/`. As pastas `wiki/` e `dist/` são geradas (`npm run construir`) e não ficam no `main`: a cada construção do `main`, o GitHub Actions as grava no branch [`gerados`](https://github.com/LittSun/Ronda/tree/gerados) e as publica na wiki.
+
+O `main` é protegido: toda mudança entra por pull request.
 
 ## Preparar
 

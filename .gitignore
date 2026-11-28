@@ -1,2 +1,5 @@
 node_modules/
 Ronda-wiki.zip
+# Gerados: ficam no branch "gerados" (o GitHub Actions os grava a cada construção do main)
+wiki/
+dist/
