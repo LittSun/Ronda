@@ -354,7 +354,7 @@ ronda.catalog.warnings = [
  */
 ronda.catalog.notifiedCategories = [
 	{ category: 'Categoria:!Usuários com nomes impróprios notificados', groups: [ 'Nome impróprio' ] },
-	{ category: 'Categoria:!Usuários com nomes impróprios passíveis de bloqueio', groups: [ 'Nome impróprio ] }
+	{ category: 'Categoria:!Usuários com nomes impróprios passíveis de bloqueio', groups: [ 'Nome impróprio' ] }
 ];
 
 /* ================================================================== *
