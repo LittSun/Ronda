@@ -77,6 +77,10 @@ Ligado, a barra mostra **todos os módulos em todos os domínios**, inclusive os
 
 Esquema: `0.MENOR.CORREÇÃO` até a 1.0, que será a primeira publicada como gadget.
 
+- **MENOR** (0.7.x → 0.8.0): função, botão, painel, opção ou tema novo, ou mudança de comportamento que quem usa percebe.
+- **CORREÇÃO** (0.8.0 → 0.8.1): erro corrigido, texto ajustado, entrada nova num catálogo que já existe, ajuste visual pequeno.
+- Várias mudanças juntas: vale a maior. Ferramentas de desenvolvimento (como o modo de teste) não sobem a versão.
+
 ## Integração contínua
 
 O workflow [`.github/workflows/construir.yml`](../.github/workflows/construir.yml) roda `npm run construir`:

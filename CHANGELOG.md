@@ -3,6 +3,13 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.7.25 — 27/11/2026
+- **Informações › Recriação**: o selo **!** no botão Informações só aparece quando a recriação ainda não foi patrulhada (para quem não vê a patrulha, quando foi recriada nos últimos 30 dias). O painel repete o selo na linha Recriação e diz o motivo, também na dica do botão; recriações antigas continuam listadas, sem destaque. Restauros no registro não são mais tomados por eliminações.
+- **Informações › Ligações**: "órfã" e os afluentes do domínio principal só para artigos.
+- **Semirrápida**: assunto **Organização**, com `{{ESR-organização}}` (justificativa no parâmetro 2).
+- **Temas**: o texto dos botões das janelas segue a cor do botão; a regra da wiki que pinta de branco o texto dos botões azuis deixava o Salvar ilegível em temas claros, como o Retrô listrado.
+- Nota sobre a numeração: da 0.7.1 à 0.7.24, várias versões com funções novas saíram como correção. A partir daqui vale a regra de [docs/desenvolvimento.md](docs/desenvolvimento.md#versões); a próxima função nova abre a 0.8.0.
+
 ## 0.7.24 — 26/11/2026
 - **Propor eliminação**: um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.
 - **Prévia** opcional, como a dos avisos, em Manutenção, Esboço, Redirecionar e nas propostas rápida e semirrápida: mostra o diff do que vai mudar na página, sem gravar nada.

@@ -71,10 +71,18 @@ test( 'Títulos parecidos e recriação', () => {
 
 	assert.strictEqual( t.similarTitles( 'João da Silva', [ { title: 'João da Silva' }, { title: 'Joao da Silva (futebolista)' }, { title: 'Futebol' } ] ).join(), 'Joao da Silva (futebolista)' );
 	const dados = ( eliminada, criada ) => ( {
-		main: { query: { pages: [ { title: 'Teste', ns: 0 } ], logevents: eliminada ? [ { timestamp: eliminada } ] : [] } },
+		main: { query: { pages: [ { title: 'Teste', ns: 0 } ], logevents: eliminada ? [ { action: 'delete', timestamp: eliminada } ] : [] } },
 		first: { query: { pages: [ { revisions: [ { timestamp: criada } ] } ] } }
 	} );
 	assert.ok( t.recreation( dados( '2025-01-01T00:00:00Z', '2026-11-20T00:00:00Z' ), 'Teste' ) );
 	assert.strictEqual( t.recreation( dados( '2026-11-25T00:00:00Z', '2020-01-01T00:00:00Z' ), 'Teste' ), null, 'eliminação parcial depois da criação não conta' );
 	assert.strictEqual( t.recreation( dados( null, '2026-11-20T00:00:00Z' ), 'Teste' ), null );
+
+	// Alerta (!): só recriação ainda não patrulhada; sem acesso à patrulha, só a criada nos últimos 30 dias
+	const recente = new Date( Date.now() - 2 * 86400000 ).toISOString();
+	const comPatrulha = ( rcs ) => Object.assign( dados( '2020-01-01T00:00:00Z', '2021-06-23T00:00:00Z' ), { patrol: { query: { recentchanges: rcs } } } );
+	assert.ok( t.recreationAlert( comPatrulha( [ { type: 'new' } ] ), 'Teste' ) );
+	assert.strictEqual( t.recreationAlert( comPatrulha( [ { type: 'edit' } ] ), 'Teste' ), null, 'criação já patrulhada' );
+	assert.ok( t.recreationAlert( dados( '2025-01-01T00:00:00Z', recente ), 'Teste' ) );
+	assert.strictEqual( t.recreationAlert( dados( '2020-01-01T00:00:00Z', '2021-06-23T00:00:00Z' ), 'Teste' ), null, 'recriação antiga' );
 } );

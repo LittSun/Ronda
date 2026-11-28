@@ -322,7 +322,8 @@ window.rondaMessages = {
 
 	'paginas-info-recriacao': 'Recriação',
 	'paginas-info-recriada': 'recriada: já foi eliminada em $1',
-	'paginas-info-recriada-curto': 'Recriação de página eliminada',
+	'paginas-info-recriada-alerta': 'recriação ainda não patrulhada: a página já foi eliminada em $1',
+	'paginas-info-recriada-curto': 'Recriação de página eliminada, ainda não patrulhada',
 	'paginas-info-recriada-proteger': 'se for eliminada de novo, considere proteger contra criação',
 	'paginas-info-parecidas': 'Parecidas',
 	'paginas-info-fundir': 'fundir',

@@ -3698,7 +3698,9 @@ function similarTitles( title, results ) {
 /** A página existe e já foi eliminada antes da criação atual? Devolve o registro ou null */
 function recreation( data, title ) {
 	var q = data.main.query,
-		log = ( q.logevents || [] )[ 0 ],
+		log = ( q.logevents || [] ).filter( function ( e ) {
+			return e.action === 'delete';
+		} )[ 0 ],
 		first = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ],
 		page = ( q.pages || [] ).filter( function ( p ) {
 			return p.title === title && !p.missing;
@@ -3710,7 +3712,26 @@ function recreation( data, title ) {
 	return Date.parse( log.timestamp ) <= Date.parse( first.timestamp ) ? log : null;
 }
 
-ronda.infoTools = { titleSimilarity: titleSimilarity, similarTitles: similarTitles, recreation: recreation };
+/**
+ * Recriação que merece o alerta (!) no botão: a criação ainda não foi patrulhada.
+ * Para quem não pode patrulhar (e não vê a patrulha), vale a criação nos últimos 30 dias.
+ */
+function recreationAlert( data, title ) {
+	var rec = recreation( data, title ),
+		first = data.first && ( ( ( data.first.query.pages || [] )[ 0 ] || {} ).revisions || [] )[ 0 ];
+
+	if ( !rec ) {
+		return null;
+	}
+	if ( data.patrol ) {
+		return ( data.patrol.query.recentchanges || [] ).some( function ( r ) {
+			return r.type === 'new';
+		} ) ? rec : null;
+	}
+	return Date.now() - Date.parse( first.timestamp ) < 30 * 86400000 ? rec : null;
+}
+
+ronda.infoTools = { titleSimilarity: titleSimilarity, similarTitles: similarTitles, recreation: recreation, recreationAlert: recreationAlert };
 
 /**
  * Dados do painel Informações, buscados uma vez por página (também em segundo plano).
@@ -3740,7 +3761,7 @@ function loadInfo( ctx ) {
 				letitle: ctx.page,
 				leprop: 'ids|title|type|user|timestamp|comment|parsedcomment|details',
 				lelimit: 20
-			}, ctx.ns % 2 === 0 ? {
+			}, ctx.ns === 0 ? {
 				// Afluentes vindos do domínio principal (sem nenhum, a página é órfã)
 				list: 'logevents|backlinks', bltitle: ctx.page, bllimit: 1, blnamespace: 0, blfilterredir: 'nonredirects'
 			} : {} ) ).then( function ( d ) {
@@ -3862,7 +3883,7 @@ function renderInfo( $panel, ctx, data ) {
 		}
 
 		// Ligações que ficaram vermelhas
-		if ( ctx.ns % 2 === 0 ) {
+		if ( ctx.ns === 0 ) {
 			addTo( $links, ( q.backlinks || [] ).length
 				? a( mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ), ronda.msg( 'paginas-info-ainda-ligada' ) ).addClass( 'ronda-bad' )
 				: $( '<span></span>' ).text( ronda.msg( 'paginas-info-sem-ligacoes' ) ) );
@@ -3911,13 +3932,19 @@ function renderInfo( $panel, ctx, data ) {
 
 	// Recriação: já foi eliminada antes da criação atual
 	rec = !page.missing && recreation( data, ctx.page );
+	if ( rec && recreationAlert( data, ctx.page ) ) {
+		// O mesmo selo do botão, para ligar um ao outro
+		$recreated.append( $( '<span class="ronda-alert-badge" aria-hidden="true">!</span>' ),
+			$( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-recriada-alerta', formatDateTime( rec.timestamp ) ) ) );
+	} else if ( rec ) {
+		$recreated.append( $( '<span></span>' ).text( ronda.msg( 'paginas-info-recriada', formatDateTime( rec.timestamp ) ) ) );
+	}
 	if ( rec ) {
-		$recreated.append( $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-recriada', formatDateTime( rec.timestamp ) ) ) );
 		if ( rec.comment ) {
 			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( rec.comment.replace( /<[^>]+>/g, '' ) ) );
 		}
 		addTo( $recreated, a( mw.util.getUrl( 'Special:Log/delete', { page: ctx.page } ), ronda.msg( 'paginas-info-registro' ) ) );
-		if ( ronda.can( 'protect' ) ) {
+		if ( ronda.can( 'protect' ) && recreationAlert( data, ctx.page ) ) {
 			addTo( $recreated, $( '<span class="ronda-feed-muted"></span>' ).text( ronda.msg( 'paginas-info-recriada-proteger' ) ) );
 		}
 	}
@@ -4026,9 +4053,12 @@ function renderInfo( $panel, ctx, data ) {
 			addTo( $links, flag( $catLinks.length > 0 || ( page.categories || [] ).some( function ( c ) {
 				return !/^Categoria:!/.test( c.title );
 			} ), 'categorias' ) );
-			addTo( $links, ( q.backlinks || [] ).length
-				? flag( true, ronda.msg( 'paginas-info-afluentes-principal' ), mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ) )
-				: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-orfa' ) ) );
+			// Órfã só faz sentido para artigos
+			if ( ctx.ns === 0 ) {
+				addTo( $links, ( q.backlinks || [] ).length
+					? flag( true, ronda.msg( 'paginas-info-afluentes-principal' ), mw.util.getUrl( 'Special:WhatLinksHere/' + ctx.page, { namespace: 0 } ) )
+					: $( '<span class="ronda-bad"></span>' ).text( ronda.msg( 'paginas-info-orfa' ) ) );
+			}
 		}
 		langs = ( page.langlinks || [] ).length;
 		wikidata = ( page.pageprops || {} ).wikibase_item;
@@ -4139,10 +4169,14 @@ function markRecreation( ctx ) {
 		return;
 	}
 	loadInfo( ctx ).then( function ( data ) {
-		var rec = recreation( data, ctx.page );
+		var rec = recreationAlert( data, ctx.page ),
+			$btn = $( '#ronda-toolbar .ronda-btn-info' ),
+			mod = ronda.getModule( 'info' );
 
-		$( '#ronda-toolbar .ronda-btn-info' ).toggleClass( 'ronda-btn-alert', !!rec )
-			.attr( 'data-alerta', rec ? ronda.msg( 'paginas-info-recriada-curto' ) : null );
+		// O motivo do selo também na dica do botão
+		$btn.toggleClass( 'ronda-btn-alert', !!rec )
+			.attr( 'data-alerta', rec ? ronda.msg( 'paginas-info-recriada-curto' ) : null )
+			.attr( 'title', ( mod && mod.title || '' ) + ( rec ? ' — ! ' + ronda.msg( 'paginas-info-recriada-curto' ) : '' ) );
 	} );
 }
 

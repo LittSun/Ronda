@@ -252,6 +252,7 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	margin: 0;
 }
 
+#ronda-toolbar .ronda-alert-badge,
 #ronda-toolbar .ronda-btn-alert.ui-button .ui-button-text::after {
 	content: '!';
 	display: inline-block;
@@ -263,6 +264,10 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	color: var( --color-inverted-fixed, #fff );
 	background: var( --background-color-error, #d73333 );
 	border-radius: 999px;
+}
+
+#ronda-toolbar .ronda-alert-badge {
+	margin: 0 0.35em 0 0;
 }
 
 .ronda-elim-type {
