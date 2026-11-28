@@ -120,6 +120,11 @@ var uid = 0,
 			smallPages: {
 				bytes: 1000
 			},
+			// Filas › Páginas novas de contas novas: conta criada há até N dias e com até N edições
+			newAccounts: {
+				days: 30,
+				edits: 100
+			},
 			revert: {
 				// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = número da versão, $4 = motivo
 				summary: 'Desfeita(s) uma ou mais edições de [[Special:Contribs/$2|$2]]',
@@ -1770,6 +1775,8 @@ ronda.PREFS = [
 	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
 	[ 'abuseLog.filters', ronda.msg( 'core-fila-abusos-filtros' ), 'list' ],
 	[ 'smallPages.bytes', ronda.msg( 'core-fila-pequenas-bytes' ), 'number' ],
+	[ 'newAccounts.days', ronda.msg( 'core-fila-contas-dias' ), 'number' ],
+	[ 'newAccounts.edits', ronda.msg( 'core-fila-contas-edicoes' ), 'number' ],
 	{ section: 'Avisos' },
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
@@ -2540,7 +2547,8 @@ ronda.news = [
 	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
 	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas',
 	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas',
-	'Filas: Páginas novas pequenas, com o tamanho em Preferências › Filas'
+	'Filas: Páginas novas pequenas, com o tamanho em Preferências › Filas',
+	'Filas: Páginas novas de contas novas, com a idade e as edições da conta em Preferências › Filas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

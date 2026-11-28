@@ -215,6 +215,7 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 - **Grandes remoções**: até 500 mudanças recentes no domínio principal (sem robôs; com o direito `patrol`, só as não autopatrulhadas), filtradas no navegador (`ronda.lists.bigRemovals`): as que tiraram pelo menos `removals.bytes` bytes (padrão 2000), sem reversões (`mw-rollback`, `mw-undo`, `mw-manual-revert`) e sem as já desfeitas (`mw-reverted`). Cada linha mostra a porcentagem da página que saiu.
 - **Filtro de abusos** (direito `abusefilter-log`): até 200 ocorrências de `list=abuselog` (com `aflfilter` quando `abuseLog.filters` tem números), das quais ficam só as que têm `revid`, ou seja, edições gravadas (`ronda.lists.savedAbuseHits`): as impedidas e as que só avisaram, sem salvar, ficam de fora. Uma linha por edição, com cada filtro ligado à ocorrência (Especial:Registro de abusos/N).
 - **Páginas novas pequenas**: até 500 páginas novas no domínio principal, sem redirecionamentos (com o direito `patrol`, só as não patrulhadas), das quais ficam as com menos de `smallPages.bytes` bytes (padrão 1000; `ronda.lists.smallNewPages`). Abrem com o link de patrulha.
+- **Páginas novas de contas novas**: até 100 páginas novas no domínio principal, sem redirecionamentos (com o direito `patrol`, só as não patrulhadas), e uma consulta `list=users` (`registration|editcount`) para até 50 autores. Ficam as de contas registradas há até `newAccounts.days` dias e com até `newAccounts.edits` edições (padrão 30 e 100) e as de IPs; contas sem data de registro (muito antigas) ficam de fora (`ronda.lists.newAccountPages`). Cada linha mostra a idade da conta e as edições.
 - **Eliminação rápida**: páginas em Categoria:!Páginas para eliminação rápida.
 
 ### #R, Esboço e Fusão
@@ -307,6 +308,10 @@ window.rondaConfig = {
 	},
 	smallPages: {
 		bytes: 1000                     // Filas › Páginas novas pequenas: menos de N bytes
+	},
+	newAccounts: {
+		days: 30,                       // Filas › Páginas novas de contas novas: conta criada há até N dias
+		edits: 100                      // … e com até N edições
 	},
 	revert: {
 		// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = versão, $4 = motivo

@@ -2368,6 +2368,39 @@ var MAX = 10,
 		}, pick: function ( list ) {
 			return smallNewPages( list, smallPageBytes() );
 		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-pequenas-vazia', smallPageBytes() ) },
+		// Páginas novas de contas novas: idade e edições da conta (newAccounts) ficam nas preferências
+		{ id: 'PNC', label: ronda.msg( 'patrulha-fila-contas' ), title: ronda.msg( 'patrulha-fila-contas-dica', newAccountLimits().days, newAccountLimits().edits ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 100 };
+		}, pick: function ( list ) {
+			// Data de registro e edições dos autores (até 50 contas numa consulta)
+			var users = [];
+
+			list.forEach( function ( item ) {
+				if ( item.user && users.indexOf( item.user ) === -1 && !mw.util.isIPAddress( item.user ) ) {
+					users.push( item.user );
+				}
+			} );
+			if ( !users.length ) {
+				return newAccountPages( list, {}, newAccountLimits(), Date.now() );
+			}
+			return ronda.api.get( { action: 'query', list: 'users', ususers: users.slice( 0, 50 ).join( '|' ), usprop: 'registration|editcount' } )
+				.then( function ( data ) {
+					var info = {};
+
+					( ( data.query && data.query.users ) || [] ).forEach( function ( u ) {
+						info[ u.name ] = u;
+					} );
+					return newAccountPages( list, info, newAccountLimits(), Date.now() );
+				} );
+		}, note: function ( item ) {
+			var a = item.account;
+
+			return !a ? null : a.ip ? ronda.msg( 'patrulha-fila-contas-ip' )
+				: a.days === 0 ? ronda.msg( 'patrulha-fila-contas-hoje', a.edits )
+					: ronda.msg( 'patrulha-fila-contas-nota', a.days, a.edits );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-contas-vazia' ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
@@ -2391,6 +2424,13 @@ function abuseFilters() {
 /** Tamanho máximo das Páginas novas pequenas, em bytes (preferências: smallPages.bytes) */
 function smallPageBytes() {
 	return Math.max( 1, Number( ( ronda.config.smallPages || {} ).bytes ) || 1000 );
+}
+
+/** Limites de "conta nova" (preferências: newAccounts.days e newAccounts.edits) */
+function newAccountLimits() {
+	var c = ronda.config.newAccounts || {};
+
+	return { days: Math.max( 1, Number( c.days ) || 30 ), edits: Math.max( 1, Number( c.edits ) || 100 ) };
 }
 
 /* ---------------- Funções puras ---------------- */
@@ -2424,6 +2464,34 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/**
+ * Páginas novas de contas novas: criadas por conta registrada há até `limits.days`
+ * dias e com até `limits.edits` edições (ou por IP, que não tem conta). Contas
+ * desconhecidas ou sem data de registro (muito antigas) ficam de fora. Cada item
+ * ganha `account` ({ days, edits } ou { ip: true }) para a linha.
+ * @param {Object[]} list páginas novas (recentchanges)
+ * @param {Object} info list=users por nome: { registration, editcount }
+ */
+function newAccountPages( list, info, limits, now ) {
+	return list.filter( function ( item ) {
+		var u = info[ item.user ],
+			days;
+
+		if ( item.user && mw.util.isIPAddress( item.user ) ) {
+			item.account = { ip: true };
+			return true;
+		}
+		if ( !u || !u.registration ) {
+			return false;
+		}
+		days = Math.floor( ( now - Date.parse( u.registration ) ) / ( 24 * 60 * 60 * 1000 ) );
+		item.account = { days: Math.max( 0, days ), edits: u.editcount || 0 };
+		return days <= limits.days && item.account.edits <= limits.edits;
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.newAccountPages = newAccountPages;
 
 /** Páginas novas pequenas: criações com menos de `bytes` bytes, das mais recentes para as mais antigas */
 function smallNewPages( list, bytes ) {
