@@ -143,6 +143,8 @@ window.rondaMessages = {
 	'patrulha-marcar-a-edicao-como-patrulhada': 'Marcar a edição como patrulhada',
 	'patrulha-avisos-opcional': 'Avisos (opcional)',
 	'patrulha-avisos': 'Avisos',
+	'patrulha-ja-notificado': 'já notificado',
+	'patrulha-ja-notificado-dica': 'o usuário já está em $1',
 	'patrulha-favoritos': 'Favoritos',
 	'patrulha-adicionar-aos-favoritos': 'Adicionar aos favoritos (o aviso passa a aparecer no topo)',
 	'patrulha-remover-dos-favoritos': 'Remover dos favoritos',

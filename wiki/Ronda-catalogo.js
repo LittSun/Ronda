@@ -297,6 +297,10 @@ ronda.catalog.warnings = [
 		title: 'Nome com caracteres fora dos sistemas de escrita', summary: 'Aviso sobre nome impróprio ([[WP:NOEMOJI|caracteres fora dos sistemas de escrita]])' }
 ];
 
+ronda.catalog.notifiedCategories = [
+	{ category: 'Categoria:!Usuários com nomes impróprios notificados', groups: [ 'Nome impróprio' ] }
+];
+
 ronda.catalog.deletionReasons = [
 	{ label: 'Redirecionamentos', options: [
 		{ label: 'R1 - Redirecionamento indevido, desnecessário, sem afluentes, para página inexistente ou eliminada', value: 'R1 - [[WP:ER#ERr1|Redirecionamento indevido, desnecessário, sem afluentes, para página inexistente ou eliminada]]' },

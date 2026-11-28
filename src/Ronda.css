@@ -1100,3 +1100,12 @@ html.skin-theme-clientpref-night .ronda-menu.ui-menu .ui-menu-item a.ui-state-ho
 		color: var( --color-emphasized, #f8f9fa );
 	}
 }
+
+/* Avisos de que o usuário já foi notificado (categoria na discussão): esmaecidos, ainda selecionáveis */
+.ronda-dialog .ronda-warn-done > label {
+	opacity: 0.55;
+}
+
+.ronda-dialog .ronda-warn-done.ronda-tag-open > label {
+	opacity: 1;
+}

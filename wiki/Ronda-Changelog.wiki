@@ -1,6 +1,9 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.25]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.8.0]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.8.0"></span>0.8.0 — 27/11/2026 ==
+* '''Avisar''' e '''Reverter''': se a discussão do usuário está na <nowiki>[[</nowiki>:Categoria:!Usuários com nomes impróprios notificados<nowiki>]]</nowiki>, os avisos do grupo Nome impróprio aparecem esmaecidos, com "já notificado" no rótulo e a categoria na dica; continuam selecionáveis, para renotificar se for preciso. A verificação vai na mesma consulta que já carregava a discussão. Outras categorias podem ser acrescentadas em <code><nowiki>ronda.catalog.notifiedCategories</nowiki></code>, indicando os grupos de avisos que cada uma afeta.
 
 == <span id="0.7.25"></span>0.7.25 — 27/11/2026 ==
 * '''Informações › Recriação''': o selo '''!''' no botão Informações só aparece quando a recriação ainda não foi patrulhada (para quem não vê a patrulha, quando foi recriada nos últimos 30 dias). O painel repete o selo na linha Recriação e diz o motivo, também na dica do botão; recriações antigas continuam listadas, sem destaque. Restauros no registro não são mais tomados por eliminações.

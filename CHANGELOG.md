@@ -3,6 +3,9 @@
 O número da versão fica em `ronda.version` (em `src/Ronda-core.js`) e no `package.json`, e aparece na dica do nome "Ronda" na barra.
 Esquema: `0.MENOR.CORREÇÃO` até a versão 1.0, que será a primeira publicada como gadget. Veja como subir a versão em [docs/desenvolvimento.md](docs/desenvolvimento.md#versões).
 
+## 0.8.0 — 27/11/2026
+- **Avisar** e **Reverter**: se a discussão do usuário está na [[:Categoria:!Usuários com nomes impróprios notificados]], os avisos do grupo Nome impróprio aparecem esmaecidos, com "já notificado" no rótulo e a categoria na dica; continuam selecionáveis, para renotificar se for preciso. A verificação vai na mesma consulta que já carregava a discussão. Outras categorias podem ser acrescentadas em `ronda.catalog.notifiedCategories`, indicando os grupos de avisos que cada uma afeta.
+
 ## 0.7.25 — 27/11/2026
 - **Informações › Recriação**: o selo **!** no botão Informações só aparece quando a recriação ainda não foi patrulhada (para quem não vê a patrulha, quando foi recriada nos últimos 30 dias). O painel repete o selo na linha Recriação e diz o motivo, também na dica do botão; recriações antigas continuam listadas, sem destaque. Restauros no registro não são mais tomados por eliminações.
 - **Informações › Ligações**: "órfã" e os afluentes do domínio principal só para artigos.

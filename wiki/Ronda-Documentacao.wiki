@@ -7,7 +7,7 @@
 |autor              = [[User:Little Sunshine|Little Sunshine]]
 |estado             = beta
 |temas              = Todos
-|versão             = [[/Changelog#0.7.25|0.7.25]]
+|versão             = [[/Changelog#0.8.0|0.8.0]]
 |código             = [[Usuário:Little Sunshine/Scripts/Ronda-loader.js]]
 |github             = LittSun/Ronda
 }}
@@ -98,7 +98,7 @@ Esses links desfazem as edições consecutivas do mesmo autor até a última ver
 {{Usuário:Little Sunshine/Ronda/Botão|Filas}} apresenta até dez entradas por lista, com autor, resumo e diferença de tamanho. Ao deixar o mouse sobre uma entrada, aparece uma prévia: o diff da edição ou, para páginas novas e marcadas, o começo do texto. Inclui páginas vigiadas, mudanças recentes não autopatrulhadas no domínio principal, páginas novas ainda não patrulhadas, edições a revisar que a própria wiki aponta como provavelmente danosas, com as de provável má-fé primeiro (com pontuações) e páginas marcadas para eliminação rápida. Algumas listas exigem o direito de marcar edições como patrulhadas.
 
 === Avisos e informações de usuários ===
-{{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe.
+{{Usuário:Little Sunshine/Ronda/Botão|Avisar}} permite enviar vários avisos numa única edição da discussão. Alguns avisos abrem campos adicionais, e o botão {{Usuário:Little Sunshine/Ronda/Botão|Prévia}} mostra o resultado antes de publicar. Também há boas-vindas opcionais, pré-selecionadas quando a discussão ainda não existe. Se o usuário já foi notificado por nome impróprio (a discussão dele está na [[:Categoria:!Usuários com nomes impróprios notificados]]), esses avisos aparecem esmaecidos, com a nota "já notificado", mas continuam disponíveis.
 
 * '''Favoritos:''' clique na estrela ao lado de um aviso para fixá-lo no início da lista. Os favoritos são salvos na conta e aparecem também no diálogo de reversão.
 * '''Níveis sugeridos:''' o Ronda consulta os avisos dos últimos 30 dias, inclusive os do DiffTools, para sugerir o próximo nível. Após o terceiro aviso de uma série, pode sugerir o bloqueio e preparar uma notificação em [[Wikipédia:Pedidos/Notificações de vandalismo]].

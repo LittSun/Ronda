@@ -30,7 +30,7 @@
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.25',
+		version: '0.8.0',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -2140,9 +2140,7 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Informações: o selo ! no botão só aparece para recriações ainda não patrulhadas, e o painel diz o porquê',
-	'Eliminação semirrápida: assunto Organização, com a predefinição própria',
-	'Temas: botões das janelas legíveis em todos eles (o Retrô listrado tinha o Salvar em branco)'
+	'Avisar e Reverter: os avisos de nome impróprio ficam esmaecidos, com "já notificado", quando o usuário já foi notificado'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
