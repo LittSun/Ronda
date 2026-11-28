@@ -491,11 +491,57 @@ html:not( .ronda-tema-original ) #ronda-toolbar .ronda-welcome {
 	margin: 0.6em 0;
 }
 
-/* Explicação dentro de um grupo das preferências (a cor segue a do tema) */
-.ronda-form .ronda-pref-nota {
+/* Explicações nas preferências (a cor segue a do tema) */
+.ronda-form .ronda-pref-nota,
+.ronda-form .ronda-pref-barra-intro {
 	margin: 0.3em 0 0.5em;
 	font-size: 0.9em;
 	opacity: 0.8;
+}
+
+/* Preferências › Barra: lista de botões com ▲ ▼ e o lugar de cada um */
+.ronda-form .ronda-pref-barra-grupo {
+	margin-top: 0.5em;
+	font-weight: bold;
+}
+
+.ronda-form .ronda-pref-barra-lista {
+	margin: 0.2em 0 0.6em;
+	padding: 0;
+	list-style: none;
+}
+
+.ronda-form .ronda-pref-barra-lista li {
+	display: flex;
+	align-items: center;
+	gap: 0.3em;
+	margin: 0;
+	padding: 0.1em 0;
+}
+
+.ronda-form .ronda-pref-barra-nome {
+	flex: 1;
+	min-width: 0;
+}
+
+.ronda-form .ronda-pref-barra-lista select {
+	flex: none;
+	width: auto;
+	min-width: 11em;
+}
+
+.ronda-form .ronda-pref-barra-off .ronda-pref-barra-nome {
+	opacity: 0.55;
+	text-decoration: line-through;
+}
+
+.ronda-form .ronda-pref-barra-seta.ui-button {
+	margin: 0;
+	font-size: 0.8em;
+}
+
+.ronda-form .ronda-pref-barra-seta .ui-button-text {
+	padding: 0.1em 0.45em;
 }
 
 .ronda-form .ronda-refresh {

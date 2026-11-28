@@ -178,6 +178,9 @@ Na primeira vez que a barra aparece, uma faixa de boas-vindas mostra onde ficam 
 
 Sem a barra na página, as '''Preferências do Ronda''' ficam no menu de ações. O painel {{Usuário:Little Sunshine/Ronda/Botão|Informações}} é carregado em segundo plano logo depois que a página abre, para aparecerem prontos; isso pode ser desligado nas preferências. É possível configurar tema, vigilância, ícone, simulação, reversão, links rápidos, avisos, Desligar e Manutenção. As preferências são salvas na conta e funcionam em diferentes navegadores.
 
+=== Barra ===
+Em '''Preferências… › Barra''', é possível escolher a ordem dos botões (com as setas ▲ ▼) e onde cada um fica: '''na barra''', no menu '''Mais''' ou '''escondido'''. O menu '''Mais''' aparece no fim da barra quando há botões guardados nele; um clique mostra esses botões, outro clique os esconde. As ações administrativas têm a sua própria lista, porque ficam sempre à direita da barra, e só aparecem para quem tem as permissões. Cada botão continua aparecendo apenas nas páginas em que pode ser usado. '''Voltar à barra padrão''' desfaz as escolhas.
+
 === Temas ===
 Em '''Preferências… › Tema''', ou direto no meta-painel (clique em '''Ronda'''), é possível mudar a aparência da barra, dos painéis e das janelas do Ronda. A troca vale na hora, sem recarregar a página; nas preferências, a escolha aparece como prévia e só fica salva ao clicar em '''Salvar'''. O funcionamento é o mesmo em todos. Opções:
 * '''Padrão (cartão com título)''': o nome Ronda numa aba escura, botões planos; segue o modo claro ou escuro da wiki.

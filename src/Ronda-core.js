@@ -64,6 +64,12 @@ var uid = 0,
 			},
 			// Buscar em segundo plano os dados dos painéis Usuário e Informações
 			prefetch: true,
+			// Barra personalizada (Preferências › Barra), com as chaves de ronda.moduleKey
+			toolbar: {
+				order: [],    // ordem escolhida; botões fora da lista vêm depois, na ordem padrão
+				more: [],     // botões guardados no menu "Mais", no fim da barra
+				hidden: []    // botões que não aparecem
+			},
 			unlink: {
 				right: 'delete',      // direito exigido para ver o módulo Desligar
 				namespaces: '0',      // domínios onde as ligações são removidas
@@ -261,11 +267,19 @@ ronda.can = function ( right ) {
  * @param {string} [mod.title] Dica (tooltip)
  * @param {number} [mod.order]
  * @param {boolean} [mod.admin] Ação administrativa: vai para o grupo destacado da barra
+ * @param {string} [mod.key] Chave nas preferências da barra, quando o id se repete (padrão: id)
+ * @param {string[]} [mod.rights] Direitos dos quais basta um para usar o botão; sem eles, o
+ *  botão não aparece nas preferências da barra
  * @param {Function} mod.isAvailable function ( ctx ) → boolean
  * @param {Function} mod.open function ( ctx, [options] )
  */
 ronda.registerModule = function ( mod ) {
 	ronda.modules.push( mod );
+};
+
+/** Chave do botão nas preferências da barra (toolbar.order, more e hidden) */
+ronda.moduleKey = function ( mod ) {
+	return mod.key || mod.id;
 };
 
 ronda.getModule = function ( id ) {
@@ -1511,16 +1525,44 @@ ronda.modoTeste = function ( on ) {
 	return !!on;
 };
 
+/**
+ * Botões na ordem das preferências (toolbar.order): os da lista vêm na ordem dela; os
+ * demais (ex.: um módulo novo), depois, na ordem padrão (mod.order).
+ * @param {Object[]} mods
+ * @param {string[]} [order] chaves de ronda.moduleKey
+ * @return {Object[]} nova lista
+ */
+ronda.toolbarSort = function ( mods, order ) {
+	order = order || [];
+
+	function rank( m ) {
+		var k = order.indexOf( ronda.moduleKey( m ) );
+
+		return k === -1 ? order.length : k;
+	}
+	return mods.map( function ( m, i ) {
+		return { m: m, i: i };
+	} ).sort( function ( a, b ) {
+		return ( rank( a.m ) - rank( b.m ) ) || ( ( a.m.order || 0 ) - ( b.m.order || 0 ) ) || ( a.i - b.i );
+	} ).map( function ( x ) {
+		return x.m;
+	} );
+};
+
 ronda.renderToolbar = function () {
-	var $group, $adminGroup, $bar,
+	var $group, $adminGroup, $bar, $more, $firstMore,
 		ctx = ronda.ctx,
 		testing = ronda.modoTeste(),
-		available = ronda.modules.filter( function ( m ) {
+		tb = ronda.config.toolbar || {},
+		hidden = tb.hidden || [],
+		more = tb.more || [],
+		available = ronda.toolbarSort( ronda.modules.filter( function ( m ) {
 			if ( testing ) {
 				return true;
 			}
-			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação)
-			if ( m.hidden ) {
+			// Módulos "hidden" só são abertos por outros (ex.: ER pelo Propor eliminação);
+			// os escondidos nas preferências da barra também ficam de fora
+			if ( m.hidden || hidden.indexOf( ronda.moduleKey( m ) ) !== -1 ) {
 				return false;
 			}
 			// Um módulo com erro fica fora da barra, sem derrubar os demais
@@ -1531,21 +1573,28 @@ ronda.renderToolbar = function () {
 				console.error( '[Ronda] módulo "' + m.id + '" ignorado:', e );
 				return false;
 			}
-		} ).sort( function ( a, b ) {
-			return ( a.order || 0 ) - ( b.order || 0 );
-		} );
+		} ), tb.order );
 
 	if ( !available.length ) {
 		return null;
+	}
+
+	/** Guardado no menu "Mais" (Preferências › Barra) */
+	function inMore( mod ) {
+		return more.indexOf( ronda.moduleKey( mod ) ) !== -1;
 	}
 
 	// Dois grupos: edição/patrulha e ações administrativas (mod.admin)
 	$group = $( '<div class="ronda-toolbar-group"></div>' );
 	$adminGroup = $( '<div class="ronda-toolbar-group ronda-toolbar-admin"></div>' );
 
-	available.forEach( function ( mod ) {
+	// Os do menu "Mais" vão para o fim do grupo, escondidos até o menu ser aberto
+	available.filter( function ( mod ) {
+		return !inMore( mod );
+	} ).concat( available.filter( inMore ) ).forEach( function ( mod ) {
 		$( '<button type="button"></button>' )
-			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) )
+			.addClass( 'ronda-btn ronda-btn-' + mod.id + ( mod.admin ? ' ronda-btn-admin' : '' ) + ( inMore( mod ) ? ' ronda-btn-mais-item' : '' ) )
+			.toggle( !inMore( mod ) )
 			.text( mod.label )
 			.attr( 'title', mod.title || '' )
 			.on( 'click', function () {
@@ -1569,6 +1618,26 @@ ronda.renderToolbar = function () {
 			} )
 			.appendTo( mod.admin ? $adminGroup : $group );
 	} );
+
+	// Botão "Mais": mostra ou esconde os botões guardados, nos dois grupos
+	if ( available.some( inMore ) ) {
+		$more = $( '<button type="button" class="ronda-btn ronda-btn-mais"></button>' )
+			.text( ronda.msg( 'core-barra-mais' ) )
+			.attr( { title: ronda.msg( 'core-barra-mais-dica' ), 'aria-expanded': 'false' } )
+			.on( 'click', function () {
+				var open = $more.attr( 'aria-expanded' ) !== 'true';
+
+				$more.attr( 'aria-expanded', String( open ) );
+				$more.button( 'option', 'label', ronda.msg( open ? 'core-barra-menos' : 'core-barra-mais' ) );
+				$bar.find( '.ronda-btn-mais-item' ).toggle( open );
+			} );
+		$firstMore = $group.children( '.ronda-btn-mais-item' ).first();
+		if ( $firstMore.length ) {
+			$more.insertBefore( $firstMore );
+		} else {
+			$more.appendTo( $group.children().length ? $group : $adminGroup );
+		}
+	}
 
 	$bar = $( '<div id="ronda-toolbar" class="ui-widget noprint"></div>' ).append(
 		brand()
@@ -1695,7 +1764,9 @@ ronda.PREFS = [
 	{ section: 'Outros' },
 	[ 'unlink.namespaces', ronda.msg( 'core-dominios-onde-o-desligar-remove-ligacoes' ), 'text' ],
 	[ 'unlink.currentNamespace', ronda.msg( 'core-desligar-tambem-no-dominio-da-propria' ), 'check' ],
-	[ 'maintenance.namespaces', ronda.msg( 'core-dominios-do-botao-manutencao-ex-0' ), 'list' ]
+	[ 'maintenance.namespaces', ronda.msg( 'core-dominios-do-botao-manutencao-ex-0' ), 'list' ],
+	{ section: 'Barra' },
+	[ 'toolbar', ronda.msg( 'core-barra-intro' ), 'toolbar' ]
 ];
 
 function getPath( obj, path ) {
@@ -1718,6 +1789,124 @@ ronda.prefs = { getPath: getPath, setPath: setPath };
 /** Mínimo de um campo numérico das preferências: { min } no quarto item, ou 1 */
 function numberMin( f ) {
 	return f[ 3 ] && typeof f[ 3 ].min === 'number' ? f[ 3 ].min : 1;
+}
+
+/**
+ * Editor da barra nas preferências: um quadro para patrulha e edição e outro para as
+ * ações administrativas (cada grupo tem o seu lugar na barra), com ▲ ▼ para mudar a
+ * ordem e um menu por botão: na barra, no menu "Mais" ou escondido. Só aparecem os
+ * botões que a conta pode usar (mod.rights).
+ * @param {Object} cur { order, more, hidden }
+ * @param {string} intro texto explicativo
+ * @return {{ $element: jQuery, value: Function }} value() → { order, more, hidden }
+ */
+function toolbarEditor( cur, intro ) {
+	var testing = ronda.modoTeste(),
+		$el = $( '<div class="ronda-pref-barra"></div>' ),
+		mods = ronda.modules.filter( function ( m ) {
+			return !m.hidden && ( testing || !m.rights || m.rights.some( function ( r ) {
+				return ronda.can( r );
+			} ) );
+		} ),
+		byDefault = ronda.toolbarSort( mods ),
+		// Como no diálogo: primeiro patrulha e edição, depois administração
+		defaultKeys = byDefault.filter( function ( m ) {
+			return !m.admin;
+		} ).concat( byDefault.filter( function ( m ) {
+			return !!m.admin;
+		} ) ).map( function ( m ) {
+			return ronda.moduleKey( m );
+		} );
+
+	function arrow( text, msg, dir, $li ) {
+		return $( '<button type="button" class="ronda-pref-barra-seta"></button>' ).text( text )
+			.attr( { title: ronda.msg( msg ), 'aria-label': ronda.msg( msg ) } )
+			.button()
+			.on( 'click', function () {
+				var $btn = $( this ),
+					$other = dir < 0 ? $li.prev() : $li.next();
+
+				if ( $other.length ) {
+					$li[ dir < 0 ? 'insertBefore' : 'insertAfter' ]( $other );
+				}
+				$btn.trigger( 'focus' );
+			} );
+	}
+
+	function row( m, conf ) {
+		var key = ronda.moduleKey( m ),
+			$li = $( '<li></li>' ).attr( 'data-key', key ),
+			$sel = $( '<select></select>' ).append(
+				$( '<option value="bar"></option>' ).text( ronda.msg( 'core-barra-na-barra' ) ),
+				$( '<option value="more"></option>' ).text( ronda.msg( 'core-barra-no-mais' ) ),
+				$( '<option value="hidden"></option>' ).text( ronda.msg( 'core-barra-escondido' ) )
+			).attr( 'aria-label', m.label );
+
+		$sel.val( ( conf.hidden || [] ).indexOf( key ) !== -1 ? 'hidden'
+			: ( conf.more || [] ).indexOf( key ) !== -1 ? 'more' : 'bar' );
+		$li.toggleClass( 'ronda-pref-barra-off', $sel.val() === 'hidden' );
+		$sel.on( 'change', function () {
+			$li.toggleClass( 'ronda-pref-barra-off', $sel.val() === 'hidden' );
+		} );
+		return $li.append(
+			arrow( '▲', 'core-barra-subir', -1, $li ),
+			arrow( '▼', 'core-barra-descer', 1, $li ),
+			$( '<span class="ronda-pref-barra-nome"></span>' ).text( m.label ).attr( 'title', m.title || '' ),
+			$sel
+		);
+	}
+
+	function build( conf ) {
+		var sorted = ronda.toolbarSort( mods, conf.order );
+
+		$el.empty().append( $( '<p class="ronda-pref-barra-intro"></p>' ).text( intro ) );
+		[ [ false, 'core-barra-grupo-patrulha' ], [ true, 'core-barra-grupo-admin' ] ].forEach( function ( g ) {
+			var group = sorted.filter( function ( m ) {
+					return !!m.admin === g[ 0 ];
+				} ),
+				$list = $( '<ol class="ronda-pref-barra-lista"></ol>' );
+
+			if ( !group.length ) {
+				return;
+			}
+			group.forEach( function ( m ) {
+				$list.append( row( m, conf ) );
+			} );
+			$el.append( $( '<div class="ronda-pref-barra-grupo"></div>' ).text( ronda.msg( g[ 1 ] ) ), $list );
+		} );
+		$( '<button type="button" class="ronda-pref-barra-padrao"></button>' ).text( ronda.msg( 'core-barra-padrao' ) )
+			.button()
+			.on( 'click', function () {
+				build( {} );
+			} )
+			.appendTo( $el );
+	}
+
+	build( cur );
+
+	return {
+		$element: $el,
+		value: function () {
+			var out = { order: [], more: [], hidden: [] };
+
+			$el.find( 'li[data-key]' ).each( function () {
+				var key = $( this ).attr( 'data-key' ),
+					v = $( this ).find( 'select' ).val();
+
+				out.order.push( key );
+				if ( v === 'more' ) {
+					out.more.push( key );
+				} else if ( v === 'hidden' ) {
+					out.hidden.push( key );
+				}
+			} );
+			// Ordem padrão: nada a guardar (assim, mudanças futuras na ordem padrão valem)
+			if ( out.order.join( '|' ) === defaultKeys.join( '|' ) ) {
+				out.order = [];
+			}
+			return out;
+		}
+	};
 }
 
 ronda.openPreferences = function () {
@@ -1752,6 +1941,12 @@ ronda.openPreferences = function () {
 			cb = ronda.ui.checkbox( label, type === 'icon' ? !!cur : !!cur );
 			$fs.append( cb.$element );
 			fields.push( { path: path, type: type, read: cb.isChecked } );
+			return;
+		}
+		if ( type === 'toolbar' ) {
+			cb = toolbarEditor( cur || {}, label );
+			$fs.append( cb.$element );
+			fields.push( { path: path, type: type, read: cb.value } );
 			return;
 		}
 		if ( type === 'select' ) {
@@ -2325,7 +2520,8 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
 ronda.news = [
 	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta',
 	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
-	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida'
+	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida',
+	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

@@ -201,6 +201,8 @@ O link **Preferências do Ronda** no menu de ações abre um diálogo com as op�
 
 **Vigilância com prazo** (`watchExpiry`): cada escrita informa o seu tipo de ação com `watchlistexpiry: ronda.watchExpiry( 'tipo' )`, que devolve o prazo escolhido ou `undefined` (sem prazo, ou `watchlist` em `nochange`/`unwatch`); `ronda.params` tira o parâmetro quando ele é `undefined`. Antes de uma escrita com prazo, o núcleo consulta `prop=info&inprop=watched`: se a página já é vigiada sem prazo, ou com prazo que termina depois, o prazo sai do pedido (`ronda.keepWatch`), porque a API trocaria a vigilância atual pela nova, mais curta.
 
+**Barra personalizada** (`toolbar`): em *Preferências › Barra*, cada botão tem ▲ ▼ e um menu (na barra, no menu "Mais" ou escondido), numa lista para patrulha e edição e noutra para as ações administrativas, que continuam no grupo da direita. A lista mostra os módulos não ocultos que a conta pode usar: os que têm `rights` só aparecem com pelo menos um desses direitos. A chave de cada botão é `ronda.moduleKey( mod )` (o `id`, ou `mod.key` quando o id se repete: o Eliminar usa `eliminar`, porque o Propor eliminação também tem o id `eliminacao`). `ronda.toolbarSort( mods, order )` aplica a ordem; com a ordem padrão, o diálogo grava `order: []`, para que mudanças futuras na ordem padrão continuem valendo. Os guardados no "Mais" vão para o fim do grupo deles, escondidos, e o botão **Mais ▾** (antes deles, no grupo de patrulha) mostra ou esconde todos de uma vez. No modo de teste, os escondidos também aparecem.
+
 ### Avisar fora do contexto de usuário
 Em diffs, reversões e versões antigas o Avisar sempre aparece. Se o diff não identifica o usuário (nome oculto, edição sua), o Ronda pergunta quem avisar antes de abrir o diálogo. O catálogo também tem as notificações de bloqueio do FastButtons (`bloqueado`, `bloqueado-disc`, `bloqueado-CPV`, `proxy`), que entram sob o título "Notificação de bloqueio", e o "Vandalismo repetido" vai para o topo da discussão.
 
@@ -249,6 +251,11 @@ window.rondaConfig = {
 	// summarySuffix e tag são fixos (não vêm das preferências):
 	// summarySuffix: ' (via [[User:Little Sunshine/Ronda|script]] #Ronda)', tag: null
 	icon: 'UserScript Ronda Icon.svg',  // ícone do Commons ao lado do nome na barra; null = sem ícone
+	toolbar: {                          // barra personalizada, com as chaves de ronda.moduleKey (o id, ou mod.key)
+		order: [],                      // ordem escolhida; vazio = ordem padrão (mod.order). Os botões fora da lista vêm depois
+		more: [],                       // guardados no menu "Mais", no fim do grupo deles
+		hidden: []                      // escondidos
+	},
 	watchlist: 'preferences',           // vigilância das páginas editadas: 'preferences' (segue as preferências do MediaWiki), 'watch', 'nochange' ou 'unwatch'
 	watchExpiry: {                      // prazo da vigilância por tipo de ação: '' (sem prazo), '1 week', '2 weeks', '1 month', '3 months', '6 months'
 		revert: '',                     // reversões, links rápidos, reverter todas no topo, restaurar versão
@@ -380,7 +387,9 @@ O gadget expõe `window.ronda` e dispara o hook `ronda.ready` com ele.
 		id: 'exemplo',
 		label: 'Exemplo',
 		title: 'Dica do botão',
-		order: 50,                      // posição na barra
+		order: 50,                      // posição na barra (padrão; o usuário pode mudar em Preferências › Barra)
+		// key: 'exemplo',              // chave nas preferências da barra, se o id se repetir (padrão: id)
+		// rights: [ 'rollback' ],      // basta um destes direitos para o botão aparecer em Preferências › Barra
 		isAvailable: function ( ctx ) {
 			return ctx.type === 'diff' && ronda.can( 'rollback' );
 		},
