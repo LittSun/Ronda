@@ -7,7 +7,8 @@
 #   e Usuário:Little Sunshine/Ronda.
 # Em pull requests, só verifica e gera (os arquivos ficam na aba Actions).
 # Os testes (npm test) rodam antes de gerar; se falharem, nada é gravado nem publicado.
-# No main, grava wiki/ e dist/ num único commit do robô e, num trabalho separado
+# No main, grava wiki/ e dist/ no branch "gerados" (um único commit, refeito a cada
+# construção; o main é protegido e só aceita pull requests) e, num trabalho separado
 # no ambiente "wiki" (que pode exigir aprovação), publica na wiki as páginas que
 # mudaram, com a senha de robô dos segredos WIKI_BOT_USER e WIKI_BOT_PASSWORD
 # (sem eles, a publicação é pulada).
@@ -74,20 +75,20 @@ jobs:
             wiki/
             dist/
 
-      # Só no main: grava os arquivos gerados, se mudaram, num único commit
-      - name: Commitar wiki/ e dist/
+      # Só no main: os arquivos gerados vão para o branch "gerados", fora do main
+      # (protegido: só aceita pull requests). Um commit só, com a versão e o commit de origem.
+      - name: Gravar wiki/ e dist/ no branch gerados
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: |
+          versao=$(cat wiki/Ronda-Versao.wiki)
+          mkdir -p /tmp/gerados && cp -r wiki dist /tmp/gerados/
+          cd /tmp/gerados
+          git init -q -b gerados
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wiki/ dist/
-          if git diff --cached --quiet; then
-            echo "Arquivos gerados sem alterações."
-          else
-            git commit -m "Atualiza os arquivos gerados [skip ci]"
-            git pull --rebase
-            git push
-          fi
+          git add wiki dist
+          git commit -q -m "Arquivos gerados do Ronda $versao (main ${GITHUB_SHA::7}) [skip ci]"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gerados
 
       - name: Compactar para a versão
         if: startsWith(github.ref, 'refs/tags/v')

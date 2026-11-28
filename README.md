@@ -26,7 +26,7 @@ npm run verificar    # sintaxe, versão e mensagens
 npm run construir    # verifica e gera wiki/ e dist/
 ```
 
-O código fica em `src/`; as pastas `wiki/` (o conteúdo de cada página da wiki) e `dist/` (o pacote para o console) são geradas. Para testar sem criar páginas, cole `dist/Ronda-console.js` no console de qualquer página da wiki: ele já vem no modo de simulação.
+O código fica em `src/`; as pastas `wiki/` (o conteúdo de cada página da wiki) e `dist/` (o pacote para o console) são geradas. Para testar sem criar páginas, cole o `dist/Ronda-console.js` (gerado com `npm run console`, ou já pronto no branch [`gerados`](https://github.com/LittSun/Ronda/blob/gerados/dist/Ronda-console.js)) no console de qualquer página da wiki: ele já vem no modo de simulação.
 
 | Documento | Para quê |
 |---|---|
