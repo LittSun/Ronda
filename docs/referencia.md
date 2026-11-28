@@ -123,6 +123,7 @@ Detalhes:
 - Gera `{{ER|<regra>|3=<observação>|2=~~~~}}` no topo, dentro de `<noinclude>` em predefinições, userboxes e páginas transcluídas.
 - Aviso ao criador: `Aviso-ER` (com a regra e a observação), `Aviso-não remova` ou nenhum. Nas regras técnicas (C1, D1, D2, P1, R1, R2 e G1) não há aviso, como no FastButtons.
 - O criador não é avisado se for você, se a página veio de uma moção ou se for um IP que criou a página há mais de 24 horas.
+- **Artigo antigo ou com interwikis**: ao abrir o formulário, uma consulta à parte (`prop=revisions|langlinks`, primeira edição) busca a data de criação e os interwikis. Se o artigo tiver pelo menos `speedy.oldDays` dias ou `speedy.oldInterwikis` interwikis (padrão: 365 e 3; 0 desliga o critério), aparece no topo um alerta com a data, a idade, o número de interwikis e o link para o histórico. Não vale para redirecionamentos nem fora do domínio principal. A função pura é `ronda.proposal.oldPageCheck`.
 
 ### Eliminação semirrápida (ESR)
 
@@ -280,6 +281,10 @@ window.rondaConfig = {
 	},
 	deletion: {
 		redirectReason: '[[WP:ER|ER]] R1: redirecionamento para página eliminada'
+	},
+	speedy: {
+		oldDays: 365,                   // alerta na ER: artigo criado há pelo menos N dias (0 = não considerar)
+		oldInterwikis: 3                // alerta na ER: artigo com pelo menos N interwikis (0 = não considerar)
 	},
 	move: {
 		deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'  // $1 = página movida

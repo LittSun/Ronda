@@ -1074,7 +1074,8 @@ ronda.proposal = {
 	buildER: buildER,
 	buildESR: buildESR,
 	afterHatnotes: afterHatnotes,
-	place: place
+	place: place,
+	oldPageCheck: oldPageCheck
 };
 
 /* ================================================================== *
@@ -1281,6 +1282,77 @@ function extraWarnFields() {
  * Rápida
  * ================================================================== */
 
+/**
+ * Artigo antigo ou com interwikis: a ER raramente é o caminho (o caso comum é um
+ * vandalismo recente sobre um artigo que existe há tempo). Limites em ronda.config.speedy;
+ * 0 desliga o critério.
+ * @param {Object} info { created: data ISO da primeira edição, interwikis: número }
+ * @param {number} now
+ * @param {Object} limits { oldDays, oldInterwikis }
+ * @return {Object} { warn, days (null sem data), interwikis, byAge, byInterwikis }
+ */
+function oldPageCheck( info, now, limits ) {
+	var created = info.created ? Date.parse( info.created ) : NaN,
+		days = isNaN( created ) ? null : Math.floor( ( now - created ) / ( 24 * 60 * 60 * 1000 ) ),
+		iw = info.interwikis || 0,
+		byAge = limits.oldDays > 0 && days !== null && days >= limits.oldDays,
+		byIw = limits.oldInterwikis > 0 && iw >= limits.oldInterwikis;
+
+	return { warn: byAge || byIw, days: days, interwikis: iw, byAge: byAge, byInterwikis: byIw };
+}
+
+/** "há 3 anos", "há 5 meses", "há 12 dias" */
+function ageText( days ) {
+	if ( days >= 365 ) {
+		return ronda.msg( 'paginas-ha-anos', Math.floor( days / 365 ) );
+	}
+	if ( days >= 60 ) {
+		return ronda.msg( 'paginas-ha-meses', Math.floor( days / 30 ) );
+	}
+	return ronda.msg( 'paginas-ha-dias', days );
+}
+
+/**
+ * Consulta a criação e os interwikis do artigo e, se passarem dos limites, põe o alerta
+ * no topo do diálogo da ER (que já está aberto: a consulta não atrasa a janela).
+ */
+function oldPageAlert( page, $content ) {
+	var limits = ronda.config.speedy || {};
+
+	if ( page.ns !== 0 || page.isRedirect || !( limits.oldDays > 0 || limits.oldInterwikis > 0 ) ) {
+		return;
+	}
+	ronda.api.get( {
+		action: 'query',
+		titles: page.title,
+		prop: 'revisions|langlinks',
+		rvprop: 'timestamp',
+		rvdir: 'newer',
+		rvlimit: 1,
+		lllimit: 'max'
+	} ).then( function ( data ) {
+		var p = ( data.query && data.query.pages && data.query.pages[ 0 ] ) || {},
+			first = ( p.revisions || [] )[ 0 ],
+			r = oldPageCheck( { created: first && first.timestamp, interwikis: ( p.langlinks || [] ).length }, Date.now(), limits ),
+			facts = [];
+
+		if ( !r.warn ) {
+			return;
+		}
+		if ( r.days !== null ) {
+			facts.push( ronda.msg( 'paginas-er-antiga-idade', new Date( first.timestamp ).toLocaleDateString( 'pt-BR' ), ageText( r.days ) ) );
+		}
+		if ( r.interwikis ) {
+			facts.push( ronda.msg( 'paginas-er-antiga-iw', r.interwikis ) );
+		}
+		$content.prepend( ronda.ui.message( 'highlight', $( '<span></span>' ).append(
+			document.createTextNode( ronda.msg( 'paginas-er-antiga', facts.join( ronda.msg( 'paginas-er-antiga-e' ) ) ) + ' ' ),
+			$( '<a target="_blank"></a>' ).attr( 'href', mw.util.getUrl( page.title, { action: 'history' } ) )
+				.text( ronda.msg( 'paginas-er-antiga-historico' ) )
+		) ).addClass( 'ronda-er-antiga' ) );
+	}, function () {} );
+}
+
 function showSpeedy( ctx, page ) {
 	var rules = rulesFor( page ),
 		$rule = $( '<select></select>' ).append( $( '<option value=""></option>' ).text( ronda.msg( 'paginas-escolha-a-regra' ) ) ),
@@ -1325,6 +1397,7 @@ function showSpeedy( ctx, page ) {
 	}
 
 	$content.append( ronda.ui.row( ronda.msg( 'paginas-regra' ), $rule ), ronda.ui.row( ronda.msg( 'paginas-observacao' ), $obs ), $warnRow, $extraRow, $progress, $log );
+	oldPageAlert( page, $content );
 
 	function submit() {
 		var r = selected(),

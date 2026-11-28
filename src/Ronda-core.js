@@ -93,6 +93,11 @@ var uid = 0,
 			deletion: {
 				redirectReason: '[[WP:ER|ER]] R1: redirecionamento para página eliminada'
 			},
+			speedy: {
+				// Alerta ao propor ER para um artigo antigo ou com interwikis (0 = não considerar)
+				oldDays: 365,         // dias desde a criação
+				oldInterwikis: 3      // número de interwikis
+			},
 			move: {
 				// Eliminação do destino antes de mover; $1 = página que será movida para lá
 				deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'
@@ -1684,6 +1689,9 @@ ronda.PREFS = [
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
 	[ 'warnings.confirm', ronda.msg( 'core-confirmar-aviso-repetido-em-24-h' ), 'check' ],
+	{ section: 'Eliminação rápida' },
+	[ 'speedy.oldDays', ronda.msg( 'core-er-antiga-dias' ), 'number', { min: 0 } ],
+	[ 'speedy.oldInterwikis', ronda.msg( 'core-er-antiga-iw' ), 'number', { min: 0 } ],
 	{ section: 'Outros' },
 	[ 'unlink.namespaces', ronda.msg( 'core-dominios-onde-o-desligar-remove-ligacoes' ), 'text' ],
 	[ 'unlink.currentNamespace', ronda.msg( 'core-desligar-tambem-no-dominio-da-propria' ), 'check' ],
@@ -1706,6 +1714,11 @@ function setPath( obj, path, value ) {
 }
 
 ronda.prefs = { getPath: getPath, setPath: setPath };
+
+/** Mínimo de um campo numérico das preferências: { min } no quarto item, ou 1 */
+function numberMin( f ) {
+	return f[ 3 ] && typeof f[ 3 ].min === 'number' ? f[ 3 ].min : 1;
+}
 
 ronda.openPreferences = function () {
 	// Valores do diálogo: padrões + preferências salvas (sem o window.rondaConfig do common.js)
@@ -1755,11 +1768,11 @@ ronda.openPreferences = function () {
 			}
 		} else {
 			$input = type === 'number'
-				? $( '<input type="number" min="1" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).val( cur )
+				? $( '<input type="number" class="ui-widget ui-widget-content ui-corner-all ronda-input">' ).attr( 'min', numberMin( f ) ).val( cur )
 				: ronda.ui.text( type === 'list' ? ( cur || [] ).join( ', ' ) : ( cur === undefined ? '' : String( cur ) ), '' );
 		}
 		$fs.append( ronda.ui.row( label, $input ) );
-		fields.push( { path: path, type: type, read: function () {
+		fields.push( { path: path, type: type, min: numberMin( f ), read: function () {
 			return $input.val();
 		} } );
 	} );
@@ -1771,7 +1784,8 @@ ronda.openPreferences = function () {
 			var v = f.read();
 
 			if ( f.type === 'number' ) {
-				v = Math.max( 1, parseInt( v, 10 ) || 1 );
+				v = parseInt( v, 10 );
+				v = Math.max( f.min, isNaN( v ) ? f.min : v );
 			} else if ( f.type === 'list' ) {
 				v = String( v ).split( /[,\s|]+/ ).filter( Boolean ).map( Number ).filter( function ( n ) {
 					return !isNaN( n );
@@ -2310,7 +2324,8 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  */
 ronda.news = [
 	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta',
-	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância'
+	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
+	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
