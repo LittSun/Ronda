@@ -2541,15 +2541,10 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta',
 	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
-	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida',
 	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
-	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas',
-	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas',
-	'Filas: Páginas novas pequenas, com o tamanho em Preferências › Filas',
-	'Filas: Páginas novas de contas novas, com a idade e as edições da conta em Preferências › Filas',
-	'Filas: Páginas novas sem <ref>, para achar artigos novos sem notas'
+	'Filas novas: Grandes remoções, Filtro de abusos e páginas novas pequenas, de contas novas e sem <ref> (ajustes em Preferências › Filas)',
+	'Eliminação rápida: alerta para artigos antigos ou com interwikis'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */
