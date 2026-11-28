@@ -1,0 +1,228 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Pregão" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-pregao #ronda-toolbar {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #d6dde6;
+	background: #0d1117;
+	border: 1px solid #263040;
+	border-radius: 4px;
+	box-shadow: none;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-brand {
+	color: #0d1117;
+	background: #f0b90b;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 1px solid #263040;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-btn.ui-button {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #d6dde6 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-pregao #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #d6dde6 !important;
+	background: #1a2330 !important;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #00d26a !important;
+	background: #132a1e !important;
+	box-shadow: inset 0 -2px 0 #00d26a !important;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #ff4d4f !important;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-userpanel {
+	color: #d6dde6;
+	background: #0f151d;
+	border-top: 1px solid #263040;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-up-table th {
+	color: #7d8b9c;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-up-table td {
+	color: #d6dde6;
+}
+
+html.ronda-tema-pregao #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-pregao #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: #1c2530;
+}
+
+html.ronda-tema-pregao #ronda-toolbar a {
+	color: #4da3ff;
+}
+
+html.ronda-tema-pregao .ronda-dialog.ui-dialog {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #d6dde6 !important;
+	background: #0f151d !important;
+	border: 1px solid #263040 !important;
+	border-radius: 4px !important;
+	box-shadow: 0 10px 40px rgba( 0, 0, 0, 0.6 ) !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-titlebar {
+	color: #d6dde6 !important;
+	background: #0d1117 !important;
+	border-bottom: 1px solid #263040 !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #0d1117;
+	background: #f0b90b;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-titlebar-close {
+	color: #d6dde6 !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form fieldset {
+	background: #121a24 !important;
+	border: 1px solid #263040 !important;
+	border-radius: 3px !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form legend {
+	color: #f0b90b !important;
+	background: transparent;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-pregao .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 3px solid #00d26a !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-pregao .ronda-dialog .ronda-form textarea,
+html.ronda-tema-pregao .ronda-dialog .ronda-form select {
+	color: #d6dde6;
+	background: #0b1016;
+	border: 1px solid #2d3a4d;
+	border-radius: 0;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #00d26a;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #7d8b9c;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #d6dde6;
+	background: transparent;
+	border: 1px solid #2d3a4d;
+	border-radius: 0;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #d6dde6;
+	background: color-mix( in srgb, #00d26a 16%, transparent );
+	border-color: #00d26a;
+	outline: 1px solid #00d26a;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #00d26a;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #7d8b9c;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ronda-form a {
+	color: #4da3ff;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane {
+	background: #0d1117 !important;
+	border-top: 1px solid #263040 !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #ff4d4f !important;
+	background: transparent !important;
+	border: 1px solid #ff4d4f !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #1a2330 !important;
+	color: #d6dde6 !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #fff !important;
+	background: #00b35c !important;
+	border-color: #00b35c !important;
+}
+
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #e03b3d !important;
+	border-color: #e03b3d !important;
+}
+
+@keyframes ronda-pregao-fita { from { transform: translateX( 0 ); } to { transform: translateX( -50% ); } }
+@keyframes ronda-pregao-pisca { 50% { opacity: 0.25; } }
+html.ronda-tema-pregao #ronda-toolbar { position: relative; padding-top: 1.7em !important; }
+html.ronda-tema-pregao #ronda-toolbar::before {
+	content: 'RNDA 0,723 ▲ 2,31%   PTWK 54.012 ▲ 0,84%   ER 12 ▼ 1,20%   ESR 7 ▲ 3,05%   PE 4 ▼ 0,47%   AVISOS 38 ▲ 5,12%   BLOQ 3 ▼ 0,90%   FILAS 17 ▲ 1,66%   RNDA 0,723 ▲ 2,31%   PTWK 54.012 ▲ 0,84%   ER 12 ▼ 1,20%   ESR 7 ▲ 3,05%   PE 4 ▼ 0,47%   AVISOS 38 ▲ 5,12%   BLOQ 3 ▼ 0,90%   FILAS 17 ▲ 1,66%   ';
+	position: absolute; top: 0; left: 0; white-space: pre; padding: 0.25em 0; font-size: 0.82em; color: #9fb0c3;
+	animation: ronda-pregao-fita 40s linear infinite; border-bottom: 1px solid #263040; width: max-content;
+}
+html.ronda-tema-pregao #ronda-toolbar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.55em; pointer-events: none;
+	background: linear-gradient( 90deg, #0d1117, transparent 6%, transparent 94%, #0d1117 ); }
+html.ronda-tema-pregao #ronda-toolbar .ronda-brand { font-weight: bold; letter-spacing: 0.08em; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-brand::after { content: '\00a0▲'; color: #0d1117; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n+1 ) .ui-button-text::after { content: ' ▲'; color: #00d26a; font-size: 0.8em; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n+2 ) .ui-button-text::after { content: ' ▼'; color: #ff4d4f; font-size: 0.8em; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n ) .ui-button-text::after { content: ' ▲'; color: #00d26a; font-size: 0.8em; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-up-table td { font-variant-numeric: tabular-nums; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-ok { color: #00d26a !important; }
+html.ronda-tema-pregao #ronda-toolbar .ronda-bad { color: #ff4d4f !important; }
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-titlebar::before { content: 'RNDA ▲' !important; }
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-title { text-transform: uppercase; letter-spacing: 0.04em; padding-right: 9em !important;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24'%3E%3Cpolyline fill='none' stroke='%2300d26a' stroke-width='2' points='0,18 10,16 20,19 30,12 40,14 50,9 60,11 70,6 80,10 90,5 100,7 110,3 120,4'/%3E%3C/svg%3E") right 0.9em center / 7.5em 1.4em no-repeat; }
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-title::before { content: 'Ordem · '; color: #7d8b9c; }
+html.ronda-tema-pregao .ronda-dialog .ronda-form legend { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78em !important; }
+html.ronda-tema-pregao .ronda-dialog .ronda-form .ronda-sug-reason { color: #f0b90b; }
+html.ronda-tema-pregao .ronda-dialog .ronda-form label,
+html.ronda-tema-pregao .ronda-dialog .ronda-form p { color: #d6dde6; }
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text { text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; }
+html.ronda-tema-pregao .ronda-dialog .ui-dialog-buttonpane::before {
+	content: '● Mercado aberto · liquidação D+0 · volume 54.012';
+	float: left; padding-top: 0.55em; font-size: 0.8em; color: #00d26a; animation: ronda-pregao-pisca 2s steps( 1 ) infinite;
+}
+/* </nowiki> */

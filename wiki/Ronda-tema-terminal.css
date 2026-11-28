@@ -1,0 +1,212 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Terminal" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-terminal #ronda-toolbar {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #33ff66;
+	background: #0b0f0b;
+	border: 1px solid #1f6b2f;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-brand {
+	color: #33ff66;
+	background: transparent;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 1px solid #1f6b2f;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn.ui-button {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #33ff66 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #33ff66 !important;
+	background: #123d1c !important;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #0b0f0b !important;
+	background: #33ff66 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #ffb000 !important;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-userpanel {
+	color: #33ff66;
+	background: #0b0f0b;
+	border-top: 1px dashed #1f6b2f;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-up-table th {
+	color: #22aa44;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-up-table td {
+	color: #33ff66;
+}
+
+html.ronda-tema-terminal #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-terminal #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-terminal #ronda-toolbar a {
+	color: #7dffa1;
+}
+
+html.ronda-tema-terminal .ronda-dialog.ui-dialog {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #33ff66 !important;
+	background: #0b0f0b !important;
+	border: 1px solid #33ff66 !important;
+	border-radius: 0 !important;
+	box-shadow: 0 0 20px rgba( 51, 255, 102, 0.2 ) !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-titlebar {
+	color: #33ff66 !important;
+	background: #0b0f0b !important;
+	border-bottom: 1px dashed #1f6b2f !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #33ff66;
+	background: transparent;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-titlebar-close {
+	color: #33ff66 !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form fieldset {
+	background: transparent !important;
+	border: 1px dashed #1f6b2f !important;
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form legend {
+	color: #7dffa1 !important;
+	background: transparent;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-terminal .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 1px dashed #ffb000 !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-terminal .ronda-dialog .ronda-form textarea,
+html.ronda-tema-terminal .ronda-dialog .ronda-form select {
+	color: #33ff66;
+	background: #000;
+	border: 1px solid #1f6b2f;
+	border-radius: 0;
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #33ff66;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #22aa44;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #33ff66;
+	background: transparent;
+	border: 1px solid #1f6b2f;
+	border-radius: 0;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #33ff66;
+	background: color-mix( in srgb, #33ff66 16%, transparent );
+	border-color: #33ff66;
+	outline: 1px solid #33ff66;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #33ff66;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #22aa44;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ronda-form a {
+	color: #7dffa1;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane {
+	background: #0b0f0b !important;
+	border-top: 1px dashed #1f6b2f !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: 'DejaVu Sans Mono', Consolas, 'Courier New', monospace;
+	color: #33ff66 !important;
+	background: transparent !important;
+	border: 1px solid #33ff66 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #123d1c !important;
+	color: #33ff66 !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #0b0f0b !important;
+	background: #33ff66 !important;
+	border-color: #33ff66 !important;
+}
+
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #0b0f0b !important;
+	background: #ffb000 !important;
+	border-color: #ffb000 !important;
+}
+
+@keyframes ronda-terminal-cursor { 50% { opacity: 0; } }
+html.ronda-tema-terminal #ronda-toolbar .ronda-brand { font-weight: normal; }
+html.ronda-tema-terminal #ronda-toolbar .ronda-brand::before { content: 'ronda@ptwiki:~$\00a0'; color: #7dffa1; }
+html.ronda-tema-terminal #ronda-toolbar .ronda-brand::after { content: '▋'; animation: ronda-terminal-cursor 1s steps( 1 ) infinite; margin-left: 0.2em; }
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn .ui-button-text::before { content: '['; opacity: 0.6; }
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn .ui-button-text::after { content: ']'; opacity: 0.6; }
+html.ronda-tema-terminal #ronda-toolbar .ronda-btn .ui-button-text { text-transform: lowercase; }
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-titlebar::before { content: '$ ronda' !important; }
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-title { font-weight: normal !important; }
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-title::before { content: '--'; }
+html.ronda-tema-terminal .ronda-dialog .ronda-form legend::before { content: '# '; }
+html.ronda-tema-terminal .ronda-dialog .ronda-form label,
+html.ronda-tema-terminal .ronda-dialog .ronda-form p { color: #33ff66; }
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text::before { content: '<'; }
+html.ronda-tema-terminal .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text::after { content: '>'; }
+/* </nowiki> */

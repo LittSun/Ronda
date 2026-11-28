@@ -1,0 +1,208 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Bauhaus" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-bauhaus #ronda-toolbar {
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+	color: #111;
+	background: #f2efe6;
+	border: 3px solid #111;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-brand {
+	color: #fff;
+	background: #e53935;
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 3px solid #111;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn.ui-button {
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+	color: #111 !important;
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #111 !important;
+	background: #f9c80e !important;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #fff !important;
+	background: #1e4fa3 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #e53935 !important;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-userpanel {
+	color: #111;
+	background: #fff;
+	border-top: 3px solid #111;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-up-table th {
+	color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-up-table td {
+	color: #111;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar a {
+	color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog.ui-dialog {
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+	color: #111 !important;
+	background: #f2efe6 !important;
+	border: 3px solid #111 !important;
+	border-radius: 0 !important;
+	box-shadow: 8px 8px 0 #1e4fa3 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-titlebar {
+	color: #fff !important;
+	background: #111 !important;
+	border-bottom: 3px solid #111 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #fff;
+	background: #e53935;
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-titlebar-close {
+	color: #fff !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form fieldset {
+	background: #fff !important;
+	border: 3px solid #111 !important;
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form legend {
+	color: #111 !important;
+	background: #f9c80e;
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 12px solid #e53935 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form textarea,
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form select {
+	color: #111;
+	background: #fff;
+	border: 2px solid #111;
+	border-radius: 0;
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #111;
+	background: transparent;
+	border: 2px solid #111;
+	border-radius: 0;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #111;
+	background: color-mix( in srgb, #1e4fa3 16%, transparent );
+	border-color: #1e4fa3;
+	outline: 1px solid #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form a {
+	color: #1e4fa3;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane {
+	background: #f9c80e !important;
+	border-top: 3px solid #111 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: 'Century Gothic', Futura, 'Trebuchet MS', sans-serif;
+	color: #111 !important;
+	background: #fff !important;
+	border: 3px solid #111 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #f9c80e !important;
+	color: #111 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #fff !important;
+	background: #1e4fa3 !important;
+	border-color: #111 !important;
+}
+
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #e53935 !important;
+	border-color: #e53935 !important;
+}
+
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-brand { text-transform: lowercase; letter-spacing: 0.05em; font-weight: bold; position: relative; padding-right: 2.2em; }
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-brand::after { content: ''; position: absolute; right: 0.6em; top: 50%; width: 0.9em; height: 0.9em; margin-top: -0.45em; background: #f9c80e; border-radius: 50%; }
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n+1 ) { box-shadow: inset 0 -4px 0 #e53935 !important; }
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n+2 ) { box-shadow: inset 0 -4px 0 #1e4fa3 !important; }
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-toolbar-group:first-of-type .ronda-btn:nth-child( 3n ) { box-shadow: inset 0 -4px 0 #f9c80e !important; }
+html.ronda-tema-bauhaus #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button { box-shadow: none !important; }
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-titlebar::before { background: #e53935 !important; color: #fff !important; text-transform: lowercase; }
+html.ronda-tema-bauhaus .ronda-dialog .ui-dialog-title { text-transform: lowercase; }
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form legend { padding: 0.1em 0.6em !important; text-transform: lowercase; font-size: 0.95em !important; }
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form fieldset:nth-of-type( 3n+2 ) legend { background: #e53935; color: #fff !important; }
+html.ronda-tema-bauhaus .ronda-dialog .ronda-form fieldset:nth-of-type( 3n ) legend { background: #1e4fa3; color: #fff !important; }
+/* </nowiki> */

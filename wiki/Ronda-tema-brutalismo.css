@@ -1,0 +1,202 @@
+/* @target Usuário:Little Sunshine/Scripts/Ronda-loader.js */
+/* Ronda — tema "Brutalismo" */
+/* Documentação: [[User:Little Sunshine/Ronda]] */
+/* <nowiki> */
+html.ronda-tema-brutalismo #ronda-toolbar {
+	font-family: 'Courier New', monospace;
+	color: #000;
+	background: #fff;
+	border: 3px solid #000;
+	border-radius: 0;
+	box-shadow: 6px 6px 0 #000;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-brand {
+	color: #ffeb3b;
+	background: #000;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-toolbar-admin {
+	border-left: 3px solid #000;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn.ui-button {
+	font-family: 'Courier New', monospace;
+	color: #000 !important;
+	background: transparent !important;
+	border: 2px solid #000 !important;
+	border-radius: 0 !important;
+	box-shadow: 3px 3px 0 #000 !important;
+	margin: 0.35em 0.3em !important;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn.ui-button.ui-state-hover,
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn.ui-button.ui-state-focus {
+	color: #000 !important;
+	background: #ffeb3b !important;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn.ronda-btn-on.ui-button {
+	color: #000 !important;
+	background: #ffeb3b !important;
+	box-shadow: none !important;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn-admin.ui-button {
+	color: #d50000 !important;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-userpanel {
+	color: #000;
+	background: #fff;
+	border-top: 3px solid #000;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-up-table th {
+	color: #000;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-up-table td {
+	color: #000;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-up-table th,
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-up-table td {
+	border-bottom-color: rgba( 127, 127, 127, 0.25 );
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar a {
+	color: #0000ee;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog.ui-dialog {
+	font-family: 'Courier New', monospace;
+	color: #000 !important;
+	background: #fff !important;
+	border: 3px solid #000 !important;
+	border-radius: 0 !important;
+	box-shadow: 10px 10px 0 #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-titlebar {
+	color: #000 !important;
+	background: #ffeb3b !important;
+	border-bottom: 3px solid #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-titlebar::before {
+	content: 'Ronda';
+	color: #ffeb3b;
+	background: #000;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-titlebar-close {
+	color: #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form fieldset {
+	background: transparent !important;
+	border: 2px solid #000 !important;
+	border-radius: 0 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form legend {
+	color: #000 !important;
+	background: #ffeb3b;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form fieldset.ronda-warn-fav,
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form fieldset.ronda-tag-sug {
+	border-left: 10px solid #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form input[ type="text" ],
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form textarea,
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form select {
+	color: #000;
+	background: #fff;
+	border: 2px solid #000;
+	border-radius: 0;
+	font-family: 'Courier New', monospace;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form input[ type="checkbox" ] {
+	accent-color: #000;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form .ronda-sug-reason {
+	color: #000;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form .ronda-elim-type {
+	color: #000;
+	background: transparent;
+	border: 2px solid #000;
+	border-radius: 0;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form .ronda-elim-type:has( input:checked ) {
+	color: #000;
+	background: color-mix( in srgb, #000 16%, transparent );
+	border-color: #000;
+	outline: 1px solid #000;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form .ronda-elim-type input[ type="radio" ] {
+	accent-color: #000;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form .ronda-elim-desc {
+	color: #000;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form a {
+	color: #0000ee;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane {
+	background: #fff !important;
+	border-top: 3px solid #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button {
+	font-family: 'Courier New', monospace;
+	color: #000 !important;
+	background: #fff !important;
+	border: 2px solid #000 !important;
+	border-radius: 0 !important;
+	box-shadow: 3px 3px 0 #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button .ui-button-text {
+	color: inherit !important;
+	text-shadow: none !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+	background: #ffeb3b !important;
+	color: #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-blue,
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-priority-primary {
+	color: #ffeb3b !important;
+	background: #000 !important;
+	border-color: #000 !important;
+}
+
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-buttonpane .ui-button.ui-button-red {
+	color: #fff !important;
+	background: #d50000 !important;
+	border-color: #d50000 !important;
+}
+
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-brand { text-transform: uppercase; font-weight: bold; font-size: 1.15em; }
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn .ui-button-text { text-transform: uppercase; font-weight: bold; }
+html.ronda-tema-brutalismo #ronda-toolbar .ronda-btn.ui-button.ui-state-hover { transform: translate( 2px, 2px ); box-shadow: 1px 1px 0 #000 !important; }
+html.ronda-tema-brutalismo .ronda-dialog .ui-dialog-title { text-transform: uppercase; font-size: 1.1em; }
+html.ronda-tema-brutalismo .ronda-dialog .ronda-form legend { padding: 0 0.5em !important; text-transform: uppercase; border: 2px solid #000; }
+/* </nowiki> */
