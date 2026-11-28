@@ -810,7 +810,7 @@ window.rondaMessages = {
 var uid = 0,
 	api = new mw.Api( { parameters: { formatversion: 2 } } ),
 	ronda = window.ronda = {
-		version: '0.7.24',
+		version: '0.7.25',
 		api: api,
 		modules: [],
 		ctx: null,
@@ -2920,10 +2920,9 @@ ronda.REPO_URL = 'https://github.com/LittSun/Ronda';
  * por versão, na faixa que se abre sozinha). Atualize junto com ronda.version.
  */
 ronda.news = [
-	'Propor eliminação: um botão só para rápida, semirrápida e consenso, com o atalho Detectar VDA',
-	'Prévia opcional em Manutenção, Esboço, Redirecionar e nas propostas de eliminação',
-	'Informações avisa quando a página é recriação de uma já eliminada, mostra artigos de título parecido e detalha páginas eliminadas',
-	'Filas: prévia da edição ao deixar o mouse sobre ela; novo tema Pregão'
+	'Informações: o selo ! no botão só aparece para recriações ainda não patrulhadas, e o painel diz o porquê',
+	'Eliminação semirrápida: assunto Organização, com a predefinição própria',
+	'Temas: botões das janelas legíveis em todos eles (o Retrô listrado tinha o Salvar em branco)'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

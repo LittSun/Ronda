@@ -1,6 +1,13 @@
-Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.24]]</nowiki></code>.
+Histórico de versões do [[Usuário:Little Sunshine/Ronda|Ronda]]. Cada versão tem uma âncora com o próprio número, por exemplo <code><nowiki>[[/Changelog#0.7.25]]</nowiki></code>.
 
 <small>Página gerada automaticamente a partir do [https://github.com/LittSun/Ronda/blob/main/CHANGELOG.md CHANGELOG.md] do repositório; edições feitas aqui são substituídas na próxima atualização.</small>
+
+== <span id="0.7.25"></span>0.7.25 — 27/11/2026 ==
+* '''Informações › Recriação''': o selo '''!''' no botão Informações só aparece quando a recriação ainda não foi patrulhada (para quem não vê a patrulha, quando foi recriada nos últimos 30 dias). O painel repete o selo na linha Recriação e diz o motivo, também na dica do botão; recriações antigas continuam listadas, sem destaque. Restauros no registro não são mais tomados por eliminações.
+* '''Informações › Ligações''': "órfã" e os afluentes do domínio principal só para artigos.
+* '''Semirrápida''': assunto '''Organização''', com <code><nowiki>{{ESR-organização}}</nowiki></code> (justificativa no parâmetro 2).
+* '''Temas''': o texto dos botões das janelas segue a cor do botão; a regra da wiki que pinta de branco o texto dos botões azuis deixava o Salvar ilegível em temas claros, como o Retrô listrado.
+* Nota sobre a numeração: da 0.7.1 à 0.7.24, várias versões com funções novas saíram como correção. A partir daqui vale a regra de docs/desenvolvimento.md; a próxima função nova abre a 0.8.0.
 
 == <span id="0.7.24"></span>0.7.24 — 26/11/2026 ==
 * '''Propor eliminação''': um botão só no lugar de ER, ESR e Consenso. O diálogo mostra os tipos que valem para a página, cada um com uma frase de explicação; ao continuar, abre o formulário de sempre do tipo escolhido.
