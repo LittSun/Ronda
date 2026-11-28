@@ -353,7 +353,8 @@ ronda.catalog.warnings = [
  * listados ficam esmaecidos, com a nota "já notificado", mas continuam selecionáveis.
  */
 ronda.catalog.notifiedCategories = [
-	{ category: 'Categoria:!Usuários com nomes impróprios notificados', groups: [ 'Nome impróprio' ] }
+	{ category: 'Categoria:!Usuários com nomes impróprios notificados', groups: [ 'Nome impróprio' ] },
+	{ category: 'Categoria:!Usuários com nomes impróprios passíveis de bloqueio', groups: [ 'Nome impróprio ] }
 ];
 
 /* ================================================================== *
