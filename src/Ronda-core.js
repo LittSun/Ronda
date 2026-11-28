@@ -116,6 +116,10 @@ var uid = 0,
 			abuseLog: {
 				filters: []
 			},
+			// Filas › Páginas novas pequenas: páginas novas com menos deste número de bytes
+			smallPages: {
+				bytes: 1000
+			},
 			revert: {
 				// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = número da versão, $4 = motivo
 				summary: 'Desfeita(s) uma ou mais edições de [[Special:Contribs/$2|$2]]',
@@ -1765,6 +1769,7 @@ ronda.PREFS = [
 	{ section: 'Filas' },
 	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
 	[ 'abuseLog.filters', ronda.msg( 'core-fila-abusos-filtros' ), 'list' ],
+	[ 'smallPages.bytes', ronda.msg( 'core-fila-pequenas-bytes' ), 'number' ],
 	{ section: 'Avisos' },
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
@@ -2534,7 +2539,8 @@ ronda.news = [
 	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida',
 	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
 	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas',
-	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas'
+	'Filas: Filtro de abusos, com a escolha dos filtros em Preferências › Filas',
+	'Filas: Páginas novas pequenas, com o tamanho em Preferências › Filas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

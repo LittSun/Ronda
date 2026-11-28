@@ -2360,6 +2360,14 @@ var MAX = 10,
 			} );
 			return $note;
 		}, key: 'abuselog', link: 'revid', sizes: false, empty: ronda.msg( 'patrulha-fila-abusos-vazia' ) },
+		// Páginas novas pequenas: o tamanho máximo (smallPages.bytes) fica nas preferências
+		{ id: 'PNP', label: ronda.msg( 'patrulha-fila-pequenas' ), title: ronda.msg( 'patrulha-fila-pequenas-dica', smallPageBytes() ), params: function () {
+			// Com o direito de patrulhar, só as ainda não patrulhadas
+			return { list: 'recentchanges', rctype: 'new', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!redirect|!patrolled' : '!redirect',
+				rcprop: 'user|comment|title|sizes|ids', rclimit: 500 };
+		}, pick: function ( list ) {
+			return smallNewPages( list, smallPageBytes() );
+		}, key: 'recentchanges', link: 'rcid', empty: ronda.msg( 'patrulha-fila-pequenas-vazia', smallPageBytes() ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
@@ -2378,6 +2386,11 @@ function abuseFilters() {
 	return ( Array.isArray( ids ) ? ids : String( ids || '' ).split( /[,\s|]+/ ) ).map( Number ).filter( function ( n ) {
 		return n > 0 && Math.floor( n ) === n;
 	} );
+}
+
+/** Tamanho máximo das Páginas novas pequenas, em bytes (preferências: smallPages.bytes) */
+function smallPageBytes() {
+	return Math.max( 1, Number( ( ronda.config.smallPages || {} ).bytes ) || 1000 );
 }
 
 /* ---------------- Funções puras ---------------- */
@@ -2411,6 +2424,15 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/** Páginas novas pequenas: criações com menos de `bytes` bytes, das mais recentes para as mais antigas */
+function smallNewPages( list, bytes ) {
+	return list.filter( function ( item ) {
+		return ( item.newlen || 0 ) < bytes;
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.smallNewPages = smallNewPages;
 
 /**
  * Filtro de abusos: só as ocorrências cuja edição foi gravada (com revid); as
