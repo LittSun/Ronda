@@ -108,6 +108,10 @@ var uid = 0,
 				// Eliminação do destino antes de mover; $1 = página que será movida para lá
 				deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'
 			},
+			// Filas › Grandes remoções: edições que tiraram pelo menos este número de bytes
+			removals: {
+				bytes: 2000
+			},
 			revert: {
 				// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = número da versão, $4 = motivo
 				summary: 'Desfeita(s) uma ou mais edições de [[Special:Contribs/$2|$2]]',
@@ -1754,6 +1758,8 @@ ronda.PREFS = [
 	[ 'revert.links.contribs', ronda.msg( 'core-links-rapidos-nas-contribuicoes' ), 'check' ],
 	[ 'revert.links.recentchanges', ronda.msg( 'core-links-rapidos-nas-mudancas-recentes' ), 'check' ],
 	[ 'revert.links.watchlist', ronda.msg( 'core-links-rapidos-nas-paginas-vigiadas' ), 'check' ],
+	{ section: 'Filas' },
+	[ 'removals.bytes', ronda.msg( 'core-fila-remocoes-bytes' ), 'number' ],
 	{ section: 'Avisos' },
 	[ 'warnings.window', ronda.msg( 'core-dias-considerados-para-sugerir-o-nivel' ), 'number' ],
 	[ 'warnings.marker', ronda.msg( 'core-deixar-marca-oculta-depois-de-cada' ), 'check' ],
@@ -2521,7 +2527,8 @@ ronda.news = [
 	'Se a sessão expirar, o Ronda não grava nada deslogado: avisa para entrar de novo na conta',
 	'Vigilância por tempo determinado: um prazo para cada tipo de ação, em Preferências › Vigilância',
 	'Eliminação rápida: alerta para artigos antigos ou com interwikis, com limites em Preferências › Eliminação rápida',
-	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra'
+	'Barra personalizável: ordem dos botões, menu "Mais" e botões escondidos, em Preferências › Barra',
+	'Filas: Grandes remoções, com o limite em bytes em Preferências › Filas'
 ];
 
 /** Grava uma opção de usuário (também na simulação, como as preferências) */

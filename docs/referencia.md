@@ -212,6 +212,7 @@ Portado do "Listar" do FastButtons. Mostra até 10 páginas de cada lista, uma p
 - **Mudanças recentes**: edições não autopatrulhadas no domínio principal;
 - **Páginas novas**: páginas novas não patrulhadas (sem redirecionamentos), abrindo com o link de patrulha;
 - **Edições a revisar**: uma consulta a `list=recentchanges` com `rcshow=!patrolled|oresreview` e `rcprop=oresscores` (extensão ORES da wiki, mesmo limite dos filtros de Mudanças recentes); as de provável má-fé (*goodfaith* < 50%) vêm primeiro e, em cada grupo, da mais danosa para a menos;
+- **Grandes remoções**: até 500 mudanças recentes no domínio principal (sem robôs; com o direito `patrol`, só as não autopatrulhadas), filtradas no navegador (`ronda.lists.bigRemovals`): as que tiraram pelo menos `removals.bytes` bytes (padrão 2000), sem reversões (`mw-rollback`, `mw-undo`, `mw-manual-revert`) e sem as já desfeitas (`mw-reverted`). Cada linha mostra a porcentagem da página que saiu.
 - **Eliminação rápida**: páginas em Categoria:!Páginas para eliminação rápida.
 
 ### #R, Esboço e Fusão
@@ -295,6 +296,9 @@ window.rondaConfig = {
 	},
 	move: {
 		deleteReason: '[[WP:ER|ER]] R2: eliminado para permitir a moção de [[$1]]'  // $1 = página movida
+	},
+	removals: {
+		bytes: 2000                     // Filas › Grandes remoções: tiraram pelo menos N bytes
 	},
 	revert: {
 		// $1 = autor da versão restaurada, $2 = usuário revertido, $3 = versão, $4 = motivo

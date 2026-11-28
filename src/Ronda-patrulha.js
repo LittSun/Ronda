@@ -2335,11 +2335,26 @@ var MAX = 10,
 				return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: '!patrolled|oresreview',
 					rcprop: 'user|comment|title|sizes|ids|oresscores', rclimit: 50 };
 			}, key: 'recentchanges', link: 'revid', scores: true, empty: ronda.msg( 'patrulha-nenhuma-edicao-para-patrulhar-ou-desfazer' ) },
+		// Grandes remoções: o limite (removals.bytes) fica nas preferências
+		{ id: 'REM', label: ronda.msg( 'patrulha-fila-remocoes' ), title: ronda.msg( 'patrulha-fila-remocoes-dica', removalBytes() ), params: function () {
+			// Com o direito de patrulhar, só as edições de quem não é autopatrulhado
+			return { list: 'recentchanges', rctype: 'edit', rcnamespace: 0, rcshow: ronda.can( 'patrol' ) ? '!bot|!autopatrolled' : '!bot',
+				rcprop: 'user|comment|title|sizes|ids|tags', rclimit: 500 };
+		}, pick: function ( list ) {
+			return bigRemovals( list, removalBytes() );
+		}, note: function ( item ) {
+			return item.oldlen ? ronda.msg( 'patrulha-fila-remocoes-nota', Math.round( ( item.oldlen - item.newlen ) * 100 / item.oldlen ) ) : null;
+		}, key: 'recentchanges', link: 'revid', empty: ronda.msg( 'patrulha-fila-remocoes-vazia', removalBytes() ) },
 		{ id: 'ER', label: ronda.msg( 'patrulha-eliminacao-rapida' ), title: ronda.msg( 'patrulha-paginas-marcadas-para-eliminacao-rapida' ), params: function () {
 			return { list: 'categorymembers', cmtitle: 'Categoria:!Páginas para eliminação rápida', cmlimit: MAX };
 		}, key: 'categorymembers', link: 'page', empty: ronda.msg( 'patrulha-nenhuma-pagina-marcada-para-eliminacao-rapida' ) }
 	],
 	runId = 0;
+
+/** Limite das Grandes remoções, em bytes (preferências: removals.bytes) */
+function removalBytes() {
+	return Math.max( 1, Number( ( ronda.config.removals || {} ).bytes ) || 2000 );
+}
 
 /* ---------------- Funções puras ---------------- */
 
@@ -2372,6 +2387,23 @@ function sizeDiff( item ) {
 }
 
 ronda.lists = { pickSuspects: pickSuspects, sizeDiff: sizeDiff, prob: prob };
+
+/**
+ * Grandes remoções: edições que tiraram pelo menos `bytes` bytes, das mais recentes
+ * para as mais antigas. Ficam de fora as reversões (que costumam tirar vandalismo) e
+ * as edições que já foram desfeitas (etiqueta mw-reverted).
+ */
+function bigRemovals( list, bytes ) {
+	var skip = [ 'mw-rollback', 'mw-undo', 'mw-manual-revert', 'mw-reverted' ];
+
+	return list.filter( function ( item ) {
+		return ( item.newlen || 0 ) - ( item.oldlen || 0 ) <= -bytes && !( item.tags || [] ).some( function ( t ) {
+			return skip.indexOf( t ) !== -1;
+		} );
+	} ).slice( 0, MAX );
+}
+
+ronda.lists.bigRemovals = bigRemovals;
 
 /* ---------------- Interface ---------------- */
 
@@ -2466,19 +2498,28 @@ function render( $out, def, list ) {
 			$li = $( '<li></li>' ).append( $link ),
 			dano = def.scores ? prob( item, 'damaging' ) : null,
 			fe = def.scores ? prob( item, 'goodfaith' ) : null,
-			d, n, comment;
+			d, n, comment, note;
 
 		attachHover( $link, item, def );
 
 		if ( def.link !== 'page' ) {
-			d = sizeDiff( item );
-			n = Number( d );
-			$li.append( ' ', $( '<span></span>' )
-				.addClass( n > 0 ? 'ronda-ok' : n < 0 ? 'ronda-bad' : 'ronda-feed-muted' )
-				.toggleClass( 'ronda-feed-big', Math.abs( n ) >= 500 )
-				.text( '(' + d + ')' ) );
+			// Listas sem tamanho (def.sizes === false) não mostram a diferença
+			if ( def.sizes !== false ) {
+				d = sizeDiff( item );
+				n = Number( d );
+				$li.append( ' ', $( '<span></span>' )
+					.addClass( n > 0 ? 'ronda-ok' : n < 0 ? 'ronda-bad' : 'ronda-feed-muted' )
+					.toggleClass( 'ronda-feed-big', Math.abs( n ) >= 500 )
+					.text( '(' + d + ')' ) );
+			}
 			if ( item.user ) {
 				$li.append( sep(), $( '<a></a>' ).attr( 'href', mw.util.getUrl( 'Special:Contributions/' + item.user ) ).text( item.user ) );
+			}
+			// Informação própria da fila (def.note: texto ou jQuery)
+			note = def.note ? def.note( item ) : null;
+			if ( note ) {
+				$li.append( sep(), typeof note === 'string'
+					? $( '<span class="ronda-feed-muted"></span>' ).text( note ) : note );
 			}
 			if ( dano !== null ) {
 				$li.append( sep(), $( '<span class="ronda-bad"></span>' ).text( 'dano ' + pct( dano ) ) );
@@ -2504,10 +2545,13 @@ function load( def, $out ) {
 	ronda.api.get( $.extend( { action: 'query' }, def.params() ) ).then( function ( data ) {
 		var list = ( data.query && data.query[ def.key ] ) || [];
 
+		// def.pick: filtro ou consulta extra da fila; devolve a lista ou uma promessa dela
+		return def.pick ? def.pick( list ) : def.scores ? pickSuspects( list ) : list;
+	} ).then( function ( list ) {
 		if ( id !== runId ) {
 			return;
 		}
-		render( $out, def, def.scores ? pickSuspects( list ) : list );
+		render( $out, def, list );
 	}, function () {
 		if ( id === runId ) {
 			$out.text( ronda.msg( 'patrulha-nao-foi-possivel-obter-a-lista', def.label ) );
